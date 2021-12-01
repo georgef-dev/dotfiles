@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# If Brew is not yet installed, install it
+if ! brew -v &> /dev/null
+then
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+
+# Install packages and dependencis
+# Based on global Brewfile: ~/.Brewfile
+brew bundle --global
+
+

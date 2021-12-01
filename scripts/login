@@ -1,0 +1,20 @@
+#!/bin/bash
+CYAN='\033[0;36m'
+GREEN='\033[0;32m'
+NC='\033[0m' # No Color
+
+#printf $CYAN
+printf '
+                      __ 
+                     / _|
+                __ _| |_ 
+               / _` |  _|
+              | (_| | |  
+               \__, |_|  
+                __/ |    
+               |___/    
+' | lolcat
+printf '
+      Greetings George, welcome back!
+' | lolcat
+echo

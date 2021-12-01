@@ -1,0 +1,212 @@
+/* GENERAL STYLES */
+html {
+  --infobarHeight: 26px;
+}
+
+html,
+body,
+body > div,
+div#joplin-plugin-content {
+  height: 100%;
+}
+a {
+  text-decoration: none;
+}
+span {
+  cursor: default;
+}
+
+/* HORIZONTAL LAYOUT */
+#container {
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: overlay;
+  width: 100%;
+}
+
+#tabs-container {
+  display: flex;
+  float: left;
+  overflow-x: overlay;
+  width: 100%;
+}
+#tab {
+  border-style: solid;
+  border-width: 0;
+  border-right-width: 1px;
+  display: flex;
+  padding: 0 8px;
+  transition: 0.2s;
+}
+#tab .fas {
+  margin-left: auto;
+  margin-right: 0;
+  padding: 2px;
+  visibility: hidden;
+}
+#tab:hover .fas {
+  visibility: visible;
+}
+.new {
+  font-style: italic;
+}
+.tab-inner {
+  align-items: center;
+  display: flex;
+  height: 100%;
+  width: 100%;
+}
+.tab-inner > input {
+  margin: 0;
+  margin-right: 3px;
+}
+.tab-title {
+  overflow: hidden;
+  padding-right: 3px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#controls {
+  align-items: center;
+  display: flex;
+  float: right;
+  padding: 0 5px;
+  margin-left: auto;
+  margin-right: 0;
+}
+#controls .fas {
+  align-items: center;
+  display: flex;
+  font-size: 14.4px;
+  height: 26px;
+  justify-content: center;
+  max-width: 26px;
+  min-height: 26px;
+  opacity: 0.8;
+  width: 26px;
+}
+#controls .fas:hover {
+  opacity: 1;
+}
+
+#infobar-container {
+  display: flex;
+  float: left;
+  height: var(--infobarHeight);
+  width: 100%;
+}
+#infobar-container .fas {
+  font-size: 1.3em;
+}
+#infobar-container .fas.fa-book {
+  font-size: 1.2em;
+}
+
+.navigation-icons {
+  border-style: solid;
+  border-width: 0;
+  border-right-width: 1px;
+  margin: auto 0;
+  min-width: fit-content;
+  padding: 0 4px;
+}
+.navigation-icons a:hover {
+  background: var(--joplin-background-color-hover3);
+  border-radius: 3px;
+}
+.navigation-icons .fas {
+  line-height: calc(var(--infobarHeight) - 2px);
+  min-width: 12px;
+  padding: 0 4px;
+}
+
+.checklist-state {
+  border-style: solid;
+  border-width: 0;
+  border-right-width: 1px;
+  margin: auto 0;
+  min-width: fit-content;
+  padding: 0 4px;
+}
+.checklist-state-inner {
+  align-items: center;
+  display: flex;
+  line-height: calc(var(--infobarHeight) - 2px);
+}
+.checklist-state-text {
+  align-items: center;
+  display: flex;
+  margin: 0 2px;
+  padding: 0 4px;
+}
+.checklist-state-text > .fas {
+  padding-right: 4px;
+}
+.checklist-state-text.completed {
+  background: #46ba61;
+  color: white;
+  border-radius: 3px;
+}
+
+.breadcrumbs-icon {
+  margin: auto 0;
+  padding-left: 8px;
+}
+#breadcrumbs-container {
+  display: flex;
+  float: left;
+  overflow-x: overlay;
+  overflow-y: hidden;
+  width: 100%;
+}
+.breadcrumb {
+  display: flex;
+  height: var(--infobarHeight);
+  min-width: 36px;
+}
+.breadcrumb:last-of-type .fas {
+  display: none;
+}
+.breadcrumb-inner {
+  align-items: center;
+  display: flex;
+  line-height: calc(var(--infobarHeight) - 2px);
+  width: 100%;
+}
+.breadcrumb-inner a:hover {
+  background: var(--joplin-background-color-hover3);
+  border-radius: 3px;
+}
+.breadcrumb-inner .fas {
+  margin-left: auto;
+  margin-right: 0px;
+}
+.breadcrumb-title {
+  margin: 0 2px;
+  overflow: hidden;
+  padding: 0 4px;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
+/* DRAG AND DROP */
+[draggable="true"] {
+  /* To prevent user selecting inside the drag source */
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
+/* SCROLLBARS */
+::-webkit-scrollbar {
+  height: 4px;
+  width: 7px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+}

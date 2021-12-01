@@ -1,0 +1,7 @@
+#!/bin/bash
+
+echo "Running Dotbot install"
+./install
+
+echo "Running Brewbundle to install work specifc App Store apps"
+brew bundle --file $HOME/dotfiles/Brewfile.mas.personal

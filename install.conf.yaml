@@ -1,0 +1,22 @@
+- defaults:
+    link:
+        relink: true
+        force: true
+
+- clean: ['~']
+
+- link:
+    ~/.vim: vim
+    ~/.vimrc: vimrc
+    ~/.config: config
+    ~/.Brewfile: Brewfile
+    ~/.zshrc:
+      force: true
+      path: zshrc
+
+- create:
+    - ~/.vim/undo-history
+
+- shell:
+    - [git submodule update --init --recursive, Installing submodules]  
+    - [scripts/initBrew]
