@@ -2,7 +2,10 @@
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH="/Users/georgeferreira/.oh-my-zsh"
+export ZSH="$HOME/.oh-my-zsh"
+
+# Export my secrets
+. ~/.secrets
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
@@ -106,6 +109,8 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+alias start-local-ftf='rm -rf tmp/pids && dip up -d postgres-dump && dip up rails sidekiq webpacker'
+alias set-secrets='$(cat ~/.secrets)'
 
 eval "$(rbenv init - zsh)"
 
@@ -115,6 +120,6 @@ if command -v pyenv 1>/dev/null 2>&1; then
   eval "$(pyenv init --path)"
 fi
 
-~/scripts/login
+~/dotfiles/scripts/login
 
 

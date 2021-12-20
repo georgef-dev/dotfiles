@@ -8,7 +8,9 @@
 - link:
     ~/.vim: vim
     ~/.vimrc: vimrc
-    ~/.config: config
+    ~/.config/coc: config/coc
+    ~/.config/jgit: config/jgit
+    ~/.config/nvim: config/nvim
     ~/.Brewfile: Brewfile
     ~/.zshrc:
       force: true
@@ -19,4 +21,4 @@
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]  
-    - [scripts/initBrew]
+      #- [scripts/initBrew]
