@@ -1,5 +1,3 @@
-# Tap repositories
-
 tap "bibendi/dip"
 tap "hashicorp/tap"
 tap "heroku/brew"
@@ -9,9 +7,6 @@ tap "homebrew/cask-versions"
 tap "homebrew/core"
 tap "homebrew/services"
 tap "sambadevi/powerlevel9k"
-
-# Install packages
-
 brew "amazon-ecs-cli"
 brew "automake"
 brew "xz"
@@ -38,6 +33,8 @@ brew "lolcat"
 brew "mas"
 brew "mosh"
 brew "neovim"
+brew "mobile-shell"
+brew "nmap"
 brew "node"
 brew "openjdk@8"
 brew "openssl@3"
@@ -52,6 +49,7 @@ brew "rbenv"
 brew "redis", restart_service: true
 brew "ruby-install"
 brew "ruby@2.7"
+brew "shellcheck"
 brew "telnet"
 brew "terraform"
 brew "terraformer"
@@ -67,12 +65,10 @@ brew "zsh-syntax-highlighting"
 brew "bibendi/dip/dip"
 brew "hashicorp/tap/terraform-ls"
 brew "heroku/brew/heroku"
-
-# Casks
-
 cask "anydesk"
 cask "anydo"
 cask "authy"
+cask "cloudflare-warp"
 cask "dbeaver-community"
 cask "discord"
 cask "drawio"

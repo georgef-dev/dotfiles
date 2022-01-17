@@ -25,7 +25,7 @@
         "sysPrefix": "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.8",
         "fileHash": "e3699d3435e3894a1a6a38f014f74b7816cd7e90f90e654ddb9b1c268772b5baa0076a582dfbcceaeac348150784dbb76a08e17e6913347a68dbddd923154234"
       },
-      "expiry": 1641914585971
+      "expiry": 1646850697212
     },
     "/usr/bin/python2.7.v3": {
       "data": {
@@ -50,7 +50,7 @@
         "sysPrefix": "/System/Library/Frameworks/Python.framework/Versions/2.7",
         "fileHash": "e3699d3435e3894a1a6a38f014f74b7816cd7e90f90e654ddb9b1c268772b5baa0076a582dfbcceaeac348150784dbb76a08e17e6913347a68dbddd923154234"
       },
-      "expiry": 1641914586009
+      "expiry": 1646850697023
     },
     "/usr/bin/python2.v3": {
       "data": {
@@ -75,7 +75,7 @@
         "sysPrefix": "/System/Library/Frameworks/Python.framework/Versions/2.7",
         "fileHash": "e3699d3435e3894a1a6a38f014f74b7816cd7e90f90e654ddb9b1c268772b5baa0076a582dfbcceaeac348150784dbb76a08e17e6913347a68dbddd923154234"
       },
-      "expiry": 1641914585974
+      "expiry": 1646850696919
     },
     "/usr/bin/python.v3": {
       "data": {
@@ -100,7 +100,7 @@
         "sysPrefix": "/System/Library/Frameworks/Python.framework/Versions/2.7",
         "fileHash": "e3699d3435e3894a1a6a38f014f74b7816cd7e90f90e654ddb9b1c268772b5baa0076a582dfbcceaeac348150784dbb76a08e17e6913347a68dbddd923154234"
       },
-      "expiry": 1641914585974
+      "expiry": 1646850697022
     },
     "/Users/georgeferreira/.pyenv/shims/python3.v3": {
       "data": {
@@ -125,7 +125,7 @@
         "sysPrefix": "/Users/georgeferreira/.pyenv/versions/3.10.0",
         "fileHash": "4079b9e742bba1cb2c5c9bcab775e0070106e9eeb69fe6d065986f17c141160e22db9d032d6c3b62b6d2ab6c4ace76929e61216e922d21c122502c55dc640753"
       },
-      "expiry": 1641914585967
+      "expiry": 1646850697044
     },
     "/Users/georgeferreira/.pyenv/shims/python.v3": {
       "data": {
@@ -150,7 +150,7 @@
         "sysPrefix": "/Users/georgeferreira/.pyenv/versions/3.10.0",
         "fileHash": "316ba78e507fb913e6ae82d114823228d8d21439575ea963eec92c61a35835df49eed3f4d9001183436ba9516b939703ea36f5e0cfd7921075350367d5b47a37"
       },
-      "expiry": 1641914585973
+      "expiry": 1646850696917
     },
     "/Users/georgeferreira/.pyenv/versions/3.9.9/bin/python.v3": {
       "data": {
@@ -175,7 +175,7 @@
         "sysPrefix": "/Users/georgeferreira/.pyenv/versions/3.9.9",
         "fileHash": "1068cabfb8ad6000d1277566f70f353dacc48193e444c49ee932f2d0c0f1575489358c74cd372004ae6ebed64b9296123076e79e6d9102f9381c39da325646e5"
       },
-      "expiry": 1641914586027
+      "expiry": 1646850697079
     },
     "/Users/georgeferreira/.pyenv/versions/3.10.0/bin/python3.10.v3": {
       "data": {
@@ -200,7 +200,7 @@
         "sysPrefix": "/Users/georgeferreira/.pyenv/versions/3.10.0",
         "fileHash": "acee21fd4caf4acef7cded50b270a52fa0eee3325d6692f5c714cdee5114066b694a261e54ff05be50085864308d5a8860f8bba5bf937a4b4a968d4930644b16"
       },
-      "expiry": 1641914585962
+      "expiry": 1646850697017
     },
     "/Users/georgeferreira/.pyenv/versions/3.10.0/bin/python3.v3": {
       "data": {
@@ -225,7 +225,7 @@
         "sysPrefix": "/Users/georgeferreira/.pyenv/versions/3.10.0",
         "fileHash": "d6cad8da5e78283ff8f9a0c4b34b0697428fd273203ec431301940104c208119e04dd7672eb19b44cf3c5906ac53a8d0c45f576af8e0c17ffc464731615b94c6"
       },
-      "expiry": 1641914585963
+      "expiry": 1646850697066
     },
     "/Users/georgeferreira/.pyenv/versions/3.10.0/bin/python.v3": {
       "data": {
@@ -250,7 +250,7 @@
         "sysPrefix": "/Users/georgeferreira/.pyenv/versions/3.10.0",
         "fileHash": "b57a21a7fb6615c60b366e074ecfe0816ad5b72da2dfb2acd8c39e0e42431d11f8364c95f80bde01e2bfdce5e3b46edd4d57c154b119e97ae57554f207356166"
       },
-      "expiry": 1641914585964
+      "expiry": 1646850697071
     },
     "/Users/georgeferreira/.pyenv/shims/python3.10.v3": {
       "data": {
@@ -275,7 +275,7 @@
         "sysPrefix": "/Users/georgeferreira/.pyenv/versions/3.10.0",
         "fileHash": "1430bb08e2053fb336680eec198a04a385cb6eb20cd3c3192d5249b02e6dcd6597a632a02cc4b0eb71c492bf99a13f723d6627428ce761bd5b27a8b93911e159"
       },
-      "expiry": 1641914586025
+      "expiry": 1646850697021
     },
     "/Users/georgeferreira/.pyenv/versions/3.9.9/bin/python3.v3": {
       "data": {
@@ -300,7 +300,7 @@
         "sysPrefix": "/Users/georgeferreira/.pyenv/versions/3.9.9",
         "fileHash": "55181499ce9ee8163d1aa0fc7ebe1a02e358bec63623b0eb207ae0dd825897da5c69130c4c62c01910b1fde689cb6adc0c67171a97111e68864f175e2aad410d"
       },
-      "expiry": 1641914586028
+      "expiry": 1646850697128
     },
     "/Users/georgeferreira/.pyenv/versions/3.9.9/bin/python3.9.v3": {
       "data": {
@@ -325,7 +325,7 @@
         "sysPrefix": "/Users/georgeferreira/.pyenv/versions/3.9.9",
         "fileHash": "5781407634fa06a9bf715269d73803bf5fa7b6d37bf7b563cbc6efc24f53280610013de2bac97011208ee88fd3857a6fd391fe27b0cce96d32b33c425f8324fe"
       },
-      "expiry": 1641914586028
+      "expiry": 1646850697126
     },
     "INTERPRETERS_CACHE_v3_VirtualEnvService": [
       {
@@ -496,7 +496,7 @@
         "sysPrefix": "/System/Library/Frameworks/Python.framework/Versions/2.7",
         "fileHash": "e3699d3435e3894a1a6a38f014f74b7816cd7e90f90e654ddb9b1c268772b5baa0076a582dfbcceaeac348150784dbb76a08e17e6913347a68dbddd923154234"
       },
-      "expiry": 1641914586079
+      "expiry": 1646850697064
     },
     "INTERPRETERS_CACHE_v3_CurrentPathService": [
       {
@@ -667,14 +667,14 @@
           "displayName": "Python 3.10.0 64-bit ('3.10.0': pyenv)"
         }
       },
-      "expiry": 1641914586116
+      "expiry": 1646850697160
     },
     "/Users/georgeferreira/.pyenv/versions/3.10.0/bin/python.interpreter.displayName.v7": {
       "data": {
         "displayName": "Python 3.10.0 64-bit ('3.10.0': pyenv)",
-        "hash": "b57a21a7fb6615c60b366e074ecfe0816ad5b72da2dfb2acd8c39e0e42431d11f8364c95f80bde01e2bfdce5e3b46edd4d57c154b119e97ae57554f207356166-bf44831e26dcc1518f175dfe6a1d6408"
+        "hash": "b57a21a7fb6615c60b366e074ecfe0816ad5b72da2dfb2acd8c39e0e42431d11f8364c95f80bde01e2bfdce5e3b46edd4d57c154b119e97ae57554f207356166-7a308e350256814c07b8ee6615f59c01"
       },
-      "expiry": 1641923171408
+      "expiry": 1646850697053
     },
     "/usr/local/bin/python3.9.v3": {
       "data": {
@@ -686,20 +686,20 @@
             "includePrerelease": false
           },
           "loose": false,
-          "raw": "3.9.9-final",
+          "raw": "3.9.10-final",
           "major": 3,
           "minor": 9,
-          "patch": 9,
+          "patch": 10,
           "prerelease": [
             "final"
           ],
           "build": [],
-          "version": "3.9.9-final"
+          "version": "3.9.10-final"
         },
         "sysPrefix": "/usr/local/opt/python@3.9/Frameworks/Python.framework/Versions/3.9",
-        "fileHash": "f241ba27791e598cee886a969fd33b0247b4dfaad2386d0cf162ce9917e1944270d1c6e147838af16ac3e1f7095904c59f98c1b7228082ae830c092e92053ace"
+        "fileHash": "af77419bae998a2fa40a2eec068019efbc02137cedc8a7be22edb6903767dc6d61483fb81bb458013735a821276bcb527e9e38989e8937442639c11b695c8253"
       },
-      "expiry": 1641914585969
+      "expiry": 1646850697068
     },
     "/Users/georgeferreira/.pyenv/shims/python3.9.v3": {
       "data": {
@@ -711,20 +711,20 @@
             "includePrerelease": false
           },
           "loose": false,
-          "raw": "3.9.9-final",
+          "raw": "3.9.10-final",
           "major": 3,
           "minor": 9,
-          "patch": 9,
+          "patch": 10,
           "prerelease": [
             "final"
           ],
           "build": [],
-          "version": "3.9.9-final"
+          "version": "3.9.10-final"
         },
         "sysPrefix": "/usr/local/opt/python@3.9/Frameworks/Python.framework/Versions/3.9",
         "fileHash": "84478d7919cf6df85cc1a0b45574392e4152309ae5d169bf2ef0aaee4170d21e32f7da9dc85569f3aad47bb41c1fef851cc545016c8d0019e9d09b5e3e9a1710"
       },
-      "expiry": 1641914586010
+      "expiry": 1646850697065
     },
     "/usr/local/bin/python3.v3": {
       "data": {
@@ -736,20 +736,20 @@
             "includePrerelease": false
           },
           "loose": false,
-          "raw": "3.9.9-final",
+          "raw": "3.9.10-final",
           "major": 3,
           "minor": 9,
-          "patch": 9,
+          "patch": 10,
           "prerelease": [
             "final"
           ],
           "build": [],
-          "version": "3.9.9-final"
+          "version": "3.9.10-final"
         },
         "sysPrefix": "/usr/local/opt/python@3.9/Frameworks/Python.framework/Versions/3.9",
-        "fileHash": "6eebf7b17f335e39ba156917a3fb9e6d5df02d9ce1ec90ffacdd3998a82dc9df5d7f746440418c02040967d8c42014ff4e2b65d29d7902661ce0d2a15978e181"
+        "fileHash": "32bcffd29cb42d8fb76955a7d24765c5eaa4f5e29e9f745ae5fcee5c5f9bc145501b29db7c6b68f627d847a600ba803d6833e09559821d17136e1db3ff26e51e"
       },
-      "expiry": 1641914585975
+      "expiry": 1646850697049
     },
     "INTERPRETERS_CACHE_v3_KnownPathsService": [
       {
@@ -830,15 +830,15 @@
             "includePrerelease": false
           },
           "loose": false,
-          "raw": "3.9.9-final",
+          "raw": "3.9.10-final",
           "major": 3,
           "minor": 9,
-          "patch": 9,
+          "patch": 10,
           "prerelease": [
             "final"
           ],
           "build": [],
-          "version": "3.9.9-final"
+          "version": "3.9.10-final"
         },
         "sysPrefix": "/usr/local/opt/python@3.9/Frameworks/Python.framework/Versions/3.9",
         "fileHash": "84478d7919cf6df85cc1a0b45574392e4152309ae5d169bf2ef0aaee4170d21e32f7da9dc85569f3aad47bb41c1fef851cc545016c8d0019e9d09b5e3e9a1710",
@@ -853,18 +853,18 @@
             "includePrerelease": false
           },
           "loose": false,
-          "raw": "3.9.9-final",
+          "raw": "3.9.10-final",
           "major": 3,
           "minor": 9,
-          "patch": 9,
+          "patch": 10,
           "prerelease": [
             "final"
           ],
           "build": [],
-          "version": "3.9.9-final"
+          "version": "3.9.10-final"
         },
         "sysPrefix": "/usr/local/opt/python@3.9/Frameworks/Python.framework/Versions/3.9",
-        "fileHash": "6eebf7b17f335e39ba156917a3fb9e6d5df02d9ce1ec90ffacdd3998a82dc9df5d7f746440418c02040967d8c42014ff4e2b65d29d7902661ce0d2a15978e181",
+        "fileHash": "32bcffd29cb42d8fb76955a7d24765c5eaa4f5e29e9f745ae5fcee5c5f9bc145501b29db7c6b68f627d847a600ba803d6833e09559821d17136e1db3ff26e51e",
         "type": "Unknown"
       },
       {
@@ -876,18 +876,18 @@
             "includePrerelease": false
           },
           "loose": false,
-          "raw": "3.9.9-final",
+          "raw": "3.9.10-final",
           "major": 3,
           "minor": 9,
-          "patch": 9,
+          "patch": 10,
           "prerelease": [
             "final"
           ],
           "build": [],
-          "version": "3.9.9-final"
+          "version": "3.9.10-final"
         },
         "sysPrefix": "/usr/local/opt/python@3.9/Frameworks/Python.framework/Versions/3.9",
-        "fileHash": "f241ba27791e598cee886a969fd33b0247b4dfaad2386d0cf162ce9917e1944270d1c6e147838af16ac3e1f7095904c59f98c1b7228082ae830c092e92053ace",
+        "fileHash": "af77419bae998a2fa40a2eec068019efbc02137cedc8a7be22edb6903767dc6d61483fb81bb458013735a821276bcb527e9e38989e8937442639c11b695c8253",
         "type": "Unknown"
       },
       {
@@ -991,18 +991,18 @@
             "includePrerelease": false
           },
           "loose": false,
-          "raw": "3.9.9-final",
+          "raw": "3.9.10-final",
           "major": 3,
           "minor": 9,
-          "patch": 9,
+          "patch": 10,
           "prerelease": [
             "final"
           ],
           "build": [],
-          "version": "3.9.9-final"
+          "version": "3.9.10-final"
         },
         "sysPrefix": "/usr/local/opt/python@3.9/Frameworks/Python.framework/Versions/3.9",
-        "fileHash": "6eebf7b17f335e39ba156917a3fb9e6d5df02d9ce1ec90ffacdd3998a82dc9df5d7f746440418c02040967d8c42014ff4e2b65d29d7902661ce0d2a15978e181",
+        "fileHash": "32bcffd29cb42d8fb76955a7d24765c5eaa4f5e29e9f745ae5fcee5c5f9bc145501b29db7c6b68f627d847a600ba803d6833e09559821d17136e1db3ff26e51e",
         "type": "Unknown"
       },
       {
@@ -1014,18 +1014,18 @@
             "includePrerelease": false
           },
           "loose": false,
-          "raw": "3.9.9-final",
+          "raw": "3.9.10-final",
           "major": 3,
           "minor": 9,
-          "patch": 9,
+          "patch": 10,
           "prerelease": [
             "final"
           ],
           "build": [],
-          "version": "3.9.9-final"
+          "version": "3.9.10-final"
         },
         "sysPrefix": "/usr/local/opt/python@3.9/Frameworks/Python.framework/Versions/3.9",
-        "fileHash": "f241ba27791e598cee886a969fd33b0247b4dfaad2386d0cf162ce9917e1944270d1c6e147838af16ac3e1f7095904c59f98c1b7228082ae830c092e92053ace",
+        "fileHash": "af77419bae998a2fa40a2eec068019efbc02137cedc8a7be22edb6903767dc6d61483fb81bb458013735a821276bcb527e9e38989e8937442639c11b695c8253",
         "type": "Unknown"
       },
       {
@@ -1127,49 +1127,49 @@
         "displayName": "Python 3.9.9 64-bit ('3.9.9': pyenv)",
         "hash": "1068cabfb8ad6000d1277566f70f353dacc48193e444c49ee932f2d0c0f1575489358c74cd372004ae6ebed64b9296123076e79e6d9102f9381c39da325646e5-961fd8ec016fad35296a7a4311f0b9ca"
       },
-      "expiry": 1641914586101
+      "expiry": 1646850697151
     },
     "/Users/georgeferreira/.pyenv/shims/python3.9.interpreter.displayName.v7": {
       "data": {
-        "displayName": "Python 3.9.9 64-bit",
-        "hash": "84478d7919cf6df85cc1a0b45574392e4152309ae5d169bf2ef0aaee4170d21e32f7da9dc85569f3aad47bb41c1fef851cc545016c8d0019e9d09b5e3e9a1710-2a42b79baea11ce373526ba3f9ebc9d8"
+        "displayName": "Python 3.9.10 64-bit",
+        "hash": "84478d7919cf6df85cc1a0b45574392e4152309ae5d169bf2ef0aaee4170d21e32f7da9dc85569f3aad47bb41c1fef851cc545016c8d0019e9d09b5e3e9a1710-09df592f30051a05b8b2490186545163"
       },
-      "expiry": 1641914586105
+      "expiry": 1646334754235
     },
     "/usr/local/bin/python3.interpreter.displayName.v7": {
       "data": {
-        "displayName": "Python 3.9.9 64-bit",
-        "hash": "6eebf7b17f335e39ba156917a3fb9e6d5df02d9ce1ec90ffacdd3998a82dc9df5d7f746440418c02040967d8c42014ff4e2b65d29d7902661ce0d2a15978e181-2ae16c570ff396350c2a4826ac7c2cb5"
+        "displayName": "Python 3.9.10 64-bit",
+        "hash": "32bcffd29cb42d8fb76955a7d24765c5eaa4f5e29e9f745ae5fcee5c5f9bc145501b29db7c6b68f627d847a600ba803d6833e09559821d17136e1db3ff26e51e-c4a013fc2165c87ccad3531f46b75967"
       },
-      "expiry": 1641914586107
+      "expiry": 1646334754242
     },
     "/usr/bin/python.interpreter.displayName.v7": {
       "data": {
         "displayName": "Python 2.7.18 64-bit",
         "hash": "e3699d3435e3894a1a6a38f014f74b7816cd7e90f90e654ddb9b1c268772b5baa0076a582dfbcceaeac348150784dbb76a08e17e6913347a68dbddd923154234-cfaba57628b2ec2ec746c04283b5d862"
       },
-      "expiry": 1641914586108
+      "expiry": 1646334754240
     },
     "/Users/georgeferreira/.pyenv/shims/python.interpreter.displayName.v7": {
       "data": {
         "displayName": "Python 3.10.0 64-bit",
         "hash": "316ba78e507fb913e6ae82d114823228d8d21439575ea963eec92c61a35835df49eed3f4d9001183436ba9516b939703ea36f5e0cfd7921075350367d5b47a37-cf5cb3e2fbd765ceddf3ce9712d14428"
       },
-      "expiry": 1641914586103
+      "expiry": 1646334754237
     },
     "/usr/bin/python3.interpreter.displayName.v7": {
       "data": {
         "displayName": "Python 3.8.9 64-bit",
         "hash": "e3699d3435e3894a1a6a38f014f74b7816cd7e90f90e654ddb9b1c268772b5baa0076a582dfbcceaeac348150784dbb76a08e17e6913347a68dbddd923154234-67279150eb076fe625636d7e709d3327"
       },
-      "expiry": 1641914586110
+      "expiry": 1646334754244
     },
     "/System/Library/Frameworks/Python.framework/Versions/2.7/Resources/Python.app/Contents/MacOS/Python.interpreter.displayName.v7": {
       "data": {
         "displayName": "Python 2.7.18 64-bit",
         "hash": "e3699d3435e3894a1a6a38f014f74b7816cd7e90f90e654ddb9b1c268772b5baa0076a582dfbcceaeac348150784dbb76a08e17e6913347a68dbddd923154234-1336eb6d782bf8725f9abf9e9eb2b7c2"
       },
-      "expiry": 1641914586111
+      "expiry": 1646850697155
     },
     "InterpreterAutoSeletionRule-system": {
       "architecture": 3,
@@ -1193,6 +1193,7 @@
       "sysPrefix": "/Users/georgeferreira/.pyenv/versions/3.10.0",
       "fileHash": "316ba78e507fb913e6ae82d114823228d8d21439575ea963eec92c61a35835df49eed3f4d9001183436ba9516b939703ea36f5e0cfd7921075350367d5b47a37",
       "type": "Unknown",
+      "cachedEntry": true,
       "displayName": "Python 3.10.0 64-bit"
     },
     "/Users/georgeferreira/.pyenv/versions/3.9.9/bin/python.interpreter.Details.v7": {
@@ -1224,7 +1225,7 @@
           "displayName": "Python 3.9.9 64-bit ('3.9.9': pyenv)"
         }
       },
-      "expiry": 1641914586125
+      "expiry": 1646850697170
     },
     "/Users/georgeferreira/.pyenv/shims/python3.9.interpreter.Details.v7": {
       "data": {
@@ -1238,27 +1239,27 @@
               "includePrerelease": false
             },
             "loose": false,
-            "raw": "3.9.9-final",
+            "raw": "3.9.10-final",
             "major": 3,
             "minor": 9,
-            "patch": 9,
+            "patch": 10,
             "prerelease": [
               "final"
             ],
             "build": [],
-            "version": "3.9.9-final"
+            "version": "3.9.10-final"
           },
           "sysPrefix": "/usr/local/opt/python@3.9/Frameworks/Python.framework/Versions/3.9",
           "fileHash": "84478d7919cf6df85cc1a0b45574392e4152309ae5d169bf2ef0aaee4170d21e32f7da9dc85569f3aad47bb41c1fef851cc545016c8d0019e9d09b5e3e9a1710",
           "type": "Unknown",
-          "displayName": "Python 3.9.9 64-bit"
+          "displayName": "Python 3.9.10 64-bit"
         }
       },
-      "expiry": 1641914586131
+      "expiry": 1646334754266
     },
     "/usr/local/bin/python3.interpreter.Details.v7": {
       "data": {
-        "fileHash": "6eebf7b17f335e39ba156917a3fb9e6d5df02d9ce1ec90ffacdd3998a82dc9df5d7f746440418c02040967d8c42014ff4e2b65d29d7902661ce0d2a15978e181",
+        "fileHash": "32bcffd29cb42d8fb76955a7d24765c5eaa4f5e29e9f745ae5fcee5c5f9bc145501b29db7c6b68f627d847a600ba803d6833e09559821d17136e1db3ff26e51e",
         "info": {
           "architecture": 3,
           "path": "/usr/local/bin/python3",
@@ -1268,23 +1269,23 @@
               "includePrerelease": false
             },
             "loose": false,
-            "raw": "3.9.9-final",
+            "raw": "3.9.10-final",
             "major": 3,
             "minor": 9,
-            "patch": 9,
+            "patch": 10,
             "prerelease": [
               "final"
             ],
             "build": [],
-            "version": "3.9.9-final"
+            "version": "3.9.10-final"
           },
           "sysPrefix": "/usr/local/opt/python@3.9/Frameworks/Python.framework/Versions/3.9",
-          "fileHash": "6eebf7b17f335e39ba156917a3fb9e6d5df02d9ce1ec90ffacdd3998a82dc9df5d7f746440418c02040967d8c42014ff4e2b65d29d7902661ce0d2a15978e181",
+          "fileHash": "32bcffd29cb42d8fb76955a7d24765c5eaa4f5e29e9f745ae5fcee5c5f9bc145501b29db7c6b68f627d847a600ba803d6833e09559821d17136e1db3ff26e51e",
           "type": "Unknown",
-          "displayName": "Python 3.9.9 64-bit"
+          "displayName": "Python 3.9.10 64-bit"
         }
       },
-      "expiry": 1641914586135
+      "expiry": 1646334754274
     },
     "/usr/bin/python.interpreter.Details.v7": {
       "data": {
@@ -1314,7 +1315,7 @@
           "displayName": "Python 2.7.18 64-bit"
         }
       },
-      "expiry": 1641914586138
+      "expiry": 1646334754272
     },
     "/Users/georgeferreira/.pyenv/shims/python.interpreter.Details.v7": {
       "data": {
@@ -1344,7 +1345,7 @@
           "displayName": "Python 3.10.0 64-bit"
         }
       },
-      "expiry": 1641914586128
+      "expiry": 1646334754269
     },
     "/usr/bin/python3.interpreter.Details.v7": {
       "data": {
@@ -1374,7 +1375,7 @@
           "displayName": "Python 3.8.9 64-bit"
         }
       },
-      "expiry": 1641914586141
+      "expiry": 1646334754277
     },
     "/System/Library/Frameworks/Python.framework/Versions/2.7/Resources/Python.app/Contents/MacOS/Python.interpreter.Details.v7": {
       "data": {
@@ -1404,7 +1405,7 @@
           "displayName": "Python 2.7.18 64-bit"
         }
       },
-      "expiry": 1641914586144
+      "expiry": 1646850697173
     },
     "InterpreterAutoSeletionRule-cachedInterpreters": {
       "architecture": 3,
@@ -1428,6 +1429,7 @@
       "sysPrefix": "/Users/georgeferreira/.pyenv/versions/3.10.0",
       "fileHash": "316ba78e507fb913e6ae82d114823228d8d21439575ea963eec92c61a35835df49eed3f4d9001183436ba9516b939703ea36f5e0cfd7921075350367d5b47a37",
       "type": "Unknown",
+      "cachedEntry": true,
       "displayName": "Python 3.10.0 64-bit"
     },
     "ProposeLSBanner": false
@@ -1494,6 +1496,35 @@
     "INTERPRETERS_CACHE_v3_PipEnvService:cf9ae215df4128e7737bf1fad7537a5c": [],
     "INTERPRETERS_CACHE_v3_WorkspaceVirtualEnvService:cf9ae215df4128e7737bf1fad7537a5c": [],
     "autoSelectedWorkspacePythonInterpreter-/Users/georgeferreira/devops/vgs_reveal": {
+      "architecture": 3,
+      "path": "/Users/georgeferreira/.pyenv/versions/3.10.0/bin/python",
+      "version": {
+        "options": {
+          "loose": false,
+          "includePrerelease": false
+        },
+        "loose": false,
+        "raw": "3.10.0-final",
+        "major": 3,
+        "minor": 10,
+        "patch": 0,
+        "prerelease": [
+          "final"
+        ],
+        "build": [],
+        "version": "3.10.0-final"
+      },
+      "sysPrefix": "/Users/georgeferreira/.pyenv/versions/3.10.0",
+      "fileHash": "b57a21a7fb6615c60b366e074ecfe0816ad5b72da2dfb2acd8c39e0e42431d11f8364c95f80bde01e2bfdce5e3b46edd4d57c154b119e97ae57554f207356166",
+      "type": "Unknown"
+    },
+    "INTERPRETERS_CACHE_v3_PipEnvService": [],
+    "INTERPRETERS_CACHE_v3_WorkspaceVirtualEnvService": []
+  },
+  "coc-python|/Users/georgeferreira/devops/aws_foundations": {
+    "INTERPRETERS_CACHE_v3_PipEnvService:3c7c0c585d9b40e192666e73e349d2a1": [],
+    "INTERPRETERS_CACHE_v3_WorkspaceVirtualEnvService:3c7c0c585d9b40e192666e73e349d2a1": [],
+    "autoSelectedWorkspacePythonInterpreter-/Users/georgeferreira/devops/aws_foundations": {
       "architecture": 3,
       "path": "/Users/georgeferreira/.pyenv/versions/3.10.0/bin/python",
       "version": {

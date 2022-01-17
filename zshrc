@@ -1,9 +1,23 @@
+#                      __
+#                     / _|
+#                __ _| |_
+#               / _` |  _|
+#              | (_| | |
+#               \__, |_|
+#                __/ |
+#               |___/
+#
+#
+
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
+export PATH=$PATH:"$HOME/devops/bin"
+export PATH=$PATH:"$HOME/go/bin"
+
 
 # Path to your oh-my-zsh installation.
-export ZSH="$HOME/.oh-my-zsh"
 
+export ZSH="$HOME/.oh-my-zsh"
 # Export my secrets
 . ~/.secrets
 
@@ -11,8 +25,6 @@ export ZSH="$HOME/.oh-my-zsh"
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-#ZSH_THEME="robbyrussell"
-#ZSH_THEME="agnoster"
 ZSH_THEME="powerlevel9k/powerlevel9k"
 
 # Set list of themes to pick from when loading at random
@@ -70,16 +82,14 @@ zstyle ':omz:update' mode reminder  # just remind me to update when it's time
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
 
-# tmux configuration
-ZSH_TMUX_AUTOSTART="true"
-
-
-
 # Which plugins would you like to load?
 # Standard plugins can be found in $ZSH/plugins/
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
+
+ZSH_TMUX_AUTOSTART="true"
+
 plugins=(git brew tmux tmuxinator github docker docker-compose aws)
 
 source $ZSH/oh-my-zsh.sh
@@ -109,8 +119,16 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+
+# Work aliases
 alias start-local-ftf='rm -rf tmp/pids && dip up -d postgres-dump && dip up rails sidekiq webpacker'
+alias start-local-radix="dip up rails sidekiq webpacker postgrest"
+
+# Personal aliases
 alias set-secrets='$(cat ~/.secrets)'
+alias tf='terraform'
+alias gitaddmod="git add \$(git status | grep modified | awk '{print \$2}')"
+alias brew-update='brew update; brew outdated; brew upgrade; brew cu --all --cleanup --yes; brew cleanup; brew doctor;'
 
 eval "$(rbenv init - zsh)"
 
@@ -123,3 +141,21 @@ fi
 ~/dotfiles/scripts/login
 
 
+#--------------------------------------------------------------------------
+## Personal settings
+#--------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------
+# Prompt for screenshotting articles/guides
+#--------------------------------------------------------------------------
+
+# zsh_custom_prompt(){
+#     local prompt_message="AWS SSO TF Guide$ "
+#     local color='%F{yellow}'
+#     [[ $signal -gt 75 ]] && color='%F{green}'
+#     [[ $signal -lt 50 ]] && color='%F{red}'
+#     echo -n "%{$color%}\uf230  $prompt_messagel%{%f%}" # \uf230 is 
+# }
+# POWERLEVEL_9K_CUSTOM_PROMPT_MESSAGE="zsh_custom_prompt"
+# POWERLEVEL9K_DISABLE_RPROMPT=true
+# POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(custom_prompt_message)

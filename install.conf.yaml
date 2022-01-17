@@ -6,7 +6,6 @@
 - clean: ['~']
 
 - link:
-    ~/.vim: vim
     ~/.vimrc: vimrc
     ~/.config/coc: config/coc
     ~/.config/jgit: config/jgit
@@ -15,10 +14,17 @@
     ~/.zshrc:
       force: true
       path: zshrc
+    ~/.tmux.conf:
+      force: true
+      path: tmux.conf
 
 - create:
     - ~/.vim/undo-history
 
 - shell:
-    - [git submodule update --init --recursive, Installing submodules]  
-      #- [scripts/initBrew]
+    - [git submodule update --init --recursive, Installing submodules]
+    -
+        command: scripts/setup.sh
+        stdout: true
+        stderr: true
+        description: Running setup
