@@ -25,5 +25,11 @@ if [ ! -d "$HOME/.oh-my-zsh/" ]; then
     git clone https://github.com/bhilburn/powerlevel9k.git ~/.oh-my-zsh/custom/themes/powerlevel9k || echo "Failed to install Powerlevel9k" >&2
 fi
 
+# If Brew is not yet installed, install it
+if ! brew -v &> /dev/null
+then
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+
 printf 'All set!' | lolcat
 echo ; echo

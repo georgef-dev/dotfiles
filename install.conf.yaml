@@ -24,7 +24,12 @@
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
     -
-        command: scripts/setup.sh
+        command: scripts/bootStrap
         stdout: true
         stderr: true
         description: Running setup
+    -
+        command: brew bundle --global
+        stdout: true
+        stderr: true
+        description: Running Home Brew

@@ -1,5 +1,3 @@
-# App Store apps
-
 mas "1Password 7", id: 1333542190
 mas "1Password for Safari", id: 1569813296
 mas "Be Focused", id: 973134470
@@ -8,7 +6,9 @@ mas "Gifski", id: 1351639930
 mas "iMovie", id: 408981434
 mas "Instapaper", id: 288545208
 mas "Keynote", id: 409183694
+mas "Kindle", id: 405399194
 mas "Magnet", id: 441258766
 mas "Notion Web Clipper", id: 1559269364
 mas "Numbers", id: 409203825
 mas "Pages", id: 409201541
+mas "Trello", id: 1278508951
