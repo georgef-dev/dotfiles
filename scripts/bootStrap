@@ -5,18 +5,18 @@ GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 
 printf '
-                      __ 
+                      __
                      / _|
-                __ _| |_ 
+                __ _| |_
                / _` |  _|
-              | (_| | |  
-               \__, |_|  
-                __/ |    
-               |___/    
+              | (_| | |
+               \__, |_|
+                __/ |
+               |___/
 
 Setting up...
 
-' | lolcat
+'
 
 if [ ! -d "$HOME/.oh-my-zsh/" ]; then
     echo "Installing Oh My Zsh"
