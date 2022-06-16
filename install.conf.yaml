@@ -17,7 +17,9 @@
     ~/.tmux.conf:
       force: true
       path: tmux.conf
-    ~/.vim/autoload: vim/autoload
+    ~/.vim:
+      force: true
+      path: vim
 
 - create:
     - ~/.vim/undo-history

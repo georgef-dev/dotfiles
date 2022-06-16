@@ -19,6 +19,16 @@ Run `install`
 - Import preferences from local folder
 - Import profile JSON
 
+# nvim
+
+Open nvim and run: `:PlugInstall`
+
+# Python
+
+Install needed Python versions using `pyenv`.
+
+- 3.10.0 -> `pyenv install 3.10.0` 
+
 # Setup Github SSH Key
 
 ```bash
