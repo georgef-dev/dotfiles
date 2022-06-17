@@ -1,4 +1,5 @@
 " Specify a directory for plugins
+set rtp +=~/.vim
 call plug#begin('~/.vim/plugged')
 
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
