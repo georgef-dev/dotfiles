@@ -138,7 +138,7 @@ alias start-local-radix="dip up rails sidekiq webpacker postgrest"
 alias set-secrets='$(cat ~/.secrets)'
 alias tf='terraform'
 alias gitaddmod="git add \$(git status | grep modified | awk '{print \$2}')"
-alias brew-update='brew update && brew outdated && brew upgrade && brew cu --all --cleanup --yes && brew cleanup && brew doctor;'
+alias brew-update='brew update && brew outdated && brew upgrade && brew cu --all --cleanup --yes && brew cleanup && brew doctor'
 
 eval "$(rbenv init - zsh)"
 

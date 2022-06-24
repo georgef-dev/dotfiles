@@ -27,7 +27,7 @@ Open nvim and run: `:PlugInstall`
 
 Install needed Python versions using `pyenv`.
 
-- 3.10.0 -> `pyenv install 3.10.0` 
+- 3.10.0 -> `pyenv install 3.10.0`
 
 # Setup Github SSH Key
 
@@ -37,6 +37,11 @@ Install needed Python versions using `pyenv`.
 ```
 
 # Install GPG and Keybase keys
+
+```bash
+# SEE: https://github.com/pstadler/keybase-gpg-github
+# SEE: https://stackoverflow.com/questions/39494631/gpg-failed-to-sign-the-data-fatal-failed-to-write-commit-object-git-2-10-0
+```
 
 ```bash
 keybase login
