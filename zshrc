@@ -171,3 +171,9 @@ fi
 # POWERLEVEL_9K_CUSTOM_PROMPT_MESSAGE="zsh_custom_prompt"
 # POWERLEVEL9K_DISABLE_RPROMPT=true
 # POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(custom_prompt_message)
+
+# Created by `pipx` on 2022-06-21 14:10:33
+export PATH="$PATH:/Users/georgeferreira/.local/bin"
+
+# heroku autocomplete setup
+HEROKU_AC_ZSH_SETUP_PATH=/Users/georgeferreira/Library/Caches/heroku/autocomplete/zsh_setup && test -f $HEROKU_AC_ZSH_SETUP_PATH && source $HEROKU_AC_ZSH_SETUP_PATH;
