@@ -138,6 +138,7 @@ alias start-local-radix="dip up rails sidekiq webpacker postgrest"
 alias set-secrets='$(cat ~/.secrets)'
 alias tf='terraform'
 alias gitaddmod="git add \$(git status | grep modified | awk '{print \$2}')"
+alias gitdeletenontrackingbranches="git branch -D \$(git branch -vv | grep -v origin | awk '{print \$1}')"
 alias brew-update='brew update && brew outdated && brew upgrade && brew cu --all --cleanup --yes && brew cleanup && brew doctor'
 
 eval "$(rbenv init - zsh)"
@@ -177,3 +178,8 @@ export PATH="$PATH:/Users/georgeferreira/.local/bin"
 
 # heroku autocomplete setup
 HEROKU_AC_ZSH_SETUP_PATH=/Users/georgeferreira/Library/Caches/heroku/autocomplete/zsh_setup && test -f $HEROKU_AC_ZSH_SETUP_PATH && source $HEROKU_AC_ZSH_SETUP_PATH;
+# Github CLI autocomplete
+autoload -U compinit
+compinit -i
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
