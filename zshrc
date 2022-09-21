@@ -183,3 +183,8 @@ autoload -U compinit
 compinit -i
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+export PATH=~/platform-engineering/ftf-tools:/Users/georgeferreira/.pyenv/shims:/Users/georgeferreira/.pyenv/bin:/Users/georgeferreira/.rbenv/shims:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin:/opt/homebrew/sbin:/Users/georgeferreira/.local/bin:/Users/georgeferreira/platform_engineering/bin:/Users/georgeferreira/go/bin:/Users/georgeferreira/gferreira/scripts:/Users/georgeferreira/.local/bin:/Users/georgeferreira/platform_engineering/bin:/Users/georgeferreira/go/bin:/Users/georgeferreira/gferreira/scripts:/Users/georgeferreira/.local/bin:/opt/homebrew/opt/fzf/bin
+
+# heroku autocomplete setup
+HEROKU_AC_ZSH_SETUP_PATH=/Users/georgeferreira/Library/Caches/heroku/autocomplete/zsh_setup && test -f $HEROKU_AC_ZSH_SETUP_PATH && source $HEROKU_AC_ZSH_SETUP_PATH;
