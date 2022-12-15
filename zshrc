@@ -30,6 +30,7 @@ export NVM_DIR="$HOME/.nvm"
   [ -s "/usr/local/opt/nvm/nvm.sh" ] && \. "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
   [ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
 
+source "${HOME}"/.nvm/nvm.sh
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
@@ -133,6 +134,7 @@ source $ZSH/oh-my-zsh.sh
 # Work aliases
 alias start-local-ftf='rm -rf tmp/pids && dip up -d postgres-dump && dip up rails sidekiq webpacker'
 alias start-local-radix="dip up rails sidekiq webpacker postgrest"
+alias matrix='LC_ALL=C tr -c "[:digit:]" " " < /dev/urandom | dd cbs=$COLUMNS conv=unblock | GREP_COLOR="1;32" grep --color "[^ ]"'
 
 # Personal aliases
 alias set-secrets='$(cat ~/.secrets)'
