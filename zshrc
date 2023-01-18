@@ -35,7 +35,11 @@ source "${HOME}"/.nvm/nvm.sh
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-source /opt/homebrew/opt/powerlevel9k/powerlevel9k.zsh-theme
+source /opt/homebrew/opt/powerlevel9k/powerlevel9k.zsh-theme >/dev/null 2>&1
+if [ $? -ne 0 ]; then
+  echo "Powerlevel9k sourcing failed, trying alternative location"
+  source /usr/local/opt/powerlevel9k/powerlevel9k.zsh-theme
+fi
 ZSH_THEME="powerlevel9k/powerlevel9k"
 
 # Set list of themes to pick from when loading at random
