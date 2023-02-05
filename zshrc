@@ -14,6 +14,7 @@
 export PATH=$PATH:"$HOME/platform_engineering/bin"
 export PATH=$PATH:"$HOME/go/bin"
 export PATH=$PATH:"$HOME/gferreira/scripts"
+export PATH=$PATH:"/usr/local/texlive/2022basic/bin/universal-darwin"
 
 
 # Path to your oh-my-zsh installation.
