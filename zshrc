@@ -19,7 +19,7 @@ export PATH=$PATH:"/usr/local/texlive/2022basic/bin/universal-darwin"
 
 # Path to your oh-my-zsh installation.
 
-export ZSH="$HOME/.oh-my-zsh"
+# export ZSH="$HOME/.oh-my-zsh"
 # Export my secrets
 . ~/.secrets
 
@@ -36,12 +36,12 @@ source "${HOME}"/.nvm/nvm.sh
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-source /opt/homebrew/opt/powerlevel9k/powerlevel9k.zsh-theme >/dev/null 2>&1
-if [ $? -ne 0 ]; then
-  echo "Powerlevel9k sourcing failed, trying alternative location"
-  source /usr/local/opt/powerlevel9k/powerlevel9k.zsh-theme
-fi
-ZSH_THEME="powerlevel9k/powerlevel9k"
+# source /opt/homebrew/opt/powerlevel9k/powerlevel9k.zsh-theme >/dev/null 2>&1
+# if [ $? -ne 0 ]; then
+#  echo "Powerlevel9k sourcing failed, trying alternative location"
+#  source /usr/local/opt/powerlevel9k/powerlevel9k.zsh-theme
+# fi
+# ZSH_THEME="powerlevel9k/powerlevel9k"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -104,11 +104,11 @@ zstyle ':omz:update' mode reminder  # just remind me to update when it's time
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 
-ZSH_TMUX_AUTOSTART="true"
+# ZSH_TMUX_AUTOSTART="true"
 
-plugins=(git brew tmux tmuxinator github docker docker-compose aws)
+# plugins=(git brew tmux tmuxinator github docker docker-compose aws)
 
-source $ZSH/oh-my-zsh.sh
+# source $ZSH/oh-my-zsh.sh
 
 # User configuration
 
@@ -186,6 +186,7 @@ export PATH="$PATH:/Users/georgeferreira/.local/bin"
 
 # heroku autocomplete setup
 HEROKU_AC_ZSH_SETUP_PATH=/Users/georgeferreira/Library/Caches/heroku/autocomplete/zsh_setup && test -f $HEROKU_AC_ZSH_SETUP_PATH && source $HEROKU_AC_ZSH_SETUP_PATH;
+
 # Github CLI autocomplete
 autoload -U compinit
 compinit -i
@@ -196,3 +197,5 @@ export PATH=~/platform-engineering/ftf-tools:/Users/georgeferreira/.pyenv/shims:
 
 # heroku autocomplete setup
 HEROKU_AC_ZSH_SETUP_PATH=/Users/georgeferreira/Library/Caches/heroku/autocomplete/zsh_setup && test -f $HEROKU_AC_ZSH_SETUP_PATH && source $HEROKU_AC_ZSH_SETUP_PATH;
+
+alias photo-compare='/Users/georgeferreira/.cargo/bin/cargo run --release --bin czkawka_gui'
