@@ -19,7 +19,7 @@ export PATH=$PATH:"/usr/local/texlive/2022basic/bin/universal-darwin"
 
 # Path to your oh-my-zsh installation.
 
-# export ZSH="$HOME/.oh-my-zsh"
+export ZSH="$HOME/.oh-my-zsh"
 # Export my secrets
 . ~/.secrets
 
@@ -36,19 +36,17 @@ source "${HOME}"/.nvm/nvm.sh
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-# source /opt/homebrew/opt/powerlevel9k/powerlevel9k.zsh-theme >/dev/null 2>&1
-# if [ $? -ne 0 ]; then
-#  echo "Powerlevel9k sourcing failed, trying alternative location"
-#  source /usr/local/opt/powerlevel9k/powerlevel9k.zsh-theme
-# fi
-# ZSH_THEME="powerlevel9k/powerlevel9k"
+
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
 # a theme from this variable instead of looking in $ZSH/themes/
 # If set to an empty array, this variable will have no effect.
 # ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
+source "$ZSH/custom/themes//powerlevel10k/config/p10k-robbyrussell.zsh"
+source "$ZSH/custom/themes/powerlevel10k/powerlevel10k.zsh-theme"
 
+ZSH_THEME="powerlevel10k/powerlevel10k"
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
 
@@ -104,11 +102,11 @@ zstyle ':omz:update' mode reminder  # just remind me to update when it's time
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 
-# ZSH_TMUX_AUTOSTART="true"
+ZSH_TMUX_AUTOSTART="true"
 
-# plugins=(git brew tmux tmuxinator github docker docker-compose aws)
+plugins=(git brew tmux tmuxinator github docker docker-compose aws)
 
-# source $ZSH/oh-my-zsh.sh
+source $ZSH/oh-my-zsh.sh
 
 # User configuration
 
@@ -159,7 +157,7 @@ fi
 
 # Workarounding Electric
 
-~/dotfiles/scripts/login
+#~/dotfiles/scripts/login
 
 
 #--------------------------------------------------------------------------
@@ -199,3 +197,18 @@ export PATH=~/platform-engineering/ftf-tools:/Users/georgeferreira/.pyenv/shims:
 HEROKU_AC_ZSH_SETUP_PATH=/Users/georgeferreira/Library/Caches/heroku/autocomplete/zsh_setup && test -f $HEROKU_AC_ZSH_SETUP_PATH && source $HEROKU_AC_ZSH_SETUP_PATH;
 
 alias photo-compare='/Users/georgeferreira/.cargo/bin/cargo run --release --bin czkawka_gui'
+
+# Localstack
+
+export LOCALSTACK_ENDPOINT=http://localhost:4566
+
+alias awslocal="aws --endpoint-url ${LOCALSTACK_ENDPOINT}"
+
+localstack-restapi-url() {
+  # e.g.: `curl $(localstack-api-url my-function) --data '{"foo":"bar"}'`
+  local function=$1
+  local stage=${2:-stage} # pulumi defaults to 'stage'
+  local restapi_id=$(awslocal apigateway get-rest-apis | jq '.items' | grep -B1 "\"name\": \"${function}\"" | head -1 | grep -Eo '[a-z0-9]+' | tail -1)
+  [ -z "${restapi_id}" ] && printf "No '${function}' Lambda found in '${stage}'" >&2 && return 1
+  echo ${LOCALSTACK_ENDPOINT}/restapis/${restapi_id}/${stage}/_user_request_/${function}
+}
