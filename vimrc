@@ -1,11 +1,11 @@
-"                      __ 
+"                      __
 "                     / _|
-"                __ _| |_ 
+"                __ _| |_
 "               / _` |  _|
-"              | (_| | |  
-"               \__, |_|  
-"                __/ |    
-"               |___/     
+"              | (_| | |
+"               \__, |_|
+"                __/ |
+"               |___/
 "
 "
 "--------------------------------------------------------------------------
@@ -242,8 +242,7 @@ nnoremap <silent><nowait> <space>p  :<C-u>CocListResume<CR>
 " Automatically install vim-plug
 let data_dir = has('nvim') ? stdpath('data') . '/site' : '~/.vim'
 if empty(glob(data_dir . '/autoload/plug.vim'))
-  silent execute '!curl -fLo '.data_dir.'/autoload/plug.vim --create-dirs
-  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+  silent execute '!curl -fLo '.data_dir.'/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
@@ -254,6 +253,9 @@ Plug 'dense-analysis/ale'
 Plug 'preservim/nerdtree'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'prabirshrestha/vim-lsp'
+
+" Theme
+Plug 'catppuccin/nvim', { 'as': 'catppuccin' }
 
 " Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 " Plug 'junegunn/fzf.vim'
@@ -269,4 +271,5 @@ call plug#end()
 "--------------------------------------------------------------------------
 "" Miscellaneous
 "--------------------------------------------------------------------------
-
+colorscheme catppuccin " catppuccin-latte, catppuccin-frappe, catppuccin-macchiato, catppuccin-mocha
+vim.cmd.colorscheme "catppuccin"

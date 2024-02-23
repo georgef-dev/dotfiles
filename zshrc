@@ -47,6 +47,12 @@ source "$ZSH/custom/themes//powerlevel10k/config/p10k-robbyrussell.zsh"
 source "$ZSH/custom/themes/powerlevel10k/powerlevel10k.zsh-theme"
 
 ZSH_THEME="powerlevel10k/powerlevel10k"
+
+source "$(brew --prefix)/opt/gitstatus/gitstatus.prompt.zsh"
+
+PROMPT='%~%# '               # left prompt: directory followed by %/# (normal/root)
+RPROMPT='$GITSTATUS_PROMPT'  # right prompt: git status
+
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
 
@@ -212,3 +218,4 @@ localstack-restapi-url() {
   [ -z "${restapi_id}" ] && printf "No '${function}' Lambda found in '${stage}'" >&2 && return 1
   echo ${LOCALSTACK_ENDPOINT}/restapis/${restapi_id}/${stage}/_user_request_/${function}
 }
+source /opt/homebrew/opt/gitstatus/gitstatus.prompt.zsh
