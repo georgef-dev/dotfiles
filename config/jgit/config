@@ -1,3 +1,0 @@
-[filesystem "Homebrew|11.0.12|/dev/disk1s2"]
-	timestampResolution = 5000 nanoseconds
-	minRacyThreshold = 0 nanoseconds

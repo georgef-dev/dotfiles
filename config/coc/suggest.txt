@@ -1,6 +1,0 @@
-updat|updateDns|around
-dnsC|dnsCmd|around
-dns|dns|around
-Add|AddCommand|around
-up|uptadeCmd|around
-cl|cloudflareCmd|around

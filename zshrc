@@ -163,7 +163,7 @@ fi
 
 # Workarounding Electric
 
-#~/dotfiles/scripts/login
+~/dotfiles/scripts/login
 
 
 #--------------------------------------------------------------------------
