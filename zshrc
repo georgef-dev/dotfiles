@@ -152,6 +152,7 @@ alias gitaddmod="git add \$(git status | grep modified | awk '{print \$2}')"
 alias gitdeletenontrackingbranches="git branch -D \$(git branch -vv | grep -v origin | awk '{print \$1}')"
 alias brew-update='brew update && brew outdated && brew upgrade && brew cu --all --cleanup --yes && brew cleanup && brew doctor'
 alias idrive='cd "$HOME/Library/Mobile Documents/com~apple~CloudDocs"'
+alias dps='docker ps --format "table {{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Ports}}"'
 
 eval "$(rbenv init - zsh)"
 
@@ -219,3 +220,4 @@ localstack-restapi-url() {
   echo ${LOCALSTACK_ENDPOINT}/restapis/${restapi_id}/${stage}/_user_request_/${function}
 }
 source /opt/homebrew/opt/gitstatus/gitstatus.prompt.zsh
+export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
