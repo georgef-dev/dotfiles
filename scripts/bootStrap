@@ -38,5 +38,8 @@ if [ ! -d "$HOME/.oh-my-zsh/" ]; then
     git clone https://github.com/bhilburn/powerlevel9k.git ~/.oh-my-zsh/custom/themes/powerlevel9k || echo "Failed to install Powerlevel9k" >&2
 fi
 
+# PowerLevel 10k
+git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
+
 printf 'All set!' | lolcat
 echo ; echo
