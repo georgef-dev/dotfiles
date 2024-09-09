@@ -31,7 +31,7 @@ export NVM_DIR="$HOME/.nvm"
   [ -s "/usr/local/opt/nvm/nvm.sh" ] && \. "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
   [ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
 
-source "${HOME}"/.nvm/nvm.sh
+#source "${HOME}"/.nvm/nvm.sh
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
@@ -149,10 +149,12 @@ alias matrix='LC_ALL=C tr -c "[:digit:]" " " < /dev/urandom | dd cbs=$COLUMNS co
 alias set-secrets='$(cat ~/.secrets)'
 alias tf='terraform'
 alias gitaddmod="git add \$(git status | grep modified | awk '{print \$2}')"
+alias gitadddeleted="git add \$(git status | grep deleted | awk '{print \$2}')"
 alias gitdeletenontrackingbranches="git branch -D \$(git branch -vv | grep -v origin | awk '{print \$1}')"
 alias brew-update='brew update && brew outdated && brew upgrade && brew cu --all --cleanup --yes && brew cleanup && brew doctor'
 alias idrive='cd "$HOME/Library/Mobile Documents/com~apple~CloudDocs"'
 alias dps='docker ps --format "table {{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Ports}}"'
+alias ghcr-login="echo $GITHUB_TOKEN | docker login ghcr.io -u georgef-dev --password-stdin"
 
 eval "$(rbenv init - zsh)"
 

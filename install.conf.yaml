@@ -6,10 +6,9 @@
 - clean: ['~']
 
 - link:
-    ~/.vimrc: vimrc
-    ~/.config/coc: config/coc
-    ~/.config/jgit: config/jgit
     ~/.config/nvim: config/nvim
+    ~/.config/joplin-desktop/userchrome.css: config/joplin-desktop/userchrome.css
+    ~/.config/joplin-desktop/userstyle.css: config/joplin-desktop/userstyle.css
     ~/.Brewfile: Brewfile
     ~/.zshrc:
       force: true
