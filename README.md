@@ -21,7 +21,7 @@ Run `install`
 
 # nvim
 
-Open nvim and run: `:PlugInstall`
+Open nvim and run: `:Lazy`
 
 # Python
 
