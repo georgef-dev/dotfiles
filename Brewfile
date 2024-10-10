@@ -86,6 +86,7 @@ brew "ruby-build"
 brew "rbenv"
 brew "redis", restart_service: true
 brew "regula"
+brew "ripgrep"
 brew "ruby-install"
 brew "ruby@2.7"
 brew "rustup-init"
