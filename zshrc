@@ -1,3 +1,10 @@
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
 #                      __
 #                     / _|
 #                __ _| |_
@@ -11,7 +18,7 @@
 
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
-export PATH=$PATH:"$HOME/platform_engineering/bin"
+export PATH=$PATH:"$HOME/.gem/ruby/3.3.0/bin"
 export PATH=$PATH:"$HOME/go/bin"
 export PATH=$PATH:"$HOME/gferreira/scripts"
 export PATH=$PATH:"/usr/local/texlive/2022basic/bin/universal-darwin"
@@ -43,8 +50,8 @@ export NVM_DIR="$HOME/.nvm"
 # a theme from this variable instead of looking in $ZSH/themes/
 # If set to an empty array, this variable will have no effect.
 # ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
-source "$ZSH/custom/themes//powerlevel10k/config/p10k-robbyrussell.zsh"
-source "$ZSH/custom/themes/powerlevel10k/powerlevel10k.zsh-theme"
+# source "$ZSH/custom/themes//powerlevel10k/config/p10k-robbyrussell.zsh"
+# source "$ZSH/custom/themes/powerlevel10k/powerlevel10k.zsh-theme"
 
 ZSH_THEME="powerlevel10k/powerlevel10k"
 
@@ -110,7 +117,7 @@ zstyle ':omz:update' mode reminder  # just remind me to update when it's time
 
 ZSH_TMUX_AUTOSTART="true"
 
-plugins=(git brew tmux tmuxinator github docker docker-compose aws)
+plugins=(git brew tmux tmuxinator github docker docker-compose aws) 
 
 source $ZSH/oh-my-zsh.sh
 
@@ -155,6 +162,7 @@ alias brew-update='brew update && brew outdated && brew upgrade && brew cu --all
 alias idrive='cd "$HOME/Library/Mobile Documents/com~apple~CloudDocs"'
 alias dps='docker ps --format "table {{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Ports}}"'
 alias ghcr-login="echo $GITHUB_TOKEN | docker login ghcr.io -u georgef-dev --password-stdin"
+alias lc="colorls"
 
 eval "$(rbenv init - zsh)"
 
@@ -164,9 +172,7 @@ if command -v pyenv 1>/dev/null 2>&1; then
   eval "$(pyenv init --path)"
 fi
 
-# Workarounding Electric
-
-~/dotfiles/scripts/login
+#~/dotfiles/scripts/login
 
 
 #--------------------------------------------------------------------------
@@ -191,19 +197,15 @@ fi
 # Created by `pipx` on 2022-06-21 14:10:33
 export PATH="$PATH:/Users/georgeferreira/.local/bin"
 
-# heroku autocomplete setup
-HEROKU_AC_ZSH_SETUP_PATH=/Users/georgeferreira/Library/Caches/heroku/autocomplete/zsh_setup && test -f $HEROKU_AC_ZSH_SETUP_PATH && source $HEROKU_AC_ZSH_SETUP_PATH;
-
 # Github CLI autocomplete
 autoload -U compinit
 compinit -i
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-export PATH=~/platform-engineering/ftf-tools:/Users/georgeferreira/.pyenv/shims:/Users/georgeferreira/.pyenv/bin:/Users/georgeferreira/.rbenv/shims:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin:/opt/homebrew/sbin:/Users/georgeferreira/.local/bin:/Users/georgeferreira/platform_engineering/bin:/Users/georgeferreira/go/bin:/Users/georgeferreira/gferreira/scripts:/Users/georgeferreira/.local/bin:/Users/georgeferreira/platform_engineering/bin:/Users/georgeferreira/go/bin:/Users/georgeferreira/gferreira/scripts:/Users/georgeferreira/.local/bin:/opt/homebrew/opt/fzf/bin
+# export PATH=~/platform-engineering/ftf-tools:/Users/georgeferreira/.pyenv/shims:/Users/georgeferreira/.pyenv/bin:/Users/georgeferreira/.rbenv/shims:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin:/opt/homebrew/sbin:/Users/georgeferreira/.local/bin:/Users/georgeferreira/platform_engineering/bin:/Users/georgeferreira/go/bin:/Users/georgeferreira/gferreira/scripts:/Users/georgeferreira/.local/bin:/Users/georgeferreira/platform_engineering/bin:/Users/georgeferreira/go/bin:/Users/georgeferreira/gferreira/scripts:/Users/georgeferreira/.local/bin:/opt/homebrew/opt/fzf/bin
 
 # heroku autocomplete setup
-HEROKU_AC_ZSH_SETUP_PATH=/Users/georgeferreira/Library/Caches/heroku/autocomplete/zsh_setup && test -f $HEROKU_AC_ZSH_SETUP_PATH && source $HEROKU_AC_ZSH_SETUP_PATH;
 
 alias photo-compare='/Users/georgeferreira/.cargo/bin/cargo run --release --bin czkawka_gui'
 
@@ -223,3 +225,10 @@ localstack-restapi-url() {
 }
 source /opt/homebrew/opt/gitstatus/gitstatus.prompt.zsh
 export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
+export PATH="/opt/homebrew/opt/mysql-client/bin:$PATH"
+
+# To customize prompt, run `p10k configure` or edit ~/.oh-my-zsh/custom/themes/powerlevel10k/config/p10k-robbyrussell.zsh.
+[[ ! -f ~/.oh-my-zsh/custom/themes/powerlevel10k/config/p10k-robbyrussell.zsh ]] || source ~/.oh-my-zsh/custom/themes/powerlevel10k/config/p10k-robbyrussell.zsh
+source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
