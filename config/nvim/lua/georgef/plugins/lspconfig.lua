@@ -134,7 +134,7 @@ return {
     }
 
     -- if you just want default config for the servers then put them in a table
-    local servers = { "html", "tsserver", "clangd", "rubocop", "sorbet" }
+    local servers = { "html", "ts_ls", "clangd", "rubocop", "sorbet" }
 
     for _, lsp in ipairs(servers) do
       lspconfig[lsp].setup {
@@ -270,7 +270,7 @@ return {
       })
     end
 
-    lspconfig.ruby_ls.setup {
+    lspconfig.ruby_lsp.setup {
       on_attach = function(client, buffer)
         setup_diagnostics(client, buffer)
         add_ruby_deps_command(client, buffer)
