@@ -115,9 +115,9 @@ zstyle ':omz:update' mode reminder  # just remind me to update when it's time
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 
-ZSH_TMUX_AUTOSTART="true"
+# ZSH_TMUX_AUTOSTART="true"
 
-plugins=(git brew tmux tmuxinator github docker docker-compose aws) 
+plugins=(git brew github docker docker-compose aws) 
 
 source $ZSH/oh-my-zsh.sh
 
