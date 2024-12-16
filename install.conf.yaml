@@ -7,9 +7,7 @@
 
 - link:
     ~/.config/nvim: config/nvim
-    ~/.config/joplin-desktop/userchrome.css: config/joplin-desktop/userchrome.css
-    ~/.config/joplin-desktop/userstyle.css: config/joplin-desktop/userstyle.css
-    ~/.Brewfile: Brewfile
+    ~/.Brewfile: ShopBrew
     ~/.zshrc:
       force: true
       path: zshrc
@@ -25,13 +23,3 @@
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
-    -
-        command: scripts/bootStrap
-        stdout: true
-        stderr: true
-        description: Running setup
-    -
-        command: brew bundle --global
-        stdout: true
-        stderr: true
-        description: Running Home Brew
