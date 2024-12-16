@@ -18,28 +18,14 @@ Setting up...
 
 '
 
-# Install Rosetta
-sudo software update —install-rosetta 
-
-# If Brew is not yet installed, install it
-if ! brew -v &> /dev/null
-then
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-fi
-
-# Install packages
-brew bundle install
-
 
 if [ ! -d "$HOME/.oh-my-zsh/" ]; then
     echo "Installing Oh My Zsh"
     sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" || echo "Failed to install Oh My Zsh" >&2
-    echo "Installing PowerLevel9k Them for Oh My Zsh"
-    git clone https://github.com/bhilburn/powerlevel9k.git ~/.oh-my-zsh/custom/themes/powerlevel9k || echo "Failed to install Powerlevel9k" >&2
+    echo "Installing PowerLevel10k Them for Oh My Zsh"
+    # PowerLevel 10k
+    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
 fi
-
-# PowerLevel 10k
-git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
 
 printf 'All set!' | lolcat
 echo ; echo

@@ -35,8 +35,8 @@ export GPG_TTY=$(tty)
 
 # NVM (Node Version Manager)
 export NVM_DIR="$HOME/.nvm"
-  [ -s "/usr/local/opt/nvm/nvm.sh" ] && \. "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
-  [ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
+[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
 
 #source "${HOME}"/.nvm/nvm.sh
 # Set name of the theme to load --- if set to "random", it will
@@ -50,12 +50,10 @@ export NVM_DIR="$HOME/.nvm"
 # a theme from this variable instead of looking in $ZSH/themes/
 # If set to an empty array, this variable will have no effect.
 # ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
-# source "$ZSH/custom/themes//powerlevel10k/config/p10k-robbyrussell.zsh"
-# source "$ZSH/custom/themes/powerlevel10k/powerlevel10k.zsh-theme"
 
 ZSH_THEME="powerlevel10k/powerlevel10k"
 
-source "$(brew --prefix)/opt/gitstatus/gitstatus.prompt.zsh"
+# source "$(brew --prefix)/opt/gitstatus/gitstatus.prompt.zsh"
 
 PROMPT='%~%# '               # left prompt: directory followed by %/# (normal/root)
 RPROMPT='$GITSTATUS_PROMPT'  # right prompt: git status
@@ -117,7 +115,7 @@ zstyle ':omz:update' mode reminder  # just remind me to update when it's time
 
 # ZSH_TMUX_AUTOSTART="true"
 
-plugins=(git brew github docker docker-compose aws) 
+plugins=(git brew github docker docker-compose aws zsh-syntax-highlighting zsh-autosugestions) 
 
 source $ZSH/oh-my-zsh.sh
 
@@ -164,7 +162,7 @@ alias dps='docker ps --format "table {{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Ports}
 alias ghcr-login="echo $GITHUB_TOKEN | docker login ghcr.io -u georgef-dev --password-stdin"
 alias lc="colorls"
 
-eval "$(rbenv init - zsh)"
+# eval "$(rbenv init - zsh)"
 
 if command -v pyenv 1>/dev/null 2>&1; then
   export PYENV_ROOT="$HOME/.pyenv"
@@ -205,8 +203,6 @@ compinit -i
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 # export PATH=~/platform-engineering/ftf-tools:/Users/georgeferreira/.pyenv/shims:/Users/georgeferreira/.pyenv/bin:/Users/georgeferreira/.rbenv/shims:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin:/opt/homebrew/sbin:/Users/georgeferreira/.local/bin:/Users/georgeferreira/platform_engineering/bin:/Users/georgeferreira/go/bin:/Users/georgeferreira/gferreira/scripts:/Users/georgeferreira/.local/bin:/Users/georgeferreira/platform_engineering/bin:/Users/georgeferreira/go/bin:/Users/georgeferreira/gferreira/scripts:/Users/georgeferreira/.local/bin:/opt/homebrew/opt/fzf/bin
 
-# heroku autocomplete setup
-
 alias photo-compare='/Users/georgeferreira/.cargo/bin/cargo run --release --bin czkawka_gui'
 
 # Localstack
@@ -223,12 +219,19 @@ localstack-restapi-url() {
   [ -z "${restapi_id}" ] && printf "No '${function}' Lambda found in '${stage}'" >&2 && return 1
   echo ${LOCALSTACK_ENDPOINT}/restapis/${restapi_id}/${stage}/_user_request_/${function}
 }
-source /opt/homebrew/opt/gitstatus/gitstatus.prompt.zsh
-export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
 export PATH="/opt/homebrew/opt/mysql-client/bin:$PATH"
 
+[[ -f /opt/dev/sh/chruby/chruby.sh ]] && { type chruby >/dev/null 2>&1 || chruby () { source /opt/dev/sh/chruby/chruby.sh; chruby "$@"; } }
+
+[[ -x /opt/homebrew/bin/brew ]] && eval $(/opt/homebrew/bin/brew shellenv)
+
+[ -f /opt/dev/dev.sh ] && source /opt/dev/dev.sh
+
+# Git branch autocompletion
+autoload -Uz compinit && compinit
+
 # To customize prompt, run `p10k configure` or edit ~/.oh-my-zsh/custom/themes/powerlevel10k/config/p10k-robbyrussell.zsh.
-[[ ! -f ~/.oh-my-zsh/custom/themes/powerlevel10k/config/p10k-robbyrussell.zsh ]] || source ~/.oh-my-zsh/custom/themes/powerlevel10k/config/p10k-robbyrussell.zsh
-source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# [[ ! -f ~/.oh-my-zsh/custom/themes/powerlevel10k/config/p10k-robbyrussell.zsh ]] || source ~/.oh-my-zsh/custom/themes/powerlevel10k/config/p10k-robbyrussell.zsh
+# source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
