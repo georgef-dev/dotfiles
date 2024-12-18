@@ -20,6 +20,8 @@ fi
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 # export PATH=$PATH:"$HOME/.gem/ruby/3.3.4/bin"
 export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
+export PATH="$HOME/.gem/ruby/3.4.0-preview2/bin:$PATH"
+export PATH=$PATH:"$HOME/.local/bin"
 export PATH=$PATH:"$HOME/go/bin"
 export PATH=$PATH:"$HOME/gferreira/scripts"
 export PATH=$PATH:"/usr/local/texlive/2022basic/bin/universal-darwin"
@@ -56,7 +58,7 @@ export NVM_DIR="$HOME/.nvm"
 
 ZSH_THEME="powerlevel10k/powerlevel10k"
 
-source "$(brew --prefix)/opt/gitstatus/gitstatus.prompt.zsh"
+# source "$(brew --prefix)/opt/gitstatus/gitstatus.prompt.zsh"
 
 PROMPT='%~%# '               # left prompt: directory followed by %/# (normal/root)
 RPROMPT='$GITSTATUS_PROMPT'  # right prompt: git status
@@ -164,8 +166,8 @@ alias idrive='cd "$HOME/Library/Mobile Documents/com~apple~CloudDocs"'
 alias dps='docker ps --format "table {{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Ports}}"'
 alias ghcr-login="echo $GITHUB_TOKEN | docker login ghcr.io -u georgef-dev --password-stdin"
 alias lc="colorls"
-
-eval "$(rbenv init - zsh)"
+alias inv='nvim $(fzf -m --preview="bat --color=always {}")'
+alias fzc='fzf -m --preview="bat --color=always {}"'
 
 if command -v pyenv 1>/dev/null 2>&1; then
   export PYENV_ROOT="$HOME/.pyenv"
@@ -202,7 +204,8 @@ export PATH="$PATH:/Users/georgeferreira/.local/bin"
 autoload -U compinit
 compinit -i
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+#[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+source <(fzf --zsh)
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 # export PATH=~/platform-engineering/ftf-tools:/Users/georgeferreira/.pyenv/shims:/Users/georgeferreira/.pyenv/bin:/Users/georgeferreira/.rbenv/shims:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin:/opt/homebrew/sbin:/Users/georgeferreira/.local/bin:/Users/georgeferreira/platform_engineering/bin:/Users/georgeferreira/go/bin:/Users/georgeferreira/gferreira/scripts:/Users/georgeferreira/.local/bin:/Users/georgeferreira/platform_engineering/bin:/Users/georgeferreira/go/bin:/Users/georgeferreira/gferreira/scripts:/Users/georgeferreira/.local/bin:/opt/homebrew/opt/fzf/bin
 
@@ -224,7 +227,7 @@ localstack-restapi-url() {
   [ -z "${restapi_id}" ] && printf "No '${function}' Lambda found in '${stage}'" >&2 && return 1
   echo ${LOCALSTACK_ENDPOINT}/restapis/${restapi_id}/${stage}/_user_request_/${function}
 }
-source /opt/homebrew/opt/gitstatus/gitstatus.prompt.zsh
+# source /opt/homebrew/opt/gitstatus/gitstatus.prompt.zsh
 export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
 export PATH="/opt/homebrew/opt/mysql-client/bin:$PATH"
 
@@ -232,3 +235,9 @@ export PATH="/opt/homebrew/opt/mysql-client/bin:$PATH"
 [[ ! -f ~/.oh-my-zsh/custom/themes/powerlevel10k/config/p10k-robbyrussell.zsh ]] || source ~/.oh-my-zsh/custom/themes/powerlevel10k/config/p10k-robbyrussell.zsh
 source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+[[ -x /opt/homebrew/bin/brew ]] && eval $(/opt/homebrew/bin/brew shellenv)
+
+[[ -f /opt/dev/sh/chruby/chruby.sh ]] && { type chruby >/dev/null 2>&1 || chruby () { source /opt/dev/sh/chruby/chruby.sh; chruby "$@"; } }
+
+[ -f /opt/dev/dev.sh ] && source /opt/dev/dev.sh
