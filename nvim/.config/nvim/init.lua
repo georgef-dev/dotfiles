@@ -16,6 +16,5 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup("georgef.plugins", {
-  defaults = { lazy = true },
   ui = { border = "rounded" },
 })
