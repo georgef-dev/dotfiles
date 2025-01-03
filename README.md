@@ -9,16 +9,21 @@
 
 # Steup
 
-Run `scripts/bootStrap`
-Follow on-screen instructions to have `brew` added to `$PATH`
-
-Run `install`
+1. `scripts/bootStrap`
+1. `install`
 
 # iTerm
 
 - Import preferences from local folder
 - Import profile JSON
 
+# My dotfiles are managed using [GNU Stow](https://www.gnu.org/software/stow/)
+
+Each folder is a package (except `manual-config` and `helpers`).
+
+For each desired config, run `stow <package>`.
+
+Example: `stow nvim` will create the sumlinks for `$HOME/.config/nvim`.
 # nvim
 
 Open nvim and run: `:Lazy`
