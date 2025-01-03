@@ -18,6 +18,9 @@ Setting up...
 
 '
 
+if [ ! command -v brew &> /dev/null ]; then
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
 
 if [ ! -d "$HOME/.oh-my-zsh/" ]; then
     echo "Installing Oh My Zsh"
