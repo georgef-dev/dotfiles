@@ -28,10 +28,13 @@ vim.opt.backup = false
 vim.opt.writebackup = false
 vim.opt.swapfile = false
 vim.opt.undofile = true
-vim.opt.list = true
 vim.opt.laststatus = 3
 vim.opt.pumheight = 10
 vim.wo.wrap = false
+vim.opt.linebreak = true
+vim.opt.wrap = true
+vim.opt.list = false
+vim.opt.showbreak = ">"
 
 -- numbertoggle
 local augroup = vim.api.nvim_create_augroup("numbertoggle", {})
