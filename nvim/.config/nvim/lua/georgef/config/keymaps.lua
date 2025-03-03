@@ -8,6 +8,8 @@ vim.keymap.set("n", "sp", ":sp<CR>")
 vim.keymap.set("n", "vs", ":vs<CR>")
 vim.keymap.set("n", "<leader>j", ":cnext<CR>", { silent = true })
 vim.keymap.set("n", "<leader>k", ":cprevious<CR>", { silent = true })
+vim.keymap.set("n", "<A-j>", ":m+1<CR>==")
+vim.keymap.set("n", "<A-k>", ":m-2<CR>==")
 vim.keymap.set(
   "n",
   "<leader>x",

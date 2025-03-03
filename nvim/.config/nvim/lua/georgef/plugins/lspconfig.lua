@@ -1,68 +1,26 @@
-vim.env.PATH = vim.fn.stdpath "data" .. "/mason/bin" .. ":" .. vim.env.PATH
-
 return {
   "neovim/nvim-lspconfig",
   event = { "BufReadPre", "BufNewFile" },
   dependencies = {
-    -- format & linting
-    {
-      "williamboman/mason.nvim",
-      cmd = { "Mason", "MasonInstall", "MasonInstallAll", "MasonUpdate" },
-      opts = {
-        PATH = "skip",
-        ui = {
-          border = "rounded",
-        },
-        ensure_installed = {
-          -- lua stuff
-          "lua-language-server",
-          "stylua",
-
-          -- web dev stuff
-          "css-lsp",
-          "html-lsp",
-          "typescript-language-server",
-          "prettier",
-
-          -- ruby stuff
-          "ruby-lsp",
-          "rubocop",
-          "sorbet",
-
-          -- c/cpp stuff
-          "clangd",
-          "clang-format",
-        },
-        automatic_installation = true,
-      },
-      config = function(_, opts)
-        require("mason").setup(opts)
-
-        vim.api.nvim_create_user_command("MasonInstallAll", function()
-          vim.cmd("MasonInstall " .. table.concat(opts.ensure_installed, " "))
-        end, {})
-
-        vim.g.mason_binaries_list = opts.ensure_installed
-      end,
-    },
+    "williamboman/mason.nvim",
+    "williamboman/mason-lspconfig.nvim",
     {
       "nvimtools/none-ls.nvim",
+      dependencies = {
+        "jay-babu/mason-null-ls.nvim",
+      },
       config = function()
-        local null_ls = require "null-ls"
-
+        local null_ls = require("null-ls")
         local b = null_ls.builtins
 
         local sources = {
-
           -- webdev stuff
-          b.formatting.prettier.with {
+          b.formatting.prettier.with({
             filetypes = { "html", "markdown", "css" },
-          }, -- so prettier works only on these filetypes
+          }),
           b.formatting.rubocop,
-
           -- Lua
           b.formatting.stylua,
-
           -- cpp
           b.formatting.clang_format,
         }
@@ -70,22 +28,34 @@ return {
         -- Autoformatting
         local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
 
-        null_ls.setup {
+        null_ls.setup({
           debug = false,
           sources = sources,
           on_attach = function(client, bufnr)
-            if client.supports_method "textDocument/formatting" then
-              vim.api.nvim_clear_autocmds { group = augroup, buffer = bufnr }
+            if client.supports_method("textDocument/formatting") then
+              vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
               vim.api.nvim_create_autocmd("BufWritePre", {
                 group = augroup,
                 buffer = bufnr,
                 callback = function()
-                  vim.lsp.buf.format { async = false }
+                  vim.lsp.buf.format({ async = false })
                 end,
               })
             end
           end,
-        }
+        })
+        
+        -- Setup mason-null-ls
+        require("mason-null-ls").setup({
+          ensure_installed = {
+            "stylua",
+            "prettier",
+            "rubocop",
+            "clang_format",
+          },
+          automatic_installation = true,
+          handlers = {},
+        })
       end,
     },
   },
@@ -102,19 +72,24 @@ return {
     { "<leader>cl", vim.lsp.codelens.run },
   },
   config = function()
-    local lspconfig = require "lspconfig"
+    local lspconfig = require("lspconfig")
 
-    local on_attach = function(client, _)
+    local on_attach = function(client, bufnr)
       client.server_capabilities.documentFormattingProvider = false
       client.server_capabilities.documentRangeFormattingProvider = false
 
-      if client.supports_method "textDocument/semanticTokens" then
+      if client.supports_method("textDocument/semanticTokens") then
         client.server_capabilities.semanticTokensProvider = nil
+      end
+      
+      -- Ruby LSP specific setup
+      if client.name == "ruby_lsp" then
+        setup_diagnostics(client, bufnr)
+        add_ruby_deps_command(client, bufnr)
       end
     end
 
     local capabilities = vim.lsp.protocol.make_client_capabilities()
-
     capabilities.textDocument.completion.completionItem = {
       documentationFormat = { "markdown", "plaintext" },
       snippetSupport = true,
@@ -133,52 +108,9 @@ return {
       },
     }
 
-    -- if you just want default config for the servers then put them in a table
-    local servers = { "html", "ts_ls", "clangd", "rubocop", "sorbet" }
-
-    for _, lsp in ipairs(servers) do
-      lspconfig[lsp].setup {
-        on_attach = on_attach,
-        capabilities = capabilities,
-      }
-    end
-
-    lspconfig.lua_ls.setup {
-      on_attach = on_attach,
-      capabilities = capabilities,
-
-      settings = {
-        Lua = {
-          diagnostics = {
-            globals = { "vim" },
-          },
-          workspace = {
-            library = {
-              [vim.fn.expand "$VIMRUNTIME/lua"] = true,
-              [vim.fn.expand "$VIMRUNTIME/lua/vim/lsp"] = true,
-              [vim.fn.stdpath "data" .. "/lazy/lazy.nvim/lua/lazy"] = true,
-            },
-            maxPreload = 100000,
-            preloadFileSize = 10000,
-          },
-        },
-      },
-    }
-
-    lspconfig.cssls.setup {
-      settings = {
-        css = {
-          validate = true,
-          lint = {
-            unknownAtRules = "ignore",
-          },
-        },
-      },
-    }
-
     -- textDocument/diagnostic support until 0.10.0 is released
     local _timers = {}
-    local function setup_diagnostics(client, buffer)
+    function setup_diagnostics(client, buffer)
       if require("vim.lsp.diagnostic")._enable then
         return
       end
@@ -190,8 +122,7 @@ return {
           { textDocument = params },
           function(err, result)
             if err then
-              local err_msg =
-                string.format("diagnostics error - %s", vim.inspect(err))
+              local err_msg = string.format("diagnostics error - %s", vim.inspect(err))
               vim.lsp.log.error(err_msg)
             end
             local diagnostic_items = {}
@@ -225,11 +156,9 @@ return {
     end
 
     -- adds ShowRubyDeps command to show dependencies in the quickfix list.
-    -- add the `all` argument to show indirect dependencies as well
-    local function add_ruby_deps_command(client, bufnr)
+    function add_ruby_deps_command(client, bufnr)
       vim.api.nvim_buf_create_user_command(bufnr, "ShowRubyDeps", function(opts)
         local params = vim.lsp.util.make_text_document_params()
-
         local showAll = opts.args == "all"
 
         client.request(
@@ -251,14 +180,13 @@ return {
                     item.version,
                     item.dependency
                   ),
-
                   filename = item.path,
                 })
               end
             end
 
             vim.fn.setqflist(qf_list)
-            vim.cmd "copen"
+            vim.cmd("copen")
           end,
           bufnr
         )
@@ -270,11 +198,53 @@ return {
       })
     end
 
-    lspconfig.ruby_lsp.setup {
-      on_attach = function(client, buffer)
-        setup_diagnostics(client, buffer)
-        add_ruby_deps_command(client, buffer)
-      end,
+    -- Server-specific settings
+    local servers_settings = {
+      lua_ls = {
+        settings = {
+          Lua = {
+            diagnostics = {
+              globals = { "vim" },
+            },
+            workspace = {
+              library = {
+                [vim.fn.expand("$VIMRUNTIME/lua")] = true,
+                [vim.fn.expand("$VIMRUNTIME/lua/vim/lsp")] = true,
+                [vim.fn.stdpath("data") .. "/lazy/lazy.nvim/lua/lazy"] = true,
+              },
+              maxPreload = 100000,
+              preloadFileSize = 10000,
+            },
+          },
+        },
+      },
+      cssls = {
+        settings = {
+          css = {
+            validate = true,
+            lint = {
+              unknownAtRules = "ignore",
+            },
+          },
+        },
+      },
     }
+
+    -- Setup mason-lspconfig
+    require("mason-lspconfig").setup_handlers({
+      function(server_name)
+        local opts = {
+          on_attach = on_attach,
+          capabilities = capabilities,
+        }
+        
+        -- Apply server-specific settings if they exist
+        if servers_settings[server_name] then
+          opts = vim.tbl_deep_extend("force", opts, servers_settings[server_name])
+        end
+        
+        lspconfig[server_name].setup(opts)
+      end,
+    })
   end,
 }
