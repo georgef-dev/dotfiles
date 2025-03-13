@@ -16,17 +16,6 @@ fi
 #
 #
 
-# If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:/usr/local/bin:$PATH
-# export PATH=$PATH:"$HOME/.gem/ruby/3.3.4/bin"
-export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
-export PATH="$HOME/.gem/ruby/3.4.0-preview2/bin:$PATH"
-export PATH=$PATH:"$HOME/.local/bin"
-export PATH=$PATH:"$HOME/go/bin"
-export PATH=$PATH:"$HOME/gferreira/scripts"
-export PATH=$PATH:"/usr/local/texlive/2022basic/bin/universal-darwin"
-
-
 # Path to your oh-my-zsh installation.
 
 export ZSH="$HOME/.oh-my-zsh"
@@ -150,6 +139,10 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
+# FZF Defaults
+# export FZF_DEFAULT_OPTS="--height $(( $LINES / 2 ))"
+# export FZF_DEFAULT_OPTS="--height 40% --tmux bottom,40% --layout reverse --border top --style full --preview 'fzf-preview.sh {}' --bind 'focus:transform-header:file --brief {}'"
+
 # Work aliases
 alias start-local-ftf='rm -rf tmp/pids && dip up -d postgres-dump && dip up rails sidekiq webpacker'
 alias start-local-radix="dip up rails sidekiq webpacker postgrest"
@@ -167,7 +160,7 @@ alias dps='docker ps --format "table {{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Ports}
 alias ghcr-login="echo $GITHUB_TOKEN | docker login ghcr.io -u georgef-dev --password-stdin"
 alias lc="colorls"
 alias inv='nvim $(fzf -m --preview="bat --color=always {}")'
-alias fzc='fzf -m --preview="bat --color=always {}"'
+alias fzc='fzf --height $(( $LINES / 2 )) -m --preview="bat --color=always {}"'
 
 if command -v pyenv 1>/dev/null 2>&1; then
   export PYENV_ROOT="$HOME/.pyenv"
@@ -242,3 +235,10 @@ source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 [[ -f /opt/dev/sh/chruby/chruby.sh ]] && { type chruby >/dev/null 2>&1 || chruby () { source /opt/dev/sh/chruby/chruby.sh; chruby "$@"; } }
 
+export PATH=$PATH:"$HOME/.local/bin"
+export PATH=$PATH:"$HOME/go/bin"
+export PATH=$PATH:"$HOME/gferreira/scripts"
+export PATH=$PATH:"/usr/local/texlive/2022basic/bin/universal-darwin"
+
+# Removes duplicates
+export PATH=$(echo $PATH | tr ':' '\n' | awk '!seen[$0]++' | tr '\n' ':' | sed 's/:$//')

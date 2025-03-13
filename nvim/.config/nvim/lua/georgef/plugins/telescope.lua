@@ -4,6 +4,7 @@ return {
   keys = {
     { "<C-p>", "<cmd>Telescope find_files<cr>", desc = "Find files" },
     { "<C-f>", "<cmd>Telescope live_grep<cr>", desc = "Live grep" },
+    { "<leader>b", "<cmd>Telescope buffers<cr>", desc = "Find buffers" },
     {
       "<leader>;",
       function()
