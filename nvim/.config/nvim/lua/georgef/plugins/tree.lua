@@ -4,12 +4,12 @@ return {
   keys = {
     {
       "<C-n>",
-      "<cmd> Neotree toggle <CR>",
-      desc = "Toggle neotree",
+      "<cmd>Neotree filesystem toggle reveal=true reveal_force_cwd<CR>",
+      desc = "Toggle neotree with current file focused",
     },
     {
       "<leader>s",
-      "<cmd> Neotree float git_status <CR>",
+      "<cmd>Neotree float git_status<CR>",
       desc = "Neotree git_status",
     },
   },
@@ -18,6 +18,21 @@ return {
     "nvim-tree/nvim-web-devicons",
     "MunifTanjim/nui.nvim",
   },
+  config = function()
+    require("neo-tree").setup {
+      filesystem = {
+        follow_current_file = {
+          enabled = true,
+        },
+        use_libuv_file_watcher = true,
+      },
+      buffers = {
+        follow_current_file = {
+          enabled = true,
+        },
+      },
+    }
+  end,
 }
 
 --return {
