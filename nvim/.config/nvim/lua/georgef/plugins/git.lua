@@ -1,24 +1,21 @@
 return {
   {
-    "lewis6991/gitsigns.nvim",
+    "tpope/vim-fugitive",
     lazy = false,
-    opts = {
-      signs = {
-        add = { text = "│" },
-        change = { text = "│" },
-        delete = { text = "󰍵" },
-        topdelete = { text = "‾" },
-        changedelete = { text = "~" },
-        untracked = { text = "│" },
-      },
-    },
   },
   {
-    "tpope/vim-fugitive",
-    cmd = { "Git" },
-    keys = {
-      { "<leader>gs", "<cmd> vert Git <CR>", desc = "Open Git Status" },
-      { "<leader>gb", "<cmd> Git blame <CR>", desc = "Open Git Blame" },
-    },
+    "lewis6991/gitsigns.nvim",
+    lazy = false,
+    config = function()
+      require("gitsigns").setup()
+
+      vim.keymap.set("n", "<leader>gp", ":Gitsigns preview_hunk<CR>", {})
+      vim.keymap.set(
+        "n",
+        "<leader>gt",
+        ":Gitsigns toggle_current_line_blame<CR>",
+        {}
+      )
+    end,
   },
 }
