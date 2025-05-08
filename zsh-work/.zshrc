@@ -161,6 +161,8 @@ alias ghcr-login="echo $GITHUB_TOKEN | docker login ghcr.io -u georgef-dev --pas
 alias lc="colorls"
 alias inv='nvim $(fzf -m --preview="bat --color=always {}")'
 alias fzc='fzf --height $(( $LINES / 2 )) -m --preview="bat --color=always {}"'
+alias goodmorning="gt co main && gt sync && gt submit --stack && dev up"
+alias startover="gt co main && gt sync && dev up"
 
 if command -v pyenv 1>/dev/null 2>&1; then
   export PYENV_ROOT="$HOME/.pyenv"
