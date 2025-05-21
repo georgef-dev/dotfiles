@@ -1,4 +1,4 @@
-require "georgef.config"
+require "config"
 
 local lazypath = vim.fn.stdpath "data" .. "/lazy/lazy.nvim"
 
@@ -15,6 +15,6 @@ end
 
 vim.opt.rtp:prepend(lazypath)
 
-require("lazy").setup("georgef.plugins", {
+require("lazy").setup("plugins", {
   ui = { border = "rounded" },
 })

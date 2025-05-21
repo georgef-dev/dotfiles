@@ -143,9 +143,6 @@ source $ZSH/oh-my-zsh.sh
 # export FZF_DEFAULT_OPTS="--height $(( $LINES / 2 ))"
 # export FZF_DEFAULT_OPTS="--height 40% --tmux bottom,40% --layout reverse --border top --style full --preview 'fzf-preview.sh {}' --bind 'focus:transform-header:file --brief {}'"
 
-# Work aliases
-alias start-local-ftf='rm -rf tmp/pids && dip up -d postgres-dump && dip up rails sidekiq webpacker'
-alias start-local-radix="dip up rails sidekiq webpacker postgrest"
 alias matrix='LC_ALL=C tr -c "[:digit:]" " " < /dev/urandom | dd cbs=$COLUMNS conv=unblock | GREP_COLOR="1;32" grep --color "[^ ]"'
 
 # Personal aliases
@@ -161,6 +158,9 @@ alias ghcr-login="echo $GITHUB_TOKEN | docker login ghcr.io -u georgef-dev --pas
 alias lc="colorls"
 alias inv='nvim $(fzf -m --preview="bat --color=always {}")'
 alias fzc='fzf --height $(( $LINES / 2 )) -m --preview="bat --color=always {}"'
+alias goodmorning="gt co main && gt sync && gt submit --stack && dev up"
+alias startover="gt co main && gt sync && dev up"
+alias cleanlocalbranches="git checkout main | git branch | grep -v "^main" | xargs git branch -D"
 
 if command -v pyenv 1>/dev/null 2>&1; then
   export PYENV_ROOT="$HOME/.pyenv"
