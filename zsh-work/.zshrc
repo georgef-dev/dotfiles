@@ -148,8 +148,6 @@ alias matrix='LC_ALL=C tr -c "[:digit:]" " " < /dev/urandom | dd cbs=$COLUMNS co
 # Personal aliases
 alias set-secrets='$(cat ~/.secrets)'
 alias tf='terraform'
-alias gitaddmod="git add \$(git status | grep modified | awk '{print \$2}')"
-alias gitadddeleted="git add \$(git status | grep deleted | awk '{print \$2}')"
 alias gitdeletenontrackingbranches="git branch -D \$(git branch -vv | grep -v origin | awk '{print \$1}')"
 alias brew-update='brew update && brew outdated && brew upgrade && brew cu --all --cleanup --yes && brew cleanup && brew doctor'
 alias idrive='cd "$HOME/Library/Mobile Documents/com~apple~CloudDocs"'

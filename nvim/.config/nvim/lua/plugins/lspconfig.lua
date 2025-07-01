@@ -57,11 +57,11 @@ return {
         local sources = {
 
           -- webdev stuff
-          b.formatting.prettier,
+          -- b.formatting.prettier,
           -- b.formatting.prettier.with {
           --   filetypes = { "html", "markdown", "css" },
           -- }, -- so prettier works only on these filetypes
-          b.formatting.rubocop,
+          -- b.formatting.rubocop,
 
           -- Lua
           b.formatting.stylua,
