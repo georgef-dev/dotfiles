@@ -19,7 +19,7 @@ fi
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 # export PATH=$PATH:"$HOME/.gem/ruby/3.3.4/bin"
-export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
+# export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
 export PATH="$HOME/.gem/ruby/3.4.0-preview2/bin:$PATH"
 export PATH=$PATH:"$HOME/.local/bin"
 export PATH=$PATH:"$HOME/go/bin"
@@ -151,8 +151,6 @@ source $ZSH/oh-my-zsh.sh
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
 # Work aliases
-alias start-local-ftf='rm -rf tmp/pids && dip up -d postgres-dump && dip up rails sidekiq webpacker'
-alias start-local-radix="dip up rails sidekiq webpacker postgrest"
 alias matrix='LC_ALL=C tr -c "[:digit:]" " " < /dev/urandom | dd cbs=$COLUMNS conv=unblock | GREP_COLOR="1;32" grep --color "[^ ]"'
 
 # Personal aliases
@@ -168,6 +166,7 @@ alias ghcr-login="echo $GITHUB_TOKEN | docker login ghcr.io -u georgef-dev --pas
 alias lc="colorls"
 alias inv='nvim $(fzf -m --preview="bat --color=always {}")'
 alias fzc='fzf -m --preview="bat --color=always {}"'
+alias oops='git reset --soft HEAD~1'
 
 if command -v pyenv 1>/dev/null 2>&1; then
   export PYENV_ROOT="$HOME/.pyenv"
@@ -240,7 +239,11 @@ source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 [[ -f /opt/dev/sh/chruby/chruby.sh ]] && { type chruby >/dev/null 2>&1 || chruby () { source /opt/dev/sh/chruby/chruby.sh; chruby "$@"; } }
 
-[ -f /opt/dev/dev.sh ] && source /opt/dev/dev.sh
+if [ -f /opt/dev/dev.sh ]; then
+  source /opt/dev/dev.sh
+elif [ -f ~/src/github.com/georgef-dev/minidev/dev.sh ]; then
+  source ~/src/github.com/georgef-dev/minidev/dev.sh
+fi
 
 # CHRuby
 
