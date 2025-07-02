@@ -1,0 +1,18 @@
+
+alias matrix='LC_ALL=C tr -c "[:digit:]" " " < /dev/urandom | dd cbs=$COLUMNS conv=unblock | GREP_COLOR="1;32" grep --color "[^ ]"'
+
+# Personal aliases
+alias set-secrets='$(cat ~/.secrets)'
+alias tf='terraform'
+alias gitdeletenontrackingbranches="git branch -D \$(git branch -vv | grep -v origin | awk '{print \$1}')"
+alias brew-update='brew update && brew outdated && brew upgrade && brew cu --all --cleanup --yes && brew cleanup && brew doctor'
+alias idrive='cd "$HOME/Library/Mobile Documents/com~apple~CloudDocs"'
+alias dps='docker ps --format "table {{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Ports}}"'
+alias ghcr-login="echo $GITHUB_TOKEN | docker login ghcr.io -u georgef-dev --password-stdin"
+alias lc="colorls"
+alias inv='nvim $(fzf -m --preview="bat --color=always {}")'
+alias fzc='fzf --height $(( $LINES / 2 )) -m --preview="bat --color=always {}"'
+alias goodmorning="gt co main && gt sync && gt submit --stack && dev up"
+alias startover="gt co main && gt sync && dev up"
+alias cleanlocalbranches="git checkout main | git branch | grep -v "^main" | xargs git branch -D"
+alias oops="reset --soft HEAD~1"
