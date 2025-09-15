@@ -16,6 +16,7 @@ return {
       end,
       desc = "Find in buffers",
     },
+    { "<leader>o", "<cmd>Telescope oldfiles<cr>", desc = "Recent files" },
   },
   dependencies = {
     "nvim-lua/plenary.nvim",
