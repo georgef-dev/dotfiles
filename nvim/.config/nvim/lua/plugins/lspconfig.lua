@@ -4,8 +4,8 @@ return {
   "neovim/nvim-lspconfig",
   event = { "BufReadPre", "BufNewFile" },
   dependencies = {
-    -- gr/gd telescope key bindings
-    "nvim-telescope/telescope.nvim",
+    -- gr/gd fzf-lua key bindings
+    "ibhagwan/fzf-lua",
     -- format & linting
     {
       "williamboman/mason.nvim",
@@ -101,8 +101,8 @@ return {
     { "<leader>rn", vim.lsp.buf.rename },
     { "<leader>ca", vim.lsp.buf.code_action },
     { "<leader>cl", vim.lsp.codelens.run },
-    { "gd", "<cmd>Telescope lsp_definitions<cr>" },
-    { "gr", "<cmd>Telescope lsp_references<cr>" },
+    { "gd", vim.lsp.buf.definition },
+    { "gr", function() require("fzf-lua").lsp_references() end },
   },
   config = function()
     local lspconfig = require "lspconfig"
