@@ -105,16 +105,20 @@ return {
     { "gr", function() require("fzf-lua").lsp_references() end },
   },
   config = function()
-    local lspconfig = require "lspconfig"
+    -- Set up LSP attach callback
+    vim.api.nvim_create_autocmd("LspAttach", {
+      callback = function(args)
+        local client = vim.lsp.get_client_by_id(args.data.client_id)
+        if client then
+          client.server_capabilities.documentFormattingProvider = false
+          client.server_capabilities.documentRangeFormattingProvider = false
 
-    local on_attach = function(client, _)
-      client.server_capabilities.documentFormattingProvider = false
-      client.server_capabilities.documentRangeFormattingProvider = false
-
-      if client.supports_method "textDocument/semanticTokens" then
-        client.server_capabilities.semanticTokensProvider = nil
-      end
-    end
+          if client.supports_method "textDocument/semanticTokens" then
+            client.server_capabilities.semanticTokensProvider = nil
+          end
+        end
+      end,
+    })
 
     local capabilities = vim.lsp.protocol.make_client_capabilities()
 
@@ -136,21 +140,14 @@ return {
       },
     }
 
-    -- if you just want default config for the servers then put them in a table
-    local servers =
-      { "html", "ts_ls", "clangd", "rubocop", "sorbet" }
-
-    for _, lsp in ipairs(servers) do
-      lspconfig[lsp].setup {
-        on_attach = on_attach,
-        capabilities = capabilities,
-      }
+    -- Simple servers with default config
+    local servers = { "html", "ts_ls", "clangd", "rubocop", "sorbet" }
+    for _, server in ipairs(servers) do
+      vim.lsp.enable(server)
     end
 
-    lspconfig.lua_ls.setup {
-      on_attach = on_attach,
-      capabilities = capabilities,
-
+    -- lua_ls with custom settings
+    vim.lsp.config("lua_ls", {
       settings = {
         Lua = {
           diagnostics = {
@@ -167,17 +164,22 @@ return {
           },
         },
       },
-    }
+    })
+    vim.lsp.enable("lua_ls")
 
-    lspconfig.cssls.setup {
-      settings = {
-        css = {
-          validate = true,
-          lint = {
-            unknownAtRules = "ignore",
+    -- cssls with custom settings (only if executable exists)
+    if vim.fn.executable("vscode-css-language-server") == 1 then
+      vim.lsp.config("cssls", {
+        settings = {
+          css = {
+            validate = true,
+            lint = {
+              unknownAtRules = "ignore",
+            },
           },
         },
-      },
-    }
+      })
+      vim.lsp.enable("cssls")
+    end
   end,
 }
