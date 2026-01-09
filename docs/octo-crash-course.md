@@ -57,12 +57,17 @@ When you open an issue or PR with Octo, you'll get a buffer with the issue/PR de
 
 ## PR Mappings
 
-- `<localleader>po` - Checkout PR
 - `<localleader>pm` - Merge PR
+- `<localleader>psm` - Squash and merge PR
+- `<localleader>prm` - Rebase and merge PR
 - `<localleader>pd` - Show PR diff
+- `<localleader>pf` - List PR changed files
+- `<localleader>pc` - List PR commits
 - `<localleader>va` - Add reviewer
 - `<localleader>vd` - Remove reviewer
-- `<localleader>vs` - Start a review
+- `<localleader>vs` - Start/submit review
+
+**Note:** `<localleader>po` (checkout PR) is disabled for Graphite workflow.
 
 # PR Review Workflow
 
@@ -75,11 +80,12 @@ When you open an issue or PR with Octo, you'll get a buffer with the issue/PR de
 
 # Quick Tips
 
-1. Authentication: Octo uses GitHub CLI (gh) for authentication. Make sure you're logged in with gh auth login before using Octo.
+1. Authentication: Octo uses GitHub CLI (gh) for authentication. Make sure you're logged in with `gh auth login` before using Octo.
 1. Repository Context: Most commands work in the context of the current git repository. Make sure you're in a git repository that's connected to GitHub.
-1. Telescope Integration: Your config uses Telescope for picking, so you'll get nice fuzzy-finding interfaces for selecting issues, PRs, etc.
-1. Reactions: You can add reactions to comments with keys like <localleader>r+ (👍), <localleader>r- (👎), etc.
-1. Local Leader: Your config uses <localleader> for most mappings. Make sure you know what key this is set to in your Neovim config (often it's \).
+1. fzf-lua Integration: Your config uses fzf-lua for picking, so you'll get fast fuzzy-finding interfaces for selecting issues, PRs, etc.
+1. Reactions: You can add reactions to comments with keys like `<localleader>r+` (👍), `<localleader>r-` (👎), etc.
+1. Local Leader: Your config uses `<localleader>` for most mappings. Make sure you know what key this is set to in your Neovim config (often it's `\`).
+1. Review Workflow: The best way to review a PR is `:Octo pr <number>` then `<localleader>vs` to start review mode directly.
 
 # Getting Help
 
@@ -119,10 +125,10 @@ return {
       use_local_fs = false, -- use local files on right side of reviews
       enable_builtin = false, -- shows a list of builtin actions when no action is provided
       default_remote = { "upstream", "origin" }, -- order to try remotes
-      default_merge_method = "commit", -- default merge method which should be used for both `Octo pr merge` and merging from picker, could be `commit`, `rebase` or `squash`
+      default_merge_method = "merge", -- default merge method which should be used for both `Octo pr merge` and merging from picker, could be `merge`, `rebase` or `squash`
       default_delete_branch = false, -- whether to delete branch when merging pull request with either `Octo pr merge` or from picker (can be overridden with `delete`/`nodelete` argument to `Octo pr merge`)
       ssh_aliases = {}, -- SSH aliases. e.g. `ssh_aliases = {["github.com-work"] = "github.com"}`. The key part will be interpreted as an anchored Lua pattern.
-      picker = "telescope", -- or "fzf-lua" or "snacks"
+      picker = "fzf-lua", -- or "telescope" or "snacks"
       picker_config = {
         use_emojis = false, -- only used by "fzf-lua" picker for now
         mappings = { -- mappings for the pickers
@@ -155,7 +161,7 @@ return {
       user_icon = " ", -- user icon
       ghost_icon = "󰊠 ", -- ghost icon
       timeline_marker = " ", -- timeline marker
-      timeline_indent = "2", -- timeline indentation
+      timeline_indent = 2, -- timeline indentation
       use_timeline_icons = true, -- toggle timeline icons
       timeline_icons = { -- the default icons based on timelineItems
         commit = "  ",
