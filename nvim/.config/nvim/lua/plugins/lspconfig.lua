@@ -102,11 +102,14 @@ return {
     { "<leader>ca", vim.lsp.buf.code_action },
     { "<leader>cl", vim.lsp.codelens.run },
     { "gd", vim.lsp.buf.definition },
-    { "gr", function() require("fzf-lua").lsp_references() end },
+    {
+      "gr",
+      function()
+        require("fzf-lua").lsp_references()
+      end,
+    },
   },
   config = function()
-    local lspconfig = require "lspconfig"
-
     local on_attach = function(client, _)
       client.server_capabilities.documentFormattingProvider = false
       client.server_capabilities.documentRangeFormattingProvider = false
@@ -137,17 +140,16 @@ return {
     }
 
     -- if you just want default config for the servers then put them in a table
-    local servers =
-      { "html", "ts_ls", "clangd", "rubocop", "sorbet" }
+    local servers = { "html", "ts_ls", "clangd", "rubocop", "sorbet" }
 
     for _, lsp in ipairs(servers) do
-      lspconfig[lsp].setup {
+      vim.lsp.config(lsp, {
         on_attach = on_attach,
         capabilities = capabilities,
-      }
+      })
     end
 
-    lspconfig.lua_ls.setup {
+    vim.lsp.config("lua_ls", {
       on_attach = on_attach,
       capabilities = capabilities,
 
@@ -167,9 +169,9 @@ return {
           },
         },
       },
-    }
+    })
 
-    lspconfig.cssls.setup {
+    vim.lsp.config("cssls", {
       settings = {
         css = {
           validate = true,
@@ -178,6 +180,18 @@ return {
           },
         },
       },
-    }
+    })
+
+    vim.lsp.config("sorbet", {
+      cmd = { "srb", "tc", "--lsp", "--dir", vim.fn.getcwd(), "--disable-watchman" },
+      on_attach = on_attach,
+      capabilities = capabilities,
+      root_dir = require("lspconfig.util").root_pattern("sorbet/config"),
+    })
+
+    vim.lsp.enable(servers)
+    vim.lsp.enable "lua_ls"
+    vim.lsp.enable "cssls"
+    vim.lsp.enable "sorbet"
   end,
 }
