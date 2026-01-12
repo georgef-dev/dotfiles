@@ -33,9 +33,6 @@ export NVM_DIR="$HOME/.nvm"
 
 ZSH_THEME="powerlevel10k/powerlevel10k"
 
-PROMPT='%~%# '               # left prompt: directory followed by %/# (normal/root)
-RPROMPT='$GITSTATUS_PROMPT'  # right prompt: git status
-
 zstyle ':omz:update' mode reminder  # just remind me to update when it's time
 
 # ZSH_TMUX_AUTOSTART="true"
@@ -47,6 +44,10 @@ source $ZSH/oh-my-zsh.sh
 # Import aliases from .zshrc-aliases
 
 source ~/.zshrc-aliases
+
+# Import custom functions from .zshrc-functions 
+
+source ~/.zshrc-functions
 
 if command -v pyenv 1>/dev/null 2>&1; then
   export PYENV_ROOT="$HOME/.pyenv"
@@ -77,8 +78,11 @@ source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 export PATH=$PATH:"$HOME/.local/bin"
 export PATH=$PATH:"$HOME/go/bin"
-export PATH=$PATH:"$HOME/gferreira/scripts"
+export PATH=$PATH:"$HOME/src/bin"
 export PATH=$PATH:"/usr/local/texlive/2022basic/bin/universal-darwin"
 
 # Removes PATH duplicates
 export PATH=$(echo $PATH | tr ':' '\n' | awk '!seen[$0]++' | tr '\n' ':' | sed 's/:$//')
+
+# Added by tec agent
+[[ -x /Users/georgeferreira/.local/state/tec/profiles/base/current/global/init ]] && eval "$(/Users/georgeferreira/.local/state/tec/profiles/base/current/global/init zsh)"

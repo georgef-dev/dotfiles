@@ -102,22 +102,23 @@ return {
     { "<leader>ca", vim.lsp.buf.code_action },
     { "<leader>cl", vim.lsp.codelens.run },
     { "gd", vim.lsp.buf.definition },
-    {
-      "gr",
-      function()
-        require("fzf-lua").lsp_references()
-      end,
-    },
+    { "gr", function() require("fzf-lua").lsp_references() end },
   },
   config = function()
-    local on_attach = function(client, _)
-      client.server_capabilities.documentFormattingProvider = false
-      client.server_capabilities.documentRangeFormattingProvider = false
+    -- Set up LSP attach callback
+    vim.api.nvim_create_autocmd("LspAttach", {
+      callback = function(args)
+        local client = vim.lsp.get_client_by_id(args.data.client_id)
+        if client then
+          client.server_capabilities.documentFormattingProvider = false
+          client.server_capabilities.documentRangeFormattingProvider = false
 
-      if client.supports_method "textDocument/semanticTokens" then
-        client.server_capabilities.semanticTokensProvider = nil
-      end
-    end
+          if client.supports_method "textDocument/semanticTokens" then
+            client.server_capabilities.semanticTokensProvider = nil
+          end
+        end
+      end,
+    })
 
     local capabilities = vim.lsp.protocol.make_client_capabilities()
 
@@ -139,20 +140,14 @@ return {
       },
     }
 
-    -- if you just want default config for the servers then put them in a table
+    -- Simple servers with default config
     local servers = { "html", "ts_ls", "clangd", "rubocop", "sorbet" }
-
-    for _, lsp in ipairs(servers) do
-      vim.lsp.config(lsp, {
-        on_attach = on_attach,
-        capabilities = capabilities,
-      })
+    for _, server in ipairs(servers) do
+      vim.lsp.enable(server)
     end
 
+    -- lua_ls with custom settings
     vim.lsp.config("lua_ls", {
-      on_attach = on_attach,
-      capabilities = capabilities,
-
       settings = {
         Lua = {
           diagnostics = {
@@ -170,28 +165,21 @@ return {
         },
       },
     })
+    vim.lsp.enable("lua_ls")
 
-    vim.lsp.config("cssls", {
-      settings = {
-        css = {
-          validate = true,
-          lint = {
-            unknownAtRules = "ignore",
+    -- cssls with custom settings (only if executable exists)
+    if vim.fn.executable("vscode-css-language-server") == 1 then
+      vim.lsp.config("cssls", {
+        settings = {
+          css = {
+            validate = true,
+            lint = {
+              unknownAtRules = "ignore",
+            },
           },
         },
-      },
-    })
-
-    vim.lsp.config("sorbet", {
-      cmd = { "srb", "tc", "--lsp", "--dir", vim.fn.getcwd(), "--disable-watchman" },
-      on_attach = on_attach,
-      capabilities = capabilities,
-      root_dir = require("lspconfig.util").root_pattern("sorbet/config"),
-    })
-
-    vim.lsp.enable(servers)
-    vim.lsp.enable "lua_ls"
-    vim.lsp.enable "cssls"
-    vim.lsp.enable "sorbet"
+      })
+      vim.lsp.enable("cssls")
+    end
   end,
 }

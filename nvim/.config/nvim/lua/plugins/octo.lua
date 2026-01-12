@@ -11,7 +11,7 @@ return {
       use_local_fs = false, -- use local files on right side of reviews
       enable_builtin = false, -- shows a list of builtin actions when no action is provided
       default_remote = { "upstream", "origin" }, -- order to try remotes
-      default_merge_method = "commit", -- default merge method which should be used for both `Octo pr merge` and merging from picker, could be `commit`, `rebase` or `squash`
+      default_merge_method = "merge", -- default merge method which should be used for both `Octo pr merge` and merging from picker, could be `merge`, `rebase` or `squash`
       default_delete_branch = false, -- whether to delete branch when merging pull request with either `Octo pr merge` or from picker (can be overridden with `delete`/`nodelete` argument to `Octo pr merge`)
       ssh_aliases = {}, -- SSH aliases. e.g. `ssh_aliases = {["github.com-work"] = "github.com"}`. The key part will be interpreted as an anchored Lua pattern.
       picker = "fzf-lua", -- or "telescope" or "snacks"
@@ -20,7 +20,7 @@ return {
         mappings = { -- mappings for the pickers
           open_in_browser = { lhs = "<C-b>", desc = "open issue in browser" },
           copy_url = { lhs = "<C-y>", desc = "copy url to system clipboard" },
-          checkout_pr = { lhs = "<C-o>", desc = "checkout pull request" },
+          -- checkout_pr = { lhs = "<C-o>", desc = "checkout pull request" }, -- Disabled for Graphite
           merge_pr = { lhs = "<C-r>", desc = "merge pull request" },
         },
         snacks = { -- snacks specific config
@@ -205,7 +205,7 @@ return {
           },
         },
         pull_request = {
-          checkout_pr = { lhs = "<localleader>po", desc = "checkout PR" },
+          -- checkout_pr = { lhs = "<localleader>po", desc = "checkout PR" }, -- Disabled for Graphite
           merge_pr = { lhs = "<localleader>pm", desc = "merge commit PR" },
           squash_and_merge_pr = {
             lhs = "<localleader>psm",
