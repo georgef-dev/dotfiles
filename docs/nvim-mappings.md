@@ -97,6 +97,28 @@
 | Mode | Key | Action | Description |
 |------|-----|--------|-------------|
 | `n` | `<leader>gp` | `:Gitsigns preview_hunk<CR>` | Preview git hunk |
+| `n` | `<leader>gt` | `:Gitsigns toggle_current_line_blame<CR>` | Toggle line blame |
+| `n` | `<leader>gd` | `<cmd>DiffviewOpen<cr>` | Open diff view (uncommitted changes) |
+| `n` | `<leader>gc` | `<cmd>DiffviewClose<cr>` | Close diff view |
+| `n` | `<leader>gh` | `<cmd>DiffviewFileHistory %<cr>` | File history |
+| `n` | `<leader>pr` | Review PR changes | Opens diffview comparing against Graphite parent branch |
+
+### PR Review Workflow (diffview + Graphite)
+
+1. Checkout PR branch: `gt checkout <branch>` or navigate with `gt up`/`gt down`
+2. In Neovim: `<leader>pr` auto-detects parent branch and opens diffview
+3. Navigate files with `j`/`k`, `<CR>` to view diff
+4. `<leader>gc` to close when done
+5. Write review in browser
+
+**In diffview:**
+
+| Mode | Key | Action | Description |
+|------|-----|--------|-------------|
+| `n` | `j` / `k` | Navigate | Move between files in file panel |
+| `n` | `<CR>` | Open diff | Show diff for selected file |
+| `n` | `]c` / `[c` | Next/prev hunk | Navigate between diff hunks |
+| `n` | `<leader>gc` | Close | Close diffview |
 
 ## Testing
 
@@ -121,106 +143,6 @@
 | Mode | Key | Action | Description |
 |------|-----|--------|-------------|
 | `n` | `<leader>?` | Show buffer local keymaps | Display available keymaps |
-
-## Octo (GitHub Integration)
-
-### Opening PRs
-
-| Command | Description |
-|---------|-------------|
-| `:Octo pr list` | List PRs with fzf picker |
-| `:Octo pr <number>` | Open specific PR by number |
-| `:Octo pr url <url>` | Open PR by URL |
-
-### PR Review Workflow
-
-**Starting a review:**
-1. `:Octo pr <number>` - Open the PR
-2. `<localleader>vs` - Start review (opens diff view with file panel)
-
-**In diff view:**
-
-| Mode | Key | Action | Description |
-|------|-----|--------|-------------|
-| `n` | `]q` / `[q` | Next/prev file | Navigate changed files |
-| `n` | `]t` / `[t` | Next/prev thread | Navigate comment threads |
-| `n` | `<localleader>ca` | Add comment | Add review comment (works in visual mode) |
-| `n,x` | `<localleader>sa` | Add suggestion | Add code suggestion |
-| `n` | `<localleader>e` | Focus files | Focus file panel |
-| `n` | `<localleader>b` | Toggle files | Show/hide file panel |
-| `n` | `<localleader><space>` | Toggle viewed | Mark file as viewed |
-| `n` | `gf` | Go to file | Open file in local filesystem |
-| `n` | `]c` / `[c` | Next/prev comment | Navigate comments in thread |
-| `n` | `<localleader>rt` | Resolve thread | Resolve PR thread |
-| `n` | `<localleader>rT` | Unresolve thread | Unresolve PR thread |
-
-**In file panel:**
-
-| Mode | Key | Action | Description |
-|------|-----|--------|-------------|
-| `n` | `j` / `k` | Navigate | Move between files |
-| `n` | `<CR>` | Open diff | Show diff for selected file |
-| `n` | `R` | Refresh | Refresh file list |
-
-**Submitting review:**
-
-| Mode | Key | Action | Description |
-|------|-----|--------|-------------|
-| `n` | `<localleader>vs` | Submit review | Opens submit window |
-
-**In submit window:**
-
-| Mode | Key | Action | Description |
-|------|-----|--------|-------------|
-| `n,i` | `<C-a>` | Approve | Approve review |
-| `n,i` | `<C-m>` | Comment | Comment only |
-| `n,i` | `<C-r>` | Request changes | Request changes |
-| `n,i` | `<C-c>` | Close | Close without submitting |
-
-### Issue Management
-
-| Mode | Key | Action | Description |
-|------|-----|--------|-------------|
-| `n` | `<localleader>ic` | Close issue/PR | Close issue or PR |
-| `n` | `<localleader>io` | Reopen issue/PR | Reopen issue or PR |
-| `n` | `<localleader>il` | List issues | List open issues |
-
-### PR Operations
-
-| Mode | Key | Action | Description |
-|------|-----|--------|-------------|
-| `n` | `<localleader>pm` | Merge PR | Merge commit PR |
-| `n` | `<localleader>psm` | Squash & merge | Squash and merge PR |
-| `n` | `<localleader>prm` | Rebase & merge | Rebase and merge PR |
-| `n` | `<localleader>pc` | List commits | List PR commits |
-| `n` | `<localleader>pf` | List files | List PR changed files |
-| `n` | `<localleader>pd` | Show diff | Show PR diff |
-
-### Comments & Reactions
-
-| Mode | Key | Action | Description |
-|------|-----|--------|-------------|
-| `n` | `<localleader>ca` | Add comment | Add comment |
-| `n` | `<localleader>cd` | Delete comment | Delete comment |
-| `n` | `]c` / `[c` | Navigate comments | Next/previous comment |
-| `n` | `<localleader>r+` | 👍 | Add/remove thumbs up |
-| `n` | `<localleader>r-` | 👎 | Add/remove thumbs down |
-| `n` | `<localleader>rh` | ❤️ | Add/remove heart |
-| `n` | `<localleader>re` | 👀 | Add/remove eyes |
-| `n` | `<localleader>rr` | 🚀 | Add/remove rocket |
-| `n` | `<localleader>rp` | 🎉 | Add/remove party |
-| `n` | `<localleader>rl` | 😄 | Add/remove laugh |
-| `n` | `<localleader>rc` | 😕 | Add/remove confused |
-
-### Browser Integration
-
-| Mode | Key | Action | Description |
-|------|-----|--------|-------------|
-| `n` | `<C-b>` | Open in browser | Open PR/issue in browser |
-| `n` | `<C-y>` | Copy URL | Copy URL to clipboard |
-| `n` | `<C-r>` | Reload | Reload PR/issue |
-
----
 
 ## Tmux Integration
 
