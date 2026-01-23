@@ -1,4 +1,8 @@
-vim.env.PATH = vim.fn.stdpath "data" .. "/mason/bin" .. ":" .. vim.env.PATH
+-- Append Mason to PATH (lower priority than nix/shadowenv LSPs)
+local mason_bin = vim.fn.stdpath("data") .. "/mason/bin"
+if not string.find(vim.env.PATH, mason_bin, 1, true) then
+  vim.env.PATH = vim.env.PATH .. ":" .. mason_bin
+end
 
 return {
   "neovim/nvim-lspconfig",
@@ -141,7 +145,8 @@ return {
     }
 
     -- Simple servers with default config
-    local servers = { "html", "ts_ls", "clangd", "rubocop", "sorbet" }
+    -- Note: rubocop removed - Shopify's custom cops require Rails/ActiveSupport context
+    local servers = { "html", "ts_ls", "clangd", "sorbet" }
     for _, server in ipairs(servers) do
       vim.lsp.enable(server)
     end
