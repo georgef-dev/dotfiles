@@ -79,6 +79,8 @@ elif [ -f ~/src/github.com/georgef-dev/minidev/dev.sh ]; then
   source ~/src/github.com/georgef-dev/minidev/dev.sh
 fi
 
+eval "$(mise activate zsh)"
+
 [[ -f /opt/dev/sh/chruby/chruby.sh ]] && { type chruby >/dev/null 2>&1 || chruby () { source /opt/dev/sh/chruby/chruby.sh; chruby "$@"; } }
 
 export PATH=$PATH:"$HOME/.local/bin"
