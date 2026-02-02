@@ -1,3 +1,4 @@
 macos-option-as-alt = left
-font-family = 0xProto Nerd Font Mono
+font-family = Hack Nerd Font Mono
+font-family = Symbols Nerd Font Mono
 theme = Catppuccin Mocha

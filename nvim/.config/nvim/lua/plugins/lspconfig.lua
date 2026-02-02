@@ -97,18 +97,36 @@ return {
     },
   },
   keys = {
-    { "<space>e", vim.diagnostic.open_float },
-    { "[d", vim.diagnostic.goto_prev },
-    { "]d", vim.diagnostic.goto_next },
-    { "<space>q", vim.diagnostic.setloclist },
-    { "K", vim.lsp.buf.hover },
-    { "<leader>rn", vim.lsp.buf.rename },
-    { "<leader>ca", vim.lsp.buf.code_action },
-    { "<leader>cl", vim.lsp.codelens.run },
-    { "gd", vim.lsp.buf.definition },
-    { "gr", function() require("fzf-lua").lsp_references() end },
+    { "<space>e", vim.diagnostic.open_float, desc = "Show Diagnostics Float" },
+    { "[d", vim.diagnostic.goto_prev, desc = "Previous Diagnostic" },
+    { "]d", vim.diagnostic.goto_next, desc = "Next Diagnostic" },
+    { "<space>q", vim.diagnostic.setloclist, desc = "Diagnostics to Loclist" },
+    { "K", vim.lsp.buf.hover, desc = "Hover Docs" },
+    { "<leader>ca", vim.lsp.buf.code_action, desc = "Code Action" },
+    { "<leader>cl", vim.lsp.codelens.run, desc = "Run Codelens" },
+    { "gd", vim.lsp.buf.definition, desc = "Go to Definition" },
+    { "gr", function() require("fzf-lua").lsp_references() end, desc = "Go to References" },
+
+    -- LSP management
+    { "<leader>li", "<cmd>LspInfo<cr>", desc = "LSP Info" },
+    { "<leader>lr", "<cmd>LspRestart<cr>", desc = "LSP Restart" },
+    { "<leader>ls", "<cmd>LspStart<cr>", desc = "LSP Start" },
+    { "<leader>lt", "<cmd>LspStop<cr>", desc = "LSP Stop" },
+    { "<leader>ll", "<cmd>LspLog<cr>", desc = "LSP Log" },
+
+    -- Additional navigation
+    { "gD", vim.lsp.buf.declaration, desc = "Go to Declaration" },
+    { "gi", vim.lsp.buf.implementation, desc = "Go to Implementation" },
+    { "<C-k>", vim.lsp.buf.signature_help, mode = "i", desc = "Signature Help" },
+
+    -- Rename with Snacks
+    { "<leader>cR", vim.lsp.buf.rename, desc = "Rename Symbol (LSP)" },
   },
   config = function()
+    -- Style LSP floating windows to match catppuccin theme
+    vim.api.nvim_set_hl(0, "NormalFloat", { link = "Normal" })
+    vim.api.nvim_set_hl(0, "FloatBorder", { fg = "#89b4fa", bg = "NONE" })
+
     -- Set up LSP attach callback
     vim.api.nvim_create_autocmd("LspAttach", {
       callback = function(args)

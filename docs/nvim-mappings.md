@@ -83,7 +83,7 @@
 | `n` | `]d` | Next diagnostic | Go to next diagnostic |
 | `n` | `<leader>cl` | Diagnostics to loclist | Put diagnostics in location list |
 | `i` | `<C-k>` | Signature help | Show function signature |
-| `n` | `<leader>cR` | Rename symbol | Rename symbol (LSP) |
+| `n` | `<leader>cR` | Rename symbol | Rename symbol (LSP) - uses Snacks.input floating window |
 
 ## File Tree
 
@@ -137,6 +137,11 @@
 | `n,x` | `<leader>aa` | `<cmd>CodeCompanionActions<cr>` | CodeCompanion actions |
 | `n,x` | `<leader>ac` | `<cmd>CodeCompanionChat<cr>` | CodeCompanion chat |
 | `n,x` | `<leader>ap` | `<cmd>CodeCompanion<cr>` | CodeCompanion prompt |
+
+## UI Enhancements (Snacks.nvim)
+
+Snacks.nvim provides enhanced UI components:
+- **Snacks.input** - Replaces `vim.ui.input` with a styled floating window (used by LSP rename)
 
 ## Which-key
 

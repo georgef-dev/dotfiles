@@ -2,6 +2,9 @@ return {
   {
     "tpope/vim-fugitive",
     lazy = false,
+    keys = {
+      { "<leader>gb", "<cmd>Git blame<cr>", desc = "Git blame (full file)" },
+    },
   },
   {
     "lewis6991/gitsigns.nvim",
