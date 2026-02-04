@@ -55,6 +55,14 @@
 |------|-----|--------|-------------|
 | `n` | `<leader>f` | `require("conform").format()` | Format buffer (rubocop/stylua) |
 
+## Code Refactoring
+
+| Mode | Key | Action | Description |
+|------|-----|--------|-------------|
+| `n` | `<leader>cc` | Convert case | Toggle between camelCase and snake_case |
+| `n` | `<leader>rs` | Refactor signature | Expand RBS type signature to multi-line |
+| `n` | `<leader>rh` | Refactor method head | Expand Ruby method definition to multi-line |
+
 ## LSP (Language Server Protocol)
 
 ### LSP Management
