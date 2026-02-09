@@ -1,4 +1,4 @@
 macos-option-as-alt = left
 font-family = Hack Nerd Font Mono
 font-family = Symbols Nerd Font Mono
-theme = Catppuccin Mocha
+theme = dark:Rose Pine,light:Rose Pine Dawn
