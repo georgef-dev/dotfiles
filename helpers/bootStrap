@@ -2,7 +2,11 @@
 set -euo pipefail
 CYAN='\033[0;36m'
 GREEN='\033[0;32m'
+RED='\033[0;31m'
 NC='\033[0m' # No Color
+
+DOTFILES_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+STOW_PACKAGES=(aerospace brew ghostty joplin nvim tmux zsh)
 
 printf '
                       __
@@ -18,17 +22,62 @@ Setting up...
 
 '
 
-if [ ! command -v brew &> /dev/null ]; then
+# ------- Homebrew -------
+if ! command -v brew &> /dev/null; then
+    printf "${CYAN}Installing Homebrew...${NC}\n"
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+else
+    printf "${GREEN}Homebrew already installed.${NC}\n"
 fi
 
+# ------- Brew bundle -------
+if [ -f "$DOTFILES_DIR/brew/.Brewfile" ]; then
+    printf "${CYAN}Installing packages from Brewfile...${NC}\n"
+    brew bundle --file="$DOTFILES_DIR/brew/.Brewfile" --no-lock
+else
+    printf "${RED}Brewfile not found, skipping.${NC}\n"
+fi
+
+# ------- Oh My Zsh -------
 if [ ! -d "$HOME/.oh-my-zsh/" ]; then
-    echo "Installing Oh My Zsh"
-    sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" || echo "Failed to install Oh My Zsh" >&2
-    echo "Installing PowerLevel10k Them for Oh My Zsh"
-    # PowerLevel 10k
-    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
+    printf "${CYAN}Installing Oh My Zsh...${NC}\n"
+    sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+else
+    printf "${GREEN}Oh My Zsh already installed.${NC}\n"
 fi
 
-printf 'All set!' | lolcat
-echo ; echo
+# ------- Powerlevel10k -------
+P10K_DIR="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
+if [ ! -d "$P10K_DIR" ]; then
+    printf "${CYAN}Installing Powerlevel10k...${NC}\n"
+    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$P10K_DIR"
+else
+    printf "${GREEN}Powerlevel10k already installed.${NC}\n"
+fi
+
+# ------- GNU Stow -------
+if ! command -v stow &> /dev/null; then
+    printf "${RED}GNU Stow not found. Install it with: brew install stow${NC}\n"
+    exit 1
+fi
+
+printf "${CYAN}Symlinking configs with stow...${NC}\n"
+cd "$DOTFILES_DIR"
+for pkg in "${STOW_PACKAGES[@]}"; do
+    if [ -d "$pkg" ]; then
+        stow -R "$pkg" 2>&1 | sed "s/^/  /"
+        printf "  ${GREEN}$pkg${NC}\n"
+    fi
+done
+
+# ------- TPM (Tmux Plugin Manager) -------
+TPM_DIR="$HOME/.tmux/plugins/tpm"
+if [ ! -d "$TPM_DIR" ]; then
+    printf "${CYAN}Installing TPM (Tmux Plugin Manager)...${NC}\n"
+    git clone https://github.com/tmux-plugins/tpm "$TPM_DIR"
+else
+    printf "${GREEN}TPM already installed.${NC}\n"
+fi
+
+printf "\n${GREEN}All set!${NC}\n\n"

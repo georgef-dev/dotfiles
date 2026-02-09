@@ -29,6 +29,7 @@ return {
           "html-lsp",
           "typescript-language-server",
           "prettier",
+          "js-debug-adapter",
 
           -- ruby stuff
           -- "ruby-lsp",

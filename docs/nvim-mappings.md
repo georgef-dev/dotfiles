@@ -53,7 +53,14 @@
 
 | Mode | Key | Action | Description |
 |------|-----|--------|-------------|
-| `n` | `<leader>f` | `require("conform").format()` | Format buffer (rubocop/stylua) |
+| `n` | `<leader>f` | `require("conform").format()` | Format buffer (rubocop/stylua/prettier) |
+
+Formatters by filetype:
+- **Ruby:** rubocop (via custom wrapper for Shopify dev.yml/shadowenv)
+- **Lua:** stylua
+- **C++:** clang-format
+- **JS/TS/JSX/TSX:** prettier
+- **JSON/CSS/HTML:** prettier
 
 ## Code Refactoring
 
@@ -92,6 +99,43 @@
 | `n` | `<leader>cl` | Diagnostics to loclist | Put diagnostics in location list |
 | `i` | `<C-k>` | Signature help | Show function signature |
 | `n` | `<leader>cR` | Rename symbol | Rename symbol (LSP) - uses Snacks.input floating window |
+
+## Debugging (DAP)
+
+### Debugger Controls
+
+| Mode | Key | Action | Description |
+|------|-----|--------|-------------|
+| `n` | `<leader>dc` | Continue | Start debugger or continue execution |
+| `n` | `<leader>do` | Step over | Step over current line |
+| `n` | `<leader>di` | Step into | Step into function call |
+| `n` | `<leader>dO` | Step out | Step out of current function |
+| `n` | `<leader>db` | Toggle breakpoint | Set/remove breakpoint on current line |
+| `n` | `<leader>dB` | Conditional breakpoint | Set breakpoint with condition |
+| `n` | `<leader>dr` | Toggle REPL | Open/close debug REPL |
+| `n` | `<leader>du` | Toggle DAP UI | Open/close debugger UI panels |
+| `n` | `<leader>dx` | Terminate | Stop debugger and close UI |
+
+### Debug Configurations
+
+**Ruby (rdbg):**
+- `Debug current file` — Launch and debug the current Ruby file
+- `Debug test (current file)` — Run current file as a test with `-Itest`
+- `Attach to rdbg` — Attach to an already running `rdbg` session (e.g. `rdbg --open --port 12345 -- ruby app.rb`)
+
+**JavaScript/TypeScript (pwa-node):**
+- `Debug current file` — Launch and debug the current JS/TS file
+- `Attach to process` — Attach to a running Node.js process (select from list)
+
+### DAP Workflow
+
+1. Set breakpoints with `<leader>db`
+2. Start debugging with `<leader>dc` (select a debug configuration)
+3. DAP UI opens automatically showing: scopes, breakpoints, stacks, watches
+4. Step through code with `<leader>do` (over), `<leader>di` (into), `<leader>dO` (out)
+5. Inspect variables in the DAP UI or hover with `K` in DAP UI panels
+6. Use `<leader>dr` for the REPL to evaluate expressions
+7. `<leader>dx` to terminate and close everything
 
 ## File Tree
 
@@ -132,9 +176,11 @@
 
 | Mode | Key | Action | Description |
 |------|-----|--------|-------------|
-| `n` | `<leader>tf` | `:TestFile -strategy=neovim<cr>` | Test current file |
-| `n` | `<leader>tn` | `:TestNearest -strategy=neovim<cr>` | Test nearest |
-| `n` | `<leader>tt` | `:TestLast -strategy=neovim<cr>` | Rerun last test |
+| `n` | `<leader>tf` | `:TestFile<cr>` | Test current file |
+| `n` | `<leader>tn` | `:TestNearest<cr>` | Test nearest |
+| `n` | `<leader>tt` | `:TestLast<cr>` | Rerun last test |
+
+Strategy: `neovim` (tests run in a neovim terminal split)
 
 ## AI Assistant
 

@@ -1,19 +1,22 @@
 return {
   "vim-test/vim-test",
+  config = function()
+    vim.g["test#strategy"] = "neovim"
+  end,
   keys = {
     {
       "<leader>tf",
-      ":TestFile -strategy=neovim<cr>",
+      ":TestFile<cr>",
       desc = "Test current file",
     },
     {
       "<leader>tn",
-      ":TestNearest -strategy=neovim<cr>",
-      desc = "Test nearest in  file",
+      ":TestNearest<cr>",
+      desc = "Test nearest",
     },
     {
       "<leader>tt",
-      ":TestLast -strategy=neovim<cr>",
+      ":TestLast<cr>",
       desc = "Rerun last test",
     },
   },

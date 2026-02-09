@@ -7,6 +7,13 @@ return {
       ruby = { "rubocop" },
       lua = { "stylua" },
       cpp = { "clang_format" },
+      javascript = { "prettier" },
+      typescript = { "prettier" },
+      javascriptreact = { "prettier" },
+      typescriptreact = { "prettier" },
+      json = { "prettier" },
+      css = { "prettier" },
+      html = { "prettier" },
     },
     formatters = {
       rubocop = {
