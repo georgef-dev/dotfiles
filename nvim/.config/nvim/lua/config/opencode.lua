@@ -78,7 +78,8 @@ function M.send_to_opencode()
         return
       end
       local code = table.concat(lines, "\n")
-      local message = prompt .. "\n\n```" .. filetype .. "\n" .. code .. "\n```\n"
+      local filepath = vim.fn.expand("%:.")
+      local message = prompt .. "\n\n`" .. filepath .. "`:\n```" .. filetype .. "\n" .. code .. "\n```\n"
       send_to_pane(pane_id, message)
     end)
   end)

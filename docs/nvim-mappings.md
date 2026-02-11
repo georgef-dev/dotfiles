@@ -62,6 +62,14 @@ Formatters by filetype:
 - **JS/TS/JSX/TSX:** prettier
 - **JSON/CSS/HTML:** prettier
 
+## Copy File Name / Path
+
+| Mode | Key | Action | Description |
+|------|-----|--------|-------------|
+| `n` | `<leader>yf` | Yank file name | Copy file name to clipboard (e.g. `init.lua`) |
+| `n` | `<leader>yp` | Yank relative path | Copy relative file path to clipboard |
+| `n` | `<leader>yP` | Yank absolute path | Copy absolute file path to clipboard |
+
 ## Code Refactoring
 
 | Mode | Key | Action | Description |

@@ -21,6 +21,25 @@ vim.keymap.set("v", "<C-K>", ":m '<-2<CR>gv=gv")
 vim.keymap.set("v", "<", "<gv")
 vim.keymap.set("v", ">", ">gv")
 
+-- Copy file name / path
+vim.keymap.set("n", "<leader>yf", function()
+  local name = vim.fn.expand("%:t")
+  vim.fn.setreg("+", name)
+  print("Copied: " .. name)
+end, { desc = "[y]ank [f]ile name" })
+
+vim.keymap.set("n", "<leader>yp", function()
+  local path = vim.fn.expand("%:.")
+  vim.fn.setreg("+", path)
+  print("Copied: " .. path)
+end, { desc = "[y]ank relative file [p]ath" })
+
+vim.keymap.set("n", "<leader>yP", function()
+  local path = vim.fn.expand("%:p")
+  vim.fn.setreg("+", path)
+  print("Copied: " .. path)
+end, { desc = "[y]ank absolute file [P]ath" })
+
 -- Case conversion helpers
 local function to_snake_case(str)
   return str:gsub("(%u)", function(c)
