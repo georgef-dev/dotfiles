@@ -19,8 +19,16 @@ fi
 # Path to your oh-my-zsh installation.
 
 export ZSH="$HOME/.oh-my-zsh"
-# Export my secrets
-. ~/.secrets
+
+# Secrets
+
+if [ -f ~/.zshrc-secrets ]; then
+  source ~/.zshrc-secrets 
+fi
+
+if [ -f ~/.zshrc-secrets-shop ]; then
+  source ~/.zshrc-secrets-shop
+fi
 
 # Modify shell for GPG
 export GPG_TTY=$(tty)
@@ -92,3 +100,6 @@ export PATH=$(echo $PATH | tr ':' '\n' | awk '!seen[$0]++' | tr '\n' ':' | sed '
 
 # Added by tec agent
 [[ -x /Users/georgeferreira/.local/state/tec/profiles/base/current/global/init ]] && eval "$(/Users/georgeferreira/.local/state/tec/profiles/base/current/global/init zsh)"
+
+# opencode
+export PATH=/Users/georgeferreira/.opencode/bin:$PATH

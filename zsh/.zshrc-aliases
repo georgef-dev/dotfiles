@@ -16,3 +16,4 @@ alias goodmorning="gt co main && gt sync && gt submit --stack && dev up"
 alias newtask="gt co main && gt sync && dev up"
 alias cleanlocalbranches="git checkout main | git branch | grep -v "^main" | xargs git branch -D"
 alias oops="reset --soft HEAD~1"
+alias gs='gt switch $(git branch | fzf)'

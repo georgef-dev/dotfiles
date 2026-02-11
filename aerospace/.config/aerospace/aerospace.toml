@@ -1,0 +1,95 @@
+# Start at login, use accordion as default (macOS-friendly)
+start-at-login = true
+after-login-command = []
+after-startup-command = []
+enable-normalization-flatten-containers = true
+enable-normalization-opposite-orientation-for-nested-containers = true
+default-root-container-layout = 'tiles'
+default-root-container-orientation = 'auto'
+
+# Move mouse to focused window center
+on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
+
+# Gaps for breathing room
+[gaps]
+inner.horizontal = 10
+inner.vertical = 10
+outer.left = 10
+outer.right = 10
+outer.top = 10
+outer.bottom = 10
+
+# --- Main mode bindings ---
+[mode.main.binding]
+
+# Focus windows (vim-style)
+alt-shift-h = 'focus left'
+alt-shift-j = 'focus down'
+alt-shift-k = 'focus up'
+alt-shift-l = 'focus right'
+
+# Move windows
+alt-shift-cmd-h = 'move left'
+alt-shift-cmd-j = 'move down'
+alt-shift-cmd-k = 'move up'
+alt-shift-cmd-l = 'move right'
+
+# Workspaces (1-6)
+alt-shift-1 = 'workspace 1'
+alt-shift-2 = 'workspace 2'
+alt-shift-3 = 'workspace 3'
+alt-shift-4 = 'workspace 4'
+alt-shift-5 = 'workspace 5'
+alt-shift-6 = 'workspace 6'
+
+# Move window to workspace
+alt-shift-cmd-1 = ['move-node-to-workspace 1', 'workspace 1']
+alt-shift-cmd-2 = ['move-node-to-workspace 2', 'workspace 2']
+alt-shift-cmd-3 = ['move-node-to-workspace 3', 'workspace 3']
+alt-shift-cmd-4 = ['move-node-to-workspace 4', 'workspace 4']
+alt-shift-cmd-5 = ['move-node-to-workspace 5', 'workspace 5']
+alt-shift-cmd-6 = ['move-node-to-workspace 6', 'workspace 6']
+
+# Layout controls
+alt-shift-f = 'fullscreen'
+alt-shift-t = 'layout tiles horizontal vertical'   # toggle tile direction
+alt-shift-a = 'layout accordion horizontal vertical' # toggle accordion
+alt-shift-e = 'balance-sizes'
+
+# Resize
+alt-shift-minus = 'resize smart -50'
+alt-shift-equal = 'resize smart +50'
+
+# Layout presets
+alt-shift-d = 'exec-and-forget bash ~/.config/aerospace/layouts/dev.sh'        # focused 2/3, other 1/3
+alt-shift-cmd-d = 'exec-and-forget bash ~/.config/aerospace/layouts/dev.sh narrow' # focused 1/3, other 2/3
+alt-shift-s = ['layout tiles horizontal', 'balance-sizes']                     # 50/50 split
+
+# Service mode for less-common operations
+alt-shift-semicolon = 'mode service'
+
+# --- Service mode ---
+[mode.service.binding]
+r = ['flatten-workspace-tree', 'mode main']     # reset layout tree
+f = ['layout floating tiling', 'mode main']     # toggle floating
+backspace = ['close-all-windows-but-current', 'mode main']
+alt-shift-semicolon = ['reload-config', 'mode main']
+esc = 'mode main'
+
+# --- Window rules ---
+# Auto-assign apps to workspaces
+[[on-window-detected]]
+if.app-id = 'com.mitchellh.ghostty'
+run = 'move-node-to-workspace 1'
+
+[[on-window-detected]]
+if.app-id = 'com.google.Chrome'
+run = 'move-node-to-workspace 2'
+
+[[on-window-detected]]
+if.app-id = 'com.tinyspeck.slackmacgap'
+run = 'move-node-to-workspace 3'
+
+[[on-window-detected]]
+if.app-id = 'com.spotify.client'
+run = 'move-node-to-workspace 6'
