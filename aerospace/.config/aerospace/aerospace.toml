@@ -84,6 +84,21 @@ run = 'move-node-to-workspace 1'
 
 [[on-window-detected]]
 if.app-id = 'com.google.Chrome'
+run = 'move-node-to-workspace 1'
+
+[[on-window-detected]]
+# Gmail
+if.app-id = 'com.google.Chrome.app.fmgjjmmmlfnkbppncabfkddbjimcfncm'
+run = 'move-node-to-workspace 2'
+
+[[on-window-detected]]
+# Google Calendar
+if.app-id = 'com.google.Chrome.app.kjbdgfilnfhdoflbpgamdcdgpehopbep'
+run = 'move-node-to-workspace 2'
+
+[[on-window-detected]]
+# Google Calendar
+if.app-id = 'com.electron.fellow'
 run = 'move-node-to-workspace 2'
 
 [[on-window-detected]]
@@ -92,4 +107,4 @@ run = 'move-node-to-workspace 3'
 
 [[on-window-detected]]
 if.app-id = 'com.spotify.client'
-run = 'move-node-to-workspace 6'
+run = 'move-node-to-workspace 4'
