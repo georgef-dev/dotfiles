@@ -26,7 +26,20 @@ return {
     cmd = { "DiffviewOpen", "DiffviewClose", "DiffviewFileHistory" },
     keys = {
       { "<leader>gd", "<cmd>DiffviewOpen<cr>", desc = "Open diff view" },
-      { "<leader>gc", "<cmd>DiffviewClose<cr>", desc = "Close diff view" },
+      {
+        "<leader>gc",
+        function()
+          -- Close diffview if open, otherwise close current tab (octo review)
+          local lib = require("diffview.lib")
+          local view = lib.get_current_view()
+          if view then
+            vim.cmd("DiffviewClose")
+          else
+            pcall(vim.cmd, "tabclose")
+          end
+        end,
+        desc = "Close diff/review",
+      },
       { "<leader>gh", "<cmd>DiffviewFileHistory %<cr>", desc = "File history" },
       {
         "<leader>pr",

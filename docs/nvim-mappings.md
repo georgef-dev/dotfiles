@@ -159,9 +159,12 @@ Formatters by filetype:
 | `n` | `<leader>gp` | `:Gitsigns preview_hunk<CR>` | Preview git hunk |
 | `n` | `<leader>gt` | `:Gitsigns toggle_current_line_blame<CR>` | Toggle line blame |
 | `n` | `<leader>gd` | `<cmd>DiffviewOpen<cr>` | Open diff view (uncommitted changes) |
-| `n` | `<leader>gc` | `<cmd>DiffviewClose<cr>` | Close diff view |
+| `n` | `<leader>gc` | Close diff/review | Closes diffview if open, otherwise closes current tab (octo review) |
 | `n` | `<leader>gh` | `<cmd>DiffviewFileHistory %<cr>` | File history |
 | `n` | `<leader>pr` | Review PR changes | Opens diffview comparing against Graphite parent branch |
+| `n` | `<leader>pd` | Browse PR diff | Opens octo.nvim PR review via GitHub API |
+| `n` | `<leader>ps` | Start PR review | Start an octo.nvim review (add comments) |
+| `n` | `<leader>pm` | Submit PR review | Submit the octo.nvim review |
 
 ### PR Review Workflow (diffview + Graphite)
 
@@ -179,6 +182,17 @@ Formatters by filetype:
 | `n` | `<CR>` | Open diff | Show diff for selected file |
 | `n` | `]c` / `[c` | Next/prev hunk | Navigate between diff hunks |
 | `n` | `<leader>gc` | Close | Close diffview |
+
+### PR Review Workflow (octo.nvim + GitHub API)
+
+1. Checkout PR branch or open any buffer in the repo
+2. `<leader>pd` to browse the PR diff (fetches file list from GitHub API)
+3. Navigate files in the file panel, view side-by-side diffs
+4. `<leader>ps` to start a review, add comments with `<localleader>ca`
+5. `<leader>pm` to submit the review (approve/comment/request changes)
+6. `<leader>gc` to close the review tab
+
+**Note:** octo.nvim uses GitHub's REST API for file listing, so it can detect renames via `previous_filename` when GitHub's server-side detection matches them. For local-only diffs, use `<leader>pr` (diffview) instead.
 
 ## Testing
 
