@@ -16,6 +16,7 @@ return {
 
       configs.setup {
         auto_install = true,
+        ensure_installed = { "norg" },
         highlight = { enable = true },
         indent = { enable = true },
         autotag = { enable = true, enable_close_on_slash = false },

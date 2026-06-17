@@ -23,6 +23,7 @@ return {
   },
   {
     "sindrets/diffview.nvim",
+    commit = "5532482a5aef52021347e16f13e1ee73b8c7b436",
     cmd = { "DiffviewOpen", "DiffviewClose", "DiffviewFileHistory" },
     keys = {
       { "<leader>gd", "<cmd>DiffviewOpen<cr>", desc = "Open diff view" },
@@ -46,9 +47,9 @@ return {
         function()
           local handle = io.popen("gt parent 2>/dev/null")
           if handle then
-            local parent = handle:read("*a"):gsub("%s+", "")
+            local parent = handle:read("*l")
             handle:close()
-            if parent ~= "" then
+            if parent and parent ~= "" then
               vim.cmd("DiffviewOpen " .. parent .. "...HEAD")
             else
               vim.notify("No parent branch found (not tracked by Graphite?)", vim.log.levels.WARN)
@@ -59,7 +60,14 @@ return {
       },
     },
     config = function()
-      require("diffview").setup()
+      require("diffview").setup({
+        file_panel = {
+          listing_style = "list",
+          tree_options = {
+            flatten_dirs = false,
+          },
+        },
+      })
     end,
   },
 }
