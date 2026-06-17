@@ -18,3 +18,4 @@ alias cleanlocalbranches="git checkout main | git branch | grep -v "^main" | xar
 alias oops="reset --soft HEAD~1"
 alias gs='gt switch $(git branch | fzf)'
 alias devswitch='dev tree switch $(dev tree list | fzf | awk "{print $1}")'
+alias rebasemain="git fetch --no-tags origin main && git rebase origin/main"
