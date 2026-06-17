@@ -161,15 +161,15 @@ Formatters by filetype:
 | `n` | `<leader>gd` | `<cmd>DiffviewOpen<cr>` | Open diff view (uncommitted changes) |
 | `n` | `<leader>gc` | Close diff/review | Closes diffview if open, otherwise closes current tab (octo review) |
 | `n` | `<leader>gh` | `<cmd>DiffviewFileHistory %<cr>` | File history |
-| `n` | `<leader>pr` | Review PR changes | Opens diffview comparing against Graphite parent branch |
+| `n` | `<leader>pr` | Review PR changes | Opens diffview comparing against `origin/main` |
 | `n` | `<leader>pd` | Browse PR diff | Opens octo.nvim PR review via GitHub API |
 | `n` | `<leader>ps` | Start PR review | Start an octo.nvim review (add comments) |
 | `n` | `<leader>pm` | Submit PR review | Submit the octo.nvim review |
 
-### PR Review Workflow (diffview + Graphite)
+### PR Review Workflow (diffview + origin/main)
 
 1. Checkout PR branch: `gt checkout <branch>` or navigate with `gt up`/`gt down`
-2. In Neovim: `<leader>pr` auto-detects parent branch and opens diffview
+2. In Neovim: `<leader>pr` opens diffview comparing `origin/main...HEAD`
 3. Navigate files with `j`/`k`, `<CR>` to view diff
 4. `<leader>gc` to close when done
 5. Write review in browser

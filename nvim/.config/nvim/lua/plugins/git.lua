@@ -44,18 +44,7 @@ return {
       { "<leader>gh", "<cmd>DiffviewFileHistory %<cr>", desc = "File history" },
       {
         "<leader>pr",
-        function()
-          local handle = io.popen("gt parent 2>/dev/null")
-          if handle then
-            local parent = handle:read("*l")
-            handle:close()
-            if parent and parent ~= "" then
-              vim.cmd("DiffviewOpen " .. parent .. "...HEAD")
-            else
-              vim.notify("No parent branch found (not tracked by Graphite?)", vim.log.levels.WARN)
-            end
-          end
-        end,
+        "<cmd>DiffviewOpen origin/main...HEAD<cr>",
         desc = "Review PR changes",
       },
     },
