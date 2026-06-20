@@ -84,6 +84,18 @@ fi
 [[ -x ~/.local/state/tec/profiles/base/current/global/init ]] && \
   eval "$(~/.local/state/tec/profiles/base/current/global/init zsh)"
 
+# If minidev is available, it means I'm not on my work machine
+if [ -f ~/src/github.com/georgef-dev/minidev/dev.sh ]; then
+  if command -v shadowenv >/dev/null 2>&1; then
+    eval "$(shadowenv init zsh)"
+    autoload -Uz add-zsh-hook
+    __shadowenv_chpwd_hook() {
+      __shadowenv_force_run=1 __shadowenv_hook chpwd
+    }
+    add-zsh-hook chpwd __shadowenv_chpwd_hook
+  fi
+fi
+
 # ============================================================================
 # 6. PATH — single consolidated block. Last word wins, dedupe at the end.
 #
