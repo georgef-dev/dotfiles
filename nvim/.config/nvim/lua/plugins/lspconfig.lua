@@ -62,11 +62,11 @@ return {
         local sources = {
 
           -- webdev stuff
-          -- b.formatting.prettier,
-          -- b.formatting.prettier.with {
-          --   filetypes = { "html", "markdown", "css" },
-          -- }, -- so prettier works only on these filetypes
-          -- b.formatting.rubocop,
+          b.formatting.prettier,
+          b.formatting.prettier.with {
+             filetypes = { "html", "markdown", "css" },
+          }, -- so prettier works only on these filetypes
+          b.formatting.rubocop,
 
           -- Lua
           b.formatting.stylua,
@@ -82,7 +82,7 @@ return {
           debug = false,
           sources = sources,
           on_attach = function(client, bufnr)
-            if client.supports_method "textDocument/formatting" then
+            if client:supports_method "textDocument/formatting" then
               vim.api.nvim_clear_autocmds { group = augroup, buffer = bufnr }
               vim.api.nvim_create_autocmd("BufWritePre", {
                 group = augroup,
@@ -136,7 +136,7 @@ return {
           client.server_capabilities.documentFormattingProvider = false
           client.server_capabilities.documentRangeFormattingProvider = false
 
-          if client.supports_method "textDocument/semanticTokens" then
+          if client:supports_method "textDocument/semanticTokens" then
             client.server_capabilities.semanticTokensProvider = nil
           end
         end
