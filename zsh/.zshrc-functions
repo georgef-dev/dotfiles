@@ -1,0 +1,179 @@
+# Markdown CLI reader
+function mkd() {
+  glow -t "$@"
+}
+
+function schema_status() {
+  opencode run "What's the status of migration: $@"
+}
+
+# Delete local branches that are already merged upstream.
+# Defaults to origin's HEAD (usually origin/main), fetches/prunes first, and
+# uses `git branch -d` so unmerged branches are refused instead of force-deleted.
+function cleanup() {
+  emulate -L zsh
+
+  local dry_run=0
+  local base=""
+  local -a skip_patterns
+
+  while (( $# )); do
+    case "$1" in
+      -n|--dry-run)
+        dry_run=1
+        ;;
+      -b|--base)
+        shift
+        if (( ! $# )); then
+          print -u2 "cleanup: --base requires a ref"
+          return 2
+        fi
+        base="$1"
+        ;;
+      -s|--skip|--keep)
+        shift
+        if (( ! $# )); then
+          print -u2 "cleanup: --skip requires a branch name or pattern"
+          return 2
+        fi
+        skip_patterns+=("$1")
+        ;;
+      --skip=*|--keep=*)
+        skip_patterns+=("${1#*=}")
+        ;;
+      -h|--help)
+        print "usage: cleanup [-n|--dry-run] [--base <ref>] [--skip <pattern> ...] [ref]"
+        print ""
+        print "Deletes local branches already merged into <ref>."
+        print "Default ref: origin's HEAD, usually origin/main."
+        print "Always fetches/prunes first, including dry runs."
+        print "Skips main/master/trunk/develop, the current branch, and branches checked out in worktrees."
+        print "Skipped worktree branches include the worktree name and path."
+        print "Skip patterns match branch names with zsh globs; quote wildcards, e.g. --skip 'wip/*'."
+        print "Persistent defaults: CLEANUP_SKIP_BRANCHES=(branch 'wip/*')."
+        return 0
+        ;;
+      -* )
+        print -u2 "cleanup: unknown option: $1"
+        return 2
+        ;;
+      *)
+        if [[ -n "$base" ]]; then
+          print -u2 "cleanup: expected at most one base ref"
+          return 2
+        fi
+        base="$1"
+        ;;
+    esac
+    shift
+  done
+
+  if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    print -u2 "cleanup: not inside a git repository"
+    return 1
+  fi
+
+  base="${base:-$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null)}"
+  base="${base:-origin/main}"
+
+  print "cleanup: fetching/pruning remotes"
+  git fetch --prune --quiet || return $?
+
+  if ! git rev-parse --verify --quiet "$base" >/dev/null; then
+    print -u2 "cleanup: base ref '$base' not found"
+    return 1
+  fi
+
+  if (( ${+CLEANUP_SKIP_BRANCHES} )); then
+    skip_patterns+=("${CLEANUP_SKIP_BRANCHES[@]}")
+  fi
+
+  local current_branch
+  current_branch="$(git branch --show-current 2>/dev/null)"
+
+  local -a merged_branches branches_to_delete skipped_requested skipped_worktrees
+  merged_branches=("${(@f)$(git branch --merged "$base" --format='%(refname:short)')}")
+
+  local -A checked_out_worktrees skip_reasons
+  local line worktree_path branch skip_pattern matched_skip_pattern
+  worktree_path=""
+  for line in "${(@f)$(git worktree list --porcelain)}"; do
+    case "$line" in
+      worktree\ *)
+        worktree_path="${line#worktree }"
+        ;;
+      branch\ refs/heads/*)
+        branch="${line#branch refs/heads/}"
+        checked_out_worktrees[$branch]="$worktree_path"
+        ;;
+    esac
+  done
+
+  for branch in "${merged_branches[@]}"; do
+    [[ -z "$branch" ]] && continue
+    [[ "$branch" == "$current_branch" ]] && continue
+
+    case "$branch" in
+      main|master|trunk|develop)
+        continue
+        ;;
+    esac
+
+    if [[ -n "${checked_out_worktrees[$branch]:-}" ]]; then
+      skipped_worktrees+=("$branch")
+      continue
+    fi
+
+    matched_skip_pattern=""
+    for skip_pattern in "${skip_patterns[@]}"; do
+      [[ -z "$skip_pattern" ]] && continue
+
+      if [[ "$branch" == ${~skip_pattern} ]]; then
+        matched_skip_pattern="$skip_pattern"
+        break
+      fi
+    done
+
+    if [[ -n "$matched_skip_pattern" ]]; then
+      skipped_requested+=("$branch")
+      skip_reasons[$branch]="$matched_skip_pattern"
+      continue
+    fi
+
+    branches_to_delete+=("$branch")
+  done
+
+  if (( ${#branches_to_delete} == 0 )); then
+    if (( ${#skipped_requested} || ${#skipped_worktrees} )); then
+      print "cleanup: no deletable local branches merged into $base"
+    else
+      print "cleanup: no local branches merged into $base"
+    fi
+  elif (( dry_run )); then
+    print "cleanup: would delete ${#branches_to_delete} local branch(es) merged into $base:"
+    for branch in "${branches_to_delete[@]}"; do
+      print "  $branch"
+    done
+  else
+    print "cleanup: deleting ${#branches_to_delete} local branch(es) merged into $base"
+    git branch -d -- "${branches_to_delete[@]}"
+  fi
+
+  if (( ${#skipped_requested} )); then
+    print "cleanup: skipped branch(es) matching skip pattern:"
+    for branch in "${skipped_requested[@]}"; do
+      print "  $branch (matched: ${skip_reasons[$branch]})"
+    done
+  fi
+
+  if (( ${#skipped_worktrees} )); then
+    local worktree_name
+
+    print "cleanup: skipped branch(es) checked out in another worktree:"
+    for branch in "${skipped_worktrees[@]}"; do
+      worktree_path="${checked_out_worktrees[$branch]}"
+      worktree_name="${worktree_path:t}"
+      print "  $branch (worktree: $worktree_name at $worktree_path)"
+    done
+  fi
+}
