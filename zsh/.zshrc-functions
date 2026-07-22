@@ -8,6 +8,15 @@ function schema_status() {
   opencode run "What's the status of migration: $@"
 }
 
+# Switch dev worktrees 
+function devswitch() {
+  if [ $# -eq 0 ]; then
+    dev tree switch $(dev tree list | fzf | cut  -d"|" -f2)
+  else
+    dev tree switch $(dev tree list |  cut  -d"|" -f2 | grep "$1")
+  fi
+}
+
 # Delete local branches that are already merged upstream.
 # Defaults to origin's HEAD (usually origin/main), fetches/prunes first, and
 # uses `git branch -d` so unmerged branches are refused instead of force-deleted.
@@ -178,3 +187,18 @@ function cleanup() {
     done
   fi
 }
+
+# Keep Herdr workspace sidebar metadata aligned with this pane after each prompt.
+autoload -Uz add-zsh-hook
+_herdr_active_pane_sidebar_precmd() {
+  emulate -L zsh
+  [[ -n "${HERDR_PANE_ID:-}" ]] || return 0
+
+  local script="$HOME/dotfiles/herdr/plugins/active-pane-sidebar/active_pane_sidebar.py"
+  [[ -x "$script" ]] || return 0
+  "$script" --pane-id "$HERDR_PANE_ID" >/dev/null 2>&1 &!
+}
+
+if (( ${precmd_functions[(Ie)_herdr_active_pane_sidebar_precmd]} == 0 )); then
+  add-zsh-hook precmd _herdr_active_pane_sidebar_precmd
+fi
