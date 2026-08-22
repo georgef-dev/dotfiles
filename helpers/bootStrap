@@ -112,6 +112,12 @@ say "Home Manager"
 run "nix run home-manager/master -- switch -b bak --flake '$DOTFILES_DIR#gf@$HOST'"
 did "activated gf@$HOST"
 
+# The profile is populated now, but this script's PATH was fixed before it
+# existed. Prepend it so the stow step below can actually find stow, instead
+# of skipping with a warning and leaving ~/.config/nvim unlinked.
+PATH="$HOME/.nix-profile/bin:$PATH"
+export PATH
+
 # --------------------------------------------------------------- 5. login shell
 # chsh rejects a shell that is not listed in /etc/shells, and nix-installed
 # shells never are. Linux only — the Mac keeps its system zsh.
@@ -142,7 +148,7 @@ if command -v stow >/dev/null 2>&1; then
   done
   did "stowed: $STOW_PACKAGES"
 else
-  warn "stow not on PATH yet — re-run this script after starting a new shell"
+  warn "stow still not on PATH after activation — is it in core.nix?"
 fi
 
 # ------------------------------------------------------------------- summary
@@ -156,5 +162,14 @@ cat <<'MSG'
 Manual steps that remain:
   - import the GPG signing key (commit.gpgsign is on; commits fail without it)
   - gh auth login
+  - for the docker CLI to reach a daemon:
+      sudo apt install docker.io && sudo usermod -aG docker "$USER"
+
+IMPORTANT: this shell still has the PATH it started with, so nvim and the
+other new tools are not on it yet. Log out and back in, or run:
+
+    exec "$HOME/.nix-profile/bin/zsh" -l
+
+Then check everything with:  ./helpers/doctor
 MSG
 printf "\n${GREEN}Done.${NC}\n\n"
