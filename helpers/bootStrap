@@ -1,83 +1,158 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# Bare machine -> working environment. Idempotent; safe to re-run.
+#
+#   helpers/bootstrap [--host debian-vm|mac] [--dry-run]
+#
+# On Darwin this REFUSES to change anything unless given --host mac. The Mac
+# is a working machine; migrating it is a deliberate act, never a side effect
+# of running this script to see what it does.
 set -euo pipefail
-CYAN='\033[0;36m'
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-NC='\033[0m' # No Color
 
+CYAN='\033[0;36m'; GREEN='\033[0;32m'; YELLOW='\033[0;33m'; RED='\033[0;31m'; NC='\033[0m'
 DOTFILES_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-STOW_PACKAGES=(aerospace brew ghostty joplin nvim tmux zsh)
+REPO_URL="https://github.com/georgef-dev/dotfiles.git"
 
-printf '
-                      __
-                     / _|
-                __ _| |_
-               / _` |  _|
-              | (_| | |
-               \__, |_|
-                __/ |
-               |___/
+HOST=""
+DRY_RUN=0
+CHANGED=(); SKIPPED=()
 
-Setting up...
-
-'
-
-# ------- Homebrew -------
-if ! command -v brew &> /dev/null; then
-    printf "${CYAN}Installing Homebrew...${NC}\n"
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-else
-    printf "${GREEN}Homebrew already installed.${NC}\n"
-fi
-
-# ------- Brew bundle -------
-if [ -f "$DOTFILES_DIR/brew/.Brewfile" ]; then
-    printf "${CYAN}Installing packages from Brewfile...${NC}\n"
-    brew bundle --file="$DOTFILES_DIR/brew/.Brewfile" --no-lock
-else
-    printf "${RED}Brewfile not found, skipping.${NC}\n"
-fi
-
-# ------- Oh My Zsh -------
-if [ ! -d "$HOME/.oh-my-zsh/" ]; then
-    printf "${CYAN}Installing Oh My Zsh...${NC}\n"
-    sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-else
-    printf "${GREEN}Oh My Zsh already installed.${NC}\n"
-fi
-
-# ------- Powerlevel10k -------
-P10K_DIR="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
-if [ ! -d "$P10K_DIR" ]; then
-    printf "${CYAN}Installing Powerlevel10k...${NC}\n"
-    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$P10K_DIR"
-else
-    printf "${GREEN}Powerlevel10k already installed.${NC}\n"
-fi
-
-# ------- GNU Stow -------
-if ! command -v stow &> /dev/null; then
-    printf "${RED}GNU Stow not found. Install it with: brew install stow${NC}\n"
-    exit 1
-fi
-
-printf "${CYAN}Symlinking configs with stow...${NC}\n"
-cd "$DOTFILES_DIR"
-for pkg in "${STOW_PACKAGES[@]}"; do
-    if [ -d "$pkg" ]; then
-        stow -R "$pkg" 2>&1 | sed "s/^/  /"
-        printf "  ${GREEN}$pkg${NC}\n"
-    fi
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --host) HOST="${2:-}"; shift 2 ;;
+    --dry-run) DRY_RUN=1; shift ;;
+    -h|--help) sed -n '2,9p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    *) printf "${RED}unknown argument: %s${NC}\n" "$1" >&2; exit 2 ;;
+  esac
 done
 
-# ------- TPM (Tmux Plugin Manager) -------
-TPM_DIR="$HOME/.tmux/plugins/tpm"
-if [ ! -d "$TPM_DIR" ]; then
-    printf "${CYAN}Installing TPM (Tmux Plugin Manager)...${NC}\n"
-    git clone https://github.com/tmux-plugins/tpm "$TPM_DIR"
-else
-    printf "${GREEN}TPM already installed.${NC}\n"
+say()  { printf "${CYAN}==> %s${NC}\n" "$1"; }
+ok()   { printf "  ${GREEN}%s${NC}\n" "$1"; SKIPPED+=("$1"); }
+did()  { printf "  ${GREEN}%s${NC}\n" "$1"; CHANGED+=("$1"); }
+warn() { printf "  ${YELLOW}%s${NC}\n" "$1"; }
+run()  { if [ "$DRY_RUN" = 1 ]; then printf "  ${YELLOW}[dry-run] %s${NC}\n" "$*"; else eval "$*"; fi; }
+
+# ---------------------------------------------------------------- host guard
+UNAME="$(uname -s)"
+if [ -z "$HOST" ]; then
+  if [ "$UNAME" = "Darwin" ]; then
+    cat <<'MSG'
+This is a Mac and no --host was given, so nothing will be changed.
+
+Migrating this machine is opt-in. When you are ready:
+
+    helpers/bootstrap --host mac --dry-run   # read the plan first
+    helpers/bootstrap --host mac             # then, from a SECOND terminal
+
+Everything it does is additive: Homebrew stays installed, and Nix simply
+wins on PATH. Roll back with `home-manager generations`.
+MSG
+    exit 0
+  fi
+  HOST="debian-vm"
 fi
 
-printf "\n${GREEN}All set!${NC}\n\n"
+case "$HOST" in
+  mac)       [ "$UNAME" = "Darwin" ] || { printf "${RED}--host mac on non-Darwin${NC}\n"; exit 1; } ;;
+  debian-vm) [ "$UNAME" = "Linux" ]  || { printf "${RED}--host debian-vm on non-Linux${NC}\n"; exit 1; } ;;
+  *) printf "${RED}unknown host: %s (expected mac or debian-vm)${NC}\n" "$HOST"; exit 2 ;;
+esac
+
+printf "\n${CYAN}bootstrap: host=%s dry-run=%s${NC}\n\n" "$HOST" "$DRY_RUN"
+
+# ------------------------------------------------------- 1. apt prerequisites
+# git is needed to clone the repo that contains the flake, so it cannot come
+# from Nix. xz-utils is what the Nix installer needs to unpack itself.
+if [ "$HOST" = "debian-vm" ]; then
+  say "APT prerequisites"
+  APT_PKGS="curl git xz-utils ca-certificates qemu-guest-agent"
+  MISSING=""
+  for p in $APT_PKGS; do
+    dpkg -s "$p" >/dev/null 2>&1 || MISSING="$MISSING $p"
+  done
+  if [ -n "$MISSING" ]; then
+    run "sudo apt-get update -qq"
+    run "sudo apt-get install -y$MISSING"
+    did "installed:$MISSING"
+  else
+    ok "all present"
+  fi
+fi
+
+# --------------------------------------------------------------- 2. install nix
+say "Nix"
+if command -v nix >/dev/null 2>&1; then
+  ok "already installed ($(nix --version 2>/dev/null || echo unknown))"
+elif [ "$HOST" = "mac" ]; then
+  printf "${RED}  nix not found on the Mac — install it manually first${NC}\n"; exit 1
+else
+  run "curl -fsSL https://install.determinate.systems/nix | sh -s -- install --no-confirm"
+  did "installed nix (Determinate)"
+fi
+
+# Make nix usable within THIS invocation, not just in the next login shell.
+NIX_PROFILE_SH=/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+# shellcheck disable=SC1090
+[ -f "$NIX_PROFILE_SH" ] && . "$NIX_PROFILE_SH"
+
+# ------------------------------------------------------------ 3. clone dotfiles
+say "Dotfiles"
+if [ -d "$DOTFILES_DIR/.git" ]; then
+  ok "already at $DOTFILES_DIR"
+else
+  run "git clone $REPO_URL $HOME/dotfiles"
+  DOTFILES_DIR="$HOME/dotfiles"
+  did "cloned to $DOTFILES_DIR"
+fi
+
+# ------------------------------------------------------------- 4. home-manager
+# -b bak is load-bearing: without it home-manager ERRORS OUT on any file that
+# already exists, and on the Mac every dotfile is currently a stow symlink.
+say "Home Manager"
+run "nix run home-manager/master -- switch -b bak --flake '$DOTFILES_DIR#gf@$HOST'"
+did "activated gf@$HOST"
+
+# --------------------------------------------------------------- 5. login shell
+# chsh rejects a shell that is not listed in /etc/shells, and nix-installed
+# shells never are. Linux only — the Mac keeps its system zsh.
+if [ "$HOST" = "debian-vm" ]; then
+  say "Login shell"
+  NIX_ZSH="$HOME/.nix-profile/bin/zsh"
+  if [ ! -x "$NIX_ZSH" ]; then
+    warn "$NIX_ZSH not found; skipping"
+  elif [ "${SHELL:-}" = "$NIX_ZSH" ]; then
+    ok "already $NIX_ZSH"
+  else
+    grep -qxF "$NIX_ZSH" /etc/shells 2>/dev/null \
+      || run "echo '$NIX_ZSH' | sudo tee -a /etc/shells >/dev/null"
+    run "chsh -s '$NIX_ZSH'"
+    did "login shell -> $NIX_ZSH (re-login to take effect)"
+  fi
+fi
+
+# --------------------------------------------------------------------- 6. stow
+# Configs home-manager deliberately does not own: nvim pins its own plugins
+# via lazy-lock.json, and ghostty/joplin are macOS GUI apps.
+say "Stow"
+STOW_PACKAGES="nvim"
+[ "$HOST" = "mac" ] && STOW_PACKAGES="nvim ghostty joplin"
+if command -v stow >/dev/null 2>&1; then
+  for pkg in $STOW_PACKAGES; do
+    [ -d "$DOTFILES_DIR/$pkg" ] && run "stow -d '$DOTFILES_DIR' -t '$HOME' -R $pkg"
+  done
+  did "stowed: $STOW_PACKAGES"
+else
+  warn "stow not on PATH yet — re-run this script after starting a new shell"
+fi
+
+# ------------------------------------------------------------------- summary
+printf "\n${CYAN}Summary${NC}\n"
+for c in "${CHANGED[@]:-}"; do [ -n "$c" ] && printf "  ${GREEN}changed${NC}  %s\n" "$c"; done
+for s in "${SKIPPED[@]:-}"; do [ -n "$s" ] && printf "  ${YELLOW}skipped${NC}  %s\n" "$s"; done
+
+cat <<'MSG'
+
+Manual steps that remain:
+  - import the GPG signing key (commit.gpgsign is on; commits fail without it)
+  - gh auth login
+MSG
+printf "\n${GREEN}Done.${NC}\n\n"

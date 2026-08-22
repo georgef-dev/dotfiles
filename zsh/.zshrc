@@ -51,8 +51,10 @@ source ~/.zshrc-functions
 # depends on it. tec last because it may layer on top of everything else.
 # ============================================================================
 
-# Homebrew
-[[ -x /opt/homebrew/bin/brew ]] && eval $(/opt/homebrew/bin/brew shellenv)
+# Homebrew if not inside Nix
+if [[ -z "$IN_NIX_SHELL" && -x /opt/homebrew/bin/brew ]]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
 
 # NVM
 [ -s "/usr/local/opt/nvm/nvm.sh" ] && \. "/usr/local/opt/nvm/nvm.sh"
@@ -69,9 +71,9 @@ fi
 command -v mise >/dev/null 2>&1 && eval "$(mise activate zsh)"
 
 # chruby — lazy-loaded; the function sources chruby.sh on first call.
-[[ -f /opt/dev/sh/chruby/chruby.sh ]] && {
-  type chruby >/dev/null 2>&1 || chruby () { source /opt/dev/sh/chruby/chruby.sh; chruby "$@"; }
-}
+# [[ -f /opt/dev/sh/chruby/chruby.sh ]] && {
+#   type chruby >/dev/null 2>&1 || chruby () { source /opt/dev/sh/chruby/chruby.sh; chruby "$@"; }
+# }
 
 # Shopify dev (or local minidev fallback)
 if [ -f /opt/dev/dev.sh ]; then
@@ -137,3 +139,4 @@ source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # Added by tec agent
 [[ -x /Users/georgeferreira/.local/state/tec/profiles/base/current/global/init ]] && eval "$(/Users/georgeferreira/.local/state/tec/profiles/base/current/global/init zsh)"
+
