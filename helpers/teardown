@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+# Undo a bootstrap on a THROWAWAY Linux VM, for iterating on the script
+# without a full rebuild.
+#
+#   helpers/teardown            # show what would be removed, change nothing
+#   helpers/teardown --yes      # actually remove it
+#
+# This does NOT fully restore a pristine machine: apt packages installed as
+# prerequisites stay, so a run after this does not exercise step 1. For the
+# real test, roll back to a Proxmox `base` snapshot instead.
+set -euo pipefail
+
+RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[0;33m'; CYAN='\033[0;36m'; NC='\033[0m'
+
+# ------------------------------------------------------------------- guards
+# This script removes the nix store. It must never run on the mac, which is a
+# working machine, and never on a host that looks like it is not disposable.
+if [ "$(uname -s)" != "Linux" ]; then
+  printf "${RED}Refusing: teardown is for the throwaway Linux VM only.${NC}\n"
+  printf "You are on %s. Nothing was changed.\n" "$(uname -s)"
+  exit 1
+fi
+
+CONFIRM=0
+[ "${1:-}" = "--yes" ] && CONFIRM=1
+
+NIX_ZSH="$HOME/.nix-profile/bin/zsh"
+TARGETS=(
+  "$HOME/.nix-profile"
+  "$HOME/.local/state/nix"
+  "$HOME/.local/state/home-manager"
+  "$HOME/.config/home-manager"
+  "$HOME/.zshrc" "$HOME/.zshenv" "$HOME/.zsh"
+  "$HOME/.config/tmux" "$HOME/.config/nvim" "$HOME/.local/share/nvim"
+  "$HOME/.config/git" "$HOME/.gitconfig"
+  "$HOME/.cache/oh-my-zsh" "$HOME/.cache/p10k"*
+  "$HOME/dotfiles" "$HOME/src/github.com/georgef-dev/minidev"
+)
+
+if [ "$CONFIRM" != 1 ]; then
+  printf "\n${CYAN}Dry run — nothing will be removed.${NC}\n\n"
+  printf "Would remove:\n"
+  for t in "${TARGETS[@]}"; do [ -e "$t" ] && printf "  %s\n" "$t"; done
+  printf "  the nix store (via /nix/nix-installer uninstall)\n"
+  printf "\nWould reset the login shell to /bin/bash and drop %s from /etc/shells.\n" "$NIX_ZSH"
+  printf "\n${YELLOW}Re-run with --yes to proceed.${NC}\n\n"
+  exit 0
+fi
+
+printf "\n${CYAN}Tearing down...${NC}\n"
+
+# Login shell first: if this fails after the store is gone, you are locked
+# out of your own account on next login.
+if [ "$(getent passwd "$USER" | cut -d: -f7)" != "/bin/bash" ]; then
+  chsh -s /bin/bash && printf "  ${GREEN}login shell -> /bin/bash${NC}\n"
+fi
+if grep -qxF "$NIX_ZSH" /etc/shells 2>/dev/null; then
+  sudo sed -i "\|^${NIX_ZSH}$|d" /etc/shells
+  printf "  ${GREEN}removed from /etc/shells${NC}\n"
+fi
+
+for t in "${TARGETS[@]}"; do
+  [ -e "$t" ] || continue
+  rm -rf "$t" && printf "  ${GREEN}removed %s${NC}\n" "$t"
+done
+
+# The Determinate installer ships a real uninstaller; the official script
+# does not. This is why bootstrap uses it.
+if [ -x /nix/nix-installer ]; then
+  sudo /nix/nix-installer uninstall --no-confirm && printf "  ${GREEN}uninstalled nix${NC}\n"
+else
+  printf "  ${YELLOW}/nix/nix-installer not found — remove /nix by hand${NC}\n"
+fi
+
+printf "\n${GREEN}Done. Log out and back in for the shell change to apply.${NC}\n"
+printf "${YELLOW}Note: apt prerequisites remain installed, so the next bootstrap\n"
+printf "run will not exercise step 1. Use a base snapshot for the real test.${NC}\n\n"
