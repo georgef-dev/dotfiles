@@ -1,0 +1,140 @@
+#!/usr/bin/env bash
+# Read-only health check for a Home Manager host. Changes nothing.
+#   helpers/doctor
+# Exit code is the number of failures.
+set -uo pipefail
+
+GREEN='\033[0;32m'; RED='\033[0;31m'; YELLOW='\033[0;33m'; CYAN='\033[0;36m'; NC='\033[0m'
+PASS=0; FAIL=0; WARN=0
+
+ok()   { printf "  ${GREEN}pass${NC}  %s\n" "$1"; PASS=$((PASS+1)); }
+no()   { printf "  ${RED}FAIL${NC}  %s\n" "$1"; [ -n "${2:-}" ] && printf "        %s\n" "$2"; FAIL=$((FAIL+1)); }
+meh()  { printf "  ${YELLOW}warn${NC}  %s\n" "$1"; [ -n "${2:-}" ] && printf "        %s\n" "$2"; WARN=$((WARN+1)); }
+sect() { printf "\n${CYAN}%s${NC}\n" "$1"; }
+
+IS_LINUX=0; [ "$(uname -s)" = "Linux" ] && IS_LINUX=1
+NIXBIN="$HOME/.nix-profile/bin"
+
+# --------------------------------------------------------------- activation
+sect "Home Manager"
+if [ -d "$HOME/.local/state/nix/profiles" ] && ls "$HOME"/.local/state/nix/profiles/home-manager* >/dev/null 2>&1; then
+  GEN=$(ls -d "$HOME"/.local/state/nix/profiles/home-manager-*-link 2>/dev/null | wc -l | tr -d ' ')
+  ok "activated ($GEN generation(s))"
+else
+  no "no home-manager generation found" "did 'home-manager switch' actually complete?"
+fi
+command -v home-manager >/dev/null 2>&1 \
+  && ok "home-manager on PATH" \
+  || meh "home-manager not on PATH" "fine if you only ever use 'nix run home-manager'"
+
+# --------------------------------------------------------------------- shell
+sect "Shell"
+[ -x "$NIXBIN/zsh" ] && ok "nix zsh present" || no "$NIXBIN/zsh missing"
+
+if [ "$IS_LINUX" = 1 ]; then
+  LOGIN_SHELL=$(getent passwd "$USER" 2>/dev/null | cut -d: -f7)
+  [ "$LOGIN_SHELL" = "$NIXBIN/zsh" ] \
+    && ok "login shell is nix zsh" \
+    || no "login shell is '$LOGIN_SHELL'" "expected $NIXBIN/zsh — log out and back in if you just ran chsh"
+  grep -qxF "$NIXBIN/zsh" /etc/shells 2>/dev/null \
+    && ok "listed in /etc/shells" \
+    || no "not in /etc/shells" "chsh will refuse until it is"
+fi
+
+if [ -f "$HOME/.zshrc" ]; then
+  ok ".zshrc generated"
+  head -1 "$HOME/.zshrc" | grep -q 'p10k-instant-prompt' \
+    && ok "p10k instant prompt is first line" \
+    || no "p10k instant prompt not first" "it warns and self-disables unless it leads the file"
+  ! grep -q '/opt/homebrew' "$HOME/.zshrc" \
+    && ok "no macOS paths leaked into .zshrc" \
+    || no "found /opt/homebrew in .zshrc" "$(grep -n /opt/homebrew "$HOME/.zshrc" | head -3)"
+  tail -5 "$HOME/.zshrc" | grep -q 'zsh-syntax-highlighting' \
+    && ok "syntax-highlighting sourced last" \
+    || meh "syntax-highlighting not near end of .zshrc"
+else
+  no ".zshrc not generated"
+fi
+
+if [ -x "$NIXBIN/zsh" ]; then
+  OUT=$("$NIXBIN/zsh" -i -c 'echo __ZOK__' 2>&1)
+  echo "$OUT" | grep -q '__ZOK__' \
+    && ok "interactive zsh starts" \
+    || no "interactive zsh failed" "$(echo "$OUT" | head -3)"
+  echo "$OUT" | grep -qi 'command not found\|no such file' \
+    && meh "startup emitted missing-file errors" "$(echo "$OUT" | grep -i 'command not found\|no such file' | head -3)"
+fi
+
+# ------------------------------------------------------------ generic linux
+if [ "$IS_LINUX" = 1 ]; then
+  sect "Non-NixOS integration"
+  # shellcheck disable=SC2016
+  XDD=$("$NIXBIN/zsh" -i -c 'echo $XDG_DATA_DIRS' 2>/dev/null | tail -1)
+  echo "$XDD" | grep -q '/nix/' \
+    && ok "XDG_DATA_DIRS includes nix paths" \
+    || no "XDG_DATA_DIRS has no nix paths" "targets.genericLinux.enable may not be set"
+  LOCERR=$(locale 2>&1 >/dev/null | head -2)
+  [ -z "$LOCERR" ] && ok "locale is clean" || no "locale errors" "$LOCERR"
+fi
+
+# ---------------------------------------------------------------- toolchain
+sect "Tools resolve to nix"
+for t in git nvim tmux rg jq fzf gh direnv terraform; do
+  P=$(command -v "$t" 2>/dev/null)
+  if [ -z "$P" ]; then no "$t not found"
+  elif echo "$P" | grep -q '/nix/store\|.nix-profile'; then ok "$t -> ${P}"
+  else meh "$t -> $P" "not from nix"
+  fi
+done
+
+sect "Ambient fallback runtimes"
+for t in python3 node go; do
+  if ! command -v "$t" >/dev/null 2>&1; then no "$t missing"; continue; fi
+  case "$t" in
+    go) V=$(go version 2>&1 | head -1) ;;   # go wants `go version`, not --version
+    *)  V=$("$t" --version 2>&1 | head -1) ;;
+  esac
+  ok "$t ($V)"
+done
+
+# ------------------------------------------------------------------- direnv
+sect "direnv"
+if "$NIXBIN/zsh" -i -c 'echo $precmd_functions' 2>/dev/null | grep -q '_direnv_hook'; then
+  ok "chpwd hook installed"
+else
+  no "direnv hook not active in zsh" "per-project devShells will not load"
+fi
+
+# ---------------------------------------------------------------------- git
+sect "git"
+[ "$(git config --get user.email)" = "fs.georgee@gmail.com" ] \
+  && ok "user.email" || no "user.email is '$(git config --get user.email)'"
+[ "$(git config --get commit.gpgsign)" = "true" ] \
+  && ok "commit.gpgsign on" || meh "commit.gpgsign not on"
+KEY=$(git config --get user.signingkey)
+if [ -n "$KEY" ]; then
+  if gpg --list-secret-keys "$KEY" >/dev/null 2>&1; then
+    ok "signing key $KEY present"
+  else
+    no "signing key $KEY NOT imported" "every commit will fail; import it before you try to commit"
+  fi
+fi
+
+# --------------------------------------------------------------------- stow
+sect "Stow-managed configs"
+[ -L "$HOME/.config/nvim" ] && ok "nvim symlinked" || no ".config/nvim is not a symlink"
+[ -f "$HOME/.config/tmux/tmux.conf" ] && ok "tmux.conf generated" || meh "no ~/.config/tmux/tmux.conf"
+
+# ------------------------------------------------------------------- docker
+sect "docker"
+if command -v docker >/dev/null 2>&1; then
+  ok "docker CLI present"
+  docker info >/dev/null 2>&1 \
+    && ok "daemon reachable" \
+    || meh "daemon not reachable" "expected: install it at the system level (sudo apt install docker.io && sudo usermod -aG docker \$USER)"
+else
+  no "docker CLI missing"
+fi
+
+printf "\n${CYAN}%d passed, %d failed, %d warnings${NC}\n\n" "$PASS" "$FAIL" "$WARN"
+exit "$FAIL"
