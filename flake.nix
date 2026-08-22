@@ -11,17 +11,23 @@
 
   outputs = { nixpkgs, home-manager, ... }:
     let
+      # Per-host identity. homeDirectory is derived from the username so the
+      # two cannot drift apart — out of sync, home-manager writes into a
+      # directory that does not exist and activation fails.
+      username = "georgeferreira";
+
+      homeFor = system:
+        if builtins.match ".*-darwin" system != null
+        then "/Users/${username}"
+        else "/home/${username}";
+
       hosts = {
         mac = {
           system = "aarch64-darwin";
-          username = "georgeferreira";
-          homeDirectory = "/Users/georgeferreira";
           platformModule = ./nix/home/darwin.nix;
         };
         vm-dev-01 = {
           system = "x86_64-linux";
-          username = "georgeferreira";
-          homeDirectory = "/home/georgef";
           platformModule = ./nix/home/linux.nix;
         };
       };
@@ -43,7 +49,8 @@
             host.platformModule
             {
               home = {
-                inherit (host) username homeDirectory;
+                inherit username;
+                homeDirectory = homeFor host.system;
                 stateVersion = "25.05";
               };
             }
