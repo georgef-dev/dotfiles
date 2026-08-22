@@ -8,7 +8,9 @@
   targets.genericLinux.enable = true;
 
   home.packages = with pkgs; [
-    docker # native daemon, no colima needed
+    # NB: the docker CLI comes from extras/containers.nix. The daemon is a
+    # system service on Debian (`sudo apt install docker.io`), not a
+    # home-manager package — adding pkgs.docker here collides on bin/docker.
     xclip # nvim clipboard over X forwarding
     wl-clipboard
   ];

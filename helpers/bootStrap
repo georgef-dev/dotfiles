@@ -14,7 +14,7 @@ REPO_URL="https://github.com/georgef-dev/dotfiles.git"
 
 HOST=""
 DRY_RUN=0
-CHANGED=(); SKIPPED=()
+CHANGED=(); SKIPPED=(); WOULD=()
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -27,7 +27,8 @@ done
 
 say()  { printf "${CYAN}==> %s${NC}\n" "$1"; }
 ok()   { printf "  ${GREEN}%s${NC}\n" "$1"; SKIPPED+=("$1"); }
-did()  { printf "  ${GREEN}%s${NC}\n" "$1"; CHANGED+=("$1"); }
+did()  { if [ "$DRY_RUN" = 1 ]; then printf "  ${YELLOW}would: %s${NC}\n" "$1"; WOULD+=("$1");
+         else printf "  ${GREEN}%s${NC}\n" "$1"; CHANGED+=("$1"); fi; }
 warn() { printf "  ${YELLOW}%s${NC}\n" "$1"; }
 run()  { if [ "$DRY_RUN" = 1 ]; then printf "  ${YELLOW}[dry-run] %s${NC}\n" "$*"; else eval "$*"; fi; }
 
@@ -147,6 +148,7 @@ fi
 # ------------------------------------------------------------------- summary
 printf "\n${CYAN}Summary${NC}\n"
 for c in "${CHANGED[@]:-}"; do [ -n "$c" ] && printf "  ${GREEN}changed${NC}  %s\n" "$c"; done
+for w in "${WOULD[@]:-}";   do [ -n "$w" ] && printf "  ${YELLOW}would${NC}    %s\n" "$w"; done
 for s in "${SKIPPED[@]:-}"; do [ -n "$s" ] && printf "  ${YELLOW}skipped${NC}  %s\n" "$s"; done
 
 cat <<'MSG'

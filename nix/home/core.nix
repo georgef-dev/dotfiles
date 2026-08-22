@@ -17,7 +17,6 @@
     # Core CLI
     gh
     neovim
-    fzf
     ripgrep
     jq
     tree
