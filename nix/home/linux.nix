@@ -7,6 +7,14 @@
   # nix glibc — without it, git/perl emit `setlocale` warnings on every call.
   targets.genericLinux.enable = true;
 
+  # Two tools are deliberately absent from this list because they are
+  # daemon+CLI pairs that must stay in version lockstep, and home-manager
+  # cannot manage a system systemd unit on Debian:
+  #   docker    -> sudo apt install docker.io
+  #   tailscale -> installed by helpers/bootstrap via tailscale.com/install.sh
+  # Installing only the nix CLI half gives you a binary with nothing to
+  # talk to. cloudflared IS in extras/infra.nix, but note that running a
+  # persistent tunnel needs `cloudflared service install` on top.
   home.packages = with pkgs; [
     # NB: the docker CLI comes from extras/containers.nix. The daemon is a
     # system service on Debian (`sudo apt install docker.io`), not a

@@ -143,6 +143,31 @@ sect "Stow-managed configs"
 [ -L "$HOME/.config/nvim" ] && ok "nvim symlinked" || no ".config/nvim is not a symlink"
 [ -f "$HOME/.config/tmux/tmux.conf" ] && ok "tmux.conf generated" || meh "no ~/.config/tmux/tmux.conf"
 
+# ---------------------------------------------------------------- tailscale
+if [ "$IS_LINUX" = 1 ]; then
+  sect "tailscale"
+  if command -v tailscale >/dev/null 2>&1; then
+    ok "CLI present ($(tailscale version 2>/dev/null | head -1))"
+    if systemctl is-active --quiet tailscaled 2>/dev/null; then
+      ok "tailscaled running"
+    else
+      no "tailscaled not running" "sudo systemctl enable --now tailscaled"
+    fi
+    if tailscale status >/dev/null 2>&1; then
+      ok "on the tailnet ($(tailscale ip -4 2>/dev/null | head -1))"
+      if tailscale status --json 2>/dev/null | grep -q '"RunningSSHServer": *true'; then
+        ok "tailscale ssh enabled"
+      else
+        meh "tailscale ssh not enabled" "sudo tailscale up --ssh"
+      fi
+    else
+      no "not on the tailnet" "sudo tailscale up --ssh"
+    fi
+  else
+    no "tailscale not installed"
+  fi
+fi
+
 # ------------------------------------------------------------------- docker
 sect "docker"
 if command -v docker >/dev/null 2>&1; then
