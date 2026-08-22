@@ -105,7 +105,20 @@ else
   did "cloned to $DOTFILES_DIR"
 fi
 
-# ------------------------------------------------------------- 4. home-manager
+# ----------------------------------------------------------------- 4. minidev
+# Cloned over HTTPS on purpose: a fresh VM has no SSH key yet, and the repo
+# vendors its deps (no submodules), so a plain clone is complete.
+say "minidev"
+MINIDEV_DIR="$HOME/src/github.com/georgef-dev/minidev"
+if [ -d "$MINIDEV_DIR/.git" ]; then
+  ok "already at $MINIDEV_DIR"
+else
+  run "mkdir -p '$(dirname "$MINIDEV_DIR")'"
+  run "git clone https://github.com/georgef-dev/minidev.git '$MINIDEV_DIR'"
+  did "cloned minidev"
+fi
+
+# ------------------------------------------------------------- 5. home-manager
 # -b bak is load-bearing: without it home-manager ERRORS OUT on any file that
 # already exists, and on the Mac every dotfile is currently a stow symlink.
 say "Home Manager"
@@ -118,7 +131,7 @@ did "activated gf@$HOST"
 PATH="$HOME/.nix-profile/bin:$PATH"
 export PATH
 
-# --------------------------------------------------------------- 5. login shell
+# --------------------------------------------------------------- 6. login shell
 # chsh rejects a shell that is not listed in /etc/shells, and nix-installed
 # shells never are. Linux only — the Mac keeps its system zsh.
 if [ "$HOST" = "vm-dev-01" ]; then
@@ -126,7 +139,9 @@ if [ "$HOST" = "vm-dev-01" ]; then
   NIX_ZSH="$HOME/.nix-profile/bin/zsh"
   if [ ! -x "$NIX_ZSH" ]; then
     warn "$NIX_ZSH not found; skipping"
-  elif [ "${SHELL:-}" = "$NIX_ZSH" ]; then
+  elif [ "$(getent passwd "$USER" | cut -d: -f7)" = "$NIX_ZSH" ]; then
+    # getent, not $SHELL: $SHELL is whatever this session started with, so it
+    # still reads the old shell after a successful chsh and would re-run it.
     ok "already $NIX_ZSH"
   else
     grep -qxF "$NIX_ZSH" /etc/shells 2>/dev/null \
@@ -136,7 +151,7 @@ if [ "$HOST" = "vm-dev-01" ]; then
   fi
 fi
 
-# --------------------------------------------------------------------- 6. stow
+# --------------------------------------------------------------------- 7. stow
 # Configs home-manager deliberately does not own: nvim pins its own plugins
 # via lazy-lock.json, and ghostty/joplin are macOS GUI apps.
 say "Stow"

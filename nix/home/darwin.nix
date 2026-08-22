@@ -19,10 +19,5 @@
     if [[ -z "$IN_NIX_SHELL" && -x /opt/homebrew/bin/brew ]]; then
       eval "$(/opt/homebrew/bin/brew shellenv)"
     fi
-
-    # minidev — personal machine only, and a no-op without shadowenv
-    if [ -f ~/src/github.com/georgef-dev/minidev/dev.sh ]; then
-      source ~/src/github.com/georgef-dev/minidev/dev.sh
-    fi
   '';
 }

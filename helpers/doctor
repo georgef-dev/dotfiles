@@ -120,6 +120,24 @@ if [ -n "$KEY" ]; then
   fi
 fi
 
+# ------------------------------------------------------------------ minidev
+sect "minidev"
+MINIDEV_DIR="$HOME/src/github.com/georgef-dev/minidev"
+if [ -d "$MINIDEV_DIR/.git" ]; then
+  ok "cloned at $MINIDEV_DIR"
+  command -v ruby >/dev/null 2>&1 \
+    && ok "ruby present ($(ruby --version 2>&1 | head -1))" \
+    || no "ruby missing" "bin/dev shebangs into ruby and cannot run without it"
+  if "$NIXBIN/zsh" -i -c 'typeset -f dev >/dev/null' 2>/dev/null; then
+    ok "dev shell function defined"
+  else
+    no "dev function not defined" "dev.sh is not being sourced by .zshrc"
+  fi
+  [ -x "$MINIDEV_DIR/bin/dev" ] && ok "bin/dev executable" || no "bin/dev not executable"
+else
+  no "minidev not cloned" "expected at $MINIDEV_DIR"
+fi
+
 # --------------------------------------------------------------------- stow
 sect "Stow-managed configs"
 [ -L "$HOME/.config/nvim" ] && ok "nvim symlinked" || no ".config/nvim is not a symlink"

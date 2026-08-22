@@ -9,6 +9,7 @@
     ./programs/git.nix
     ./programs/tmux.nix
     ./programs/direnv.nix
+    ./programs/minidev.nix
   ];
 
   programs.home-manager.enable = true;
