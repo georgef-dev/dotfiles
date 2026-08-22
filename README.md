@@ -32,7 +32,7 @@ Packages and most dotfiles are declared in a flake and pinned by
 `flake.lock`, so both machines get identical versions.
 
 ```bash
-home-manager switch -b bak --flake ~/dotfiles#gf@mac        # or #gf@debian-vm
+home-manager switch -b bak --flake ~/dotfiles#gf@mac        # or #gf@vm-dev-01
 nix flake check                                             # validate changes
 nix flake update && home-manager switch --flake ...         # upgrade everything
 home-manager generations                                    # roll back

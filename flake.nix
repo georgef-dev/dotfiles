@@ -11,10 +11,6 @@
 
   outputs = { nixpkgs, home-manager, ... }:
     let
-      # ----------------------------------------------------------------------
-      # Per-host identity. Adjust `vm.username` to match the account you
-      # created on the Debian VM before the first `home-manager switch`.
-      # ----------------------------------------------------------------------
       hosts = {
         mac = {
           system = "aarch64-darwin";
@@ -22,9 +18,9 @@
           homeDirectory = "/Users/georgeferreira";
           platformModule = ./nix/home/darwin.nix;
         };
-        debian-vm = {
+        vm-dev-01 = {
           system = "x86_64-linux";
-          username = "georgef";
+          username = "georgeferreira";
           homeDirectory = "/home/georgef";
           platformModule = ./nix/home/linux.nix;
         };
@@ -57,7 +53,7 @@
     in {
       homeConfigurations = {
         "gf@mac" = mkHome "mac" hosts.mac;
-        "gf@debian-vm" = mkHome "debian-vm" hosts.debian-vm;
+        "gf@vm-dev-01" = mkHome "vm-dev-01" hosts.vm-dev-01;
       };
 
       devShells = nixpkgs.lib.genAttrs

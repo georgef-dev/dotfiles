@@ -6,7 +6,7 @@
 #   - hardcoded /opt/homebrew zsh-syntax-highlighting path -> syntaxHighlighting
 #   - /opt/homebrew/opt/{libpq,mysql-client}/bin on PATH -> dropped, use devShells
 #   - the tec agent block appearing twice -> not carried over at all
-{ pkgs, ... }:
+{ lib, pkgs, ... }:
 
 {
   programs.zsh = {
@@ -46,21 +46,28 @@
         "git branch -D $(git branch -vv | grep -v origin | awk '{print $1}')";
     };
 
-    initContent = ''
-      # p10k instant prompt must stay at the very top of the rc.
-      if [[ -r "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh" ]]; then
-        source "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh"
-      fi
+    # Split deliberately. p10k's instant prompt must be the FIRST thing in
+    # the rc or it prints a warning and does nothing; home-manager's default
+    # initContent slot lands well after `source $ZSH/oh-my-zsh.sh`.
+    # mkOrder 500 == before everything, 1000 == the normal slot.
+    initContent = lib.mkMerge [
+      (lib.mkOrder 500 ''
+        if [[ -r "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh" ]]; then
+          source "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh"
+        fi
+      '')
 
-      # Secrets, if present. Never tracked in this repo.
-      [ -f ~/.zshrc-secrets ] && source ~/.zshrc-secrets
+      (lib.mkOrder 1000 ''
+        # Secrets, if present. Never tracked in this repo.
+        [ -f ~/.zshrc-secrets ] && source ~/.zshrc-secrets
 
-      export GPG_TTY=$(tty)
+        export GPG_TTY=$(tty)
 
-      source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/config/p10k-robbyrussell.zsh
+        source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/config/p10k-robbyrussell.zsh
 
-      mkd() { mkdir -p "$@" && cd "$@"; }
-    '';
+        mkd() { mkdir -p "$@" && cd "$@"; }
+      '')
+    ];
   };
 
   programs.fzf = {

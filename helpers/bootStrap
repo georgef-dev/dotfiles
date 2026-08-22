@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Bare machine -> working environment. Idempotent; safe to re-run.
 #
-#   helpers/bootstrap [--host debian-vm|mac] [--dry-run]
+#   helpers/bootstrap [--host vm-dev-01|mac] [--dry-run]
 #
 # On Darwin this REFUSES to change anything unless given --host mac. The Mac
 # is a working machine; migrating it is a deliberate act, never a side effect
@@ -49,13 +49,13 @@ wins on PATH. Roll back with `home-manager generations`.
 MSG
     exit 0
   fi
-  HOST="debian-vm"
+  HOST="vm-dev-01"
 fi
 
 case "$HOST" in
   mac)       [ "$UNAME" = "Darwin" ] || { printf "${RED}--host mac on non-Darwin${NC}\n"; exit 1; } ;;
-  debian-vm) [ "$UNAME" = "Linux" ]  || { printf "${RED}--host debian-vm on non-Linux${NC}\n"; exit 1; } ;;
-  *) printf "${RED}unknown host: %s (expected mac or debian-vm)${NC}\n" "$HOST"; exit 2 ;;
+  vm-dev-01) [ "$UNAME" = "Linux" ]  || { printf "${RED}--host vm-dev-01 on non-Linux${NC}\n"; exit 1; } ;;
+  *) printf "${RED}unknown host: %s (expected mac or vm-dev-01)${NC}\n" "$HOST"; exit 2 ;;
 esac
 
 printf "\n${CYAN}bootstrap: host=%s dry-run=%s${NC}\n\n" "$HOST" "$DRY_RUN"
@@ -63,7 +63,7 @@ printf "\n${CYAN}bootstrap: host=%s dry-run=%s${NC}\n\n" "$HOST" "$DRY_RUN"
 # ------------------------------------------------------- 1. apt prerequisites
 # git is needed to clone the repo that contains the flake, so it cannot come
 # from Nix. xz-utils is what the Nix installer needs to unpack itself.
-if [ "$HOST" = "debian-vm" ]; then
+if [ "$HOST" = "vm-dev-01" ]; then
   say "APT prerequisites"
   APT_PKGS="curl git xz-utils ca-certificates qemu-guest-agent"
   MISSING=""
@@ -115,7 +115,7 @@ did "activated gf@$HOST"
 # --------------------------------------------------------------- 5. login shell
 # chsh rejects a shell that is not listed in /etc/shells, and nix-installed
 # shells never are. Linux only — the Mac keeps its system zsh.
-if [ "$HOST" = "debian-vm" ]; then
+if [ "$HOST" = "vm-dev-01" ]; then
   say "Login shell"
   NIX_ZSH="$HOME/.nix-profile/bin/zsh"
   if [ ! -x "$NIX_ZSH" ]; then
