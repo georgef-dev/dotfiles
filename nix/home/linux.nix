@@ -34,16 +34,14 @@
   # home-manager can own its systemd unit on Debian without sudo.
   services.keybase.enable = true;
 
-  # pull-private reads the key from /keybase/private/<you>/.keys/pgp, so KBFS
-  # has to be running or the import silently has nothing to read. Needs FUSE,
-  # which bootstrap installs via apt (fuse3).
+  # KBFS, for keybase's encrypted storage. Needs FUSE, which bootstrap
+  # installs via apt (fuse3).
   services.kbfs.enable = true;
 
-  # Headless box reached only over SSH, so pinentry has to be a terminal one:
-  # the graphical variants have no display to draw on, and gpg then fails with
-  # "No pinentry" on any operation needing the passphrase — including
-  # importing a secret key, not just signing. darwin.nix has pinentry_mac for
-  # the same reason; this is its counterpart.
+  # Commits are signed with SSH now, so gpg no longer gates committing. It is
+  # still kept working for keybase and ad-hoc use: without a pinentry, gpg
+  # fails on anything needing a passphrase. Headless box, so it must be a
+  # terminal pinentry — the graphical ones have no display to draw on.
   services.gpg-agent = {
     enable = true;
     pinentry.package = pkgs.pinentry-curses;

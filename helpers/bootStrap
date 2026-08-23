@@ -179,7 +179,21 @@ if [ "$HOST" = "vm-dev-01" ]; then
   fi
 fi
 
-# --------------------------------------------------------------------- 8. stow
+# ---------------------------------------------------------------- 8. ssh key
+# Commits are signed with SSH, using a key this machine generates itself and
+# that never leaves it. No passphrase: the box is reached over tailscale and
+# an unattended rebuild should not stall on a prompt.
+say "SSH signing key"
+SSH_KEY="$HOME/.ssh/id_ed25519"
+if [ -f "$SSH_KEY" ]; then
+  ok "already at $SSH_KEY"
+else
+  run "mkdir -p '$HOME/.ssh' && chmod 700 '$HOME/.ssh'"
+  run "ssh-keygen -t ed25519 -f '$SSH_KEY' -N '' -C '$USER@$(hostname)'"
+  did "generated $SSH_KEY"
+fi
+
+# --------------------------------------------------------------------- 9. stow
 # Configs home-manager deliberately does not own: nvim pins its own plugins
 # via lazy-lock.json, and ghostty/joplin are macOS GUI apps.
 say "Stow"
@@ -203,8 +217,12 @@ for s in "${SKIPPED[@]:-}"; do [ -n "$s" ] && printf "  ${YELLOW}skipped${NC}  %
 cat <<'MSG'
 
 Manual steps that remain:
-  - import the GPG signing key (commit.gpgsign is on; commits fail without it)
   - gh auth login
+  - register this machine's SSH key for commit signing (commit.gpgsign is on,
+    so commits are signed locally either way, but GitHub shows them
+    "Unverified" until the key is registered):
+      gh ssh-key add ~/.ssh/id_ed25519.pub --type signing
+      gh ssh-key add ~/.ssh/id_ed25519.pub --type authentication
   - for the docker CLI to reach a daemon:
       sudo apt install docker.io && sudo usermod -aG docker "$USER"
   - join the tailnet if it was skipped:  sudo tailscale up --ssh

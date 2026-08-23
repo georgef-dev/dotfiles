@@ -96,52 +96,54 @@ Install needed Python versions using `pyenv`.
 # SEE: https://help.github.com/en/articles/adding-a-new-ssh-key-to-your-github-account
 ```
 
-# GPG signing key
+# Commit signing
 
-`commit.gpgsign` is on, so **every commit fails until the signing key is
-imported**. The key lives in Keybase and travels via KBFS, so a new machine
-never needs another machine to be online.
+Commits are signed with **SSH**, not GPG. Each machine signs with an ed25519
+key it generated itself, so no private key ever travels between machines and
+losing one means revoking a single key on GitHub rather than rotating an
+identity everywhere.
 
-Signing key: `020388768FEBD380` (the primary `[SC]` key — `E9454F08D8C9BE1A`
-in the git config is its encryption subkey, which gpg resolves to the same
-keyblock).
-
-## One time, from a machine that already holds the secret key
-
-Uploads the private key to `/keybase/private/<you>/.keys/pgp`, encrypted with
-your Keybase device keys. It is not protected by the key passphrase alone, so
-this is a deliberate trade: convenience on every future machine against
-storing the encrypted secret on Keybase's servers.
+`helpers/bootstrap` generates `~/.ssh/id_ed25519` if it is missing. Register
+it once per machine:
 
 ```bash
-keybase pgp push-private 020388768FEBD380
-keybase pgp list                            # confirm it is there
+gh ssh-key add ~/.ssh/id_ed25519.pub --type signing
+gh ssh-key add ~/.ssh/id_ed25519.pub --type authentication
 ```
 
-## On every new machine
+Until the signing key is registered, commits are still signed locally but
+GitHub shows them as *Unverified*.
+
+Check it works:
 
 ```bash
-keybase login                 # provisions the device; approve from an
-                              # existing device or use a paper key
-chmod 700 ~/.gnupg
-keybase pgp pull-private 020388768FEBD380
+./helpers/doctor                        # covers format, key, and signing
+git commit --allow-empty -m test && git log --show-signature -1
 ```
 
-Then mark it trusted, or gpg will refuse to use it:
+## Verifying your own signatures locally
 
-```bash
-gpg --edit-key 020388768FEBD380   # trust -> 5 -> y -> save
+`gpg.ssh.allowedSignersFile` points at `~/.config/git/allowed_signers`. Add
+one line per machine, otherwise `git log --show-signature` cannot verify even
+your own commits:
+
+```
+fs.georgee@gmail.com ssh-ed25519 AAAAC3Nz...   # m3-pro
+fs.georgee@gmail.com ssh-ed25519 AAAAC3Nz...   # vm-dev-01
 ```
 
-Verify with `./helpers/doctor`, or directly:
+This only affects local verification — GitHub verifies independently from the
+keys registered on your account.
 
-```bash
-gpg --list-secret-keys 020388768FEBD380
-echo test | gpg --clearsign > /dev/null && echo "signing works"
-```
+## Revoking a machine
 
-Note `push-private` / `pull-private`, **not** `export --secret`. Export reads
-the local GnuPG keyring, so it only ever works on a machine that already has
-the key — which is the one machine you do not need it on.
+Delete that machine's key from GitHub (Settings → SSH and GPG keys) and drop
+its line from `allowed_signers`. Nothing else needs to change.
 
-SEE: https://github.com/pstadler/keybase-gpg-github
+## The GPG key
+
+`020388768FEBD380` is still in Keybase as an identity proof and still signs
+nothing. Old commits signed with it stay verified as long as the public key
+remains on your GitHub account.
+
+SEE: https://docs.github.com/en/authentication/managing-commit-signature-verification

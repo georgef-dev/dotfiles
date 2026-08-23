@@ -111,44 +111,30 @@ sect "git"
   && ok "user.email" || no "user.email is '$(git config --get user.email)'"
 [ "$(git config --get commit.gpgsign)" = "true" ] \
   && ok "commit.gpgsign on" || meh "commit.gpgsign not on"
+FMT=$(git config --get gpg.format)
+[ "$FMT" = "ssh" ] && ok "signing format is ssh" || no "gpg.format is '$FMT'" "expected ssh"
+
 KEY=$(git config --get user.signingkey)
 if [ -n "$KEY" ]; then
-  if gpg --list-secret-keys "$KEY" >/dev/null 2>&1; then
-    ok "signing key $KEY present"
-  else
-    no "signing key $KEY NOT imported" "every commit will fail; import it before you try to commit"
-  fi
-  # Without a pinentry gpg cannot prompt for a passphrase, so it fails on
-  # both signing AND importing a secret key -- with a message that does not
-  # obviously point here.
-  if [ "$IS_LINUX" = 1 ]; then
-    if command -v pinentry-curses >/dev/null 2>&1; then
-      ok "pinentry-curses present"
+  KEY_EXPANDED="${KEY/#\~/$HOME}"
+  if [ -f "$KEY_EXPANDED" ]; then
+    ok "signing key $KEY_EXPANDED"
+    # The real test: can this machine actually produce a signature?
+    if echo test | ssh-keygen -Y sign -f "${KEY_EXPANDED%.pub}" -n git >/dev/null 2>&1; then
+      ok "can sign (private half usable, no passphrase prompt)"
     else
-      no "no pinentry" "gpg cannot prompt for a passphrase; secret key import fails"
+      no "cannot sign with $KEY_EXPANDED" "private half missing or passphrase-locked"
     fi
-    systemctl --user is-active --quiet gpg-agent 2>/dev/null \
-      && ok "gpg-agent running" \
-      || meh "gpg-agent not running" "it starts on demand, so this is usually fine"
+  else
+    no "signing key $KEY_EXPANDED does not exist" "ssh-keygen -t ed25519 -f ${KEY_EXPANDED%.pub}"
   fi
 fi
 
-# ------------------------------------------------------------------ minidev
-sect "minidev"
-MINIDEV_DIR="$HOME/src/github.com/georgef-dev/minidev"
-if [ -d "$MINIDEV_DIR/.git" ]; then
-  ok "cloned at $MINIDEV_DIR"
-  command -v ruby >/dev/null 2>&1 \
-    && ok "ruby present ($(ruby --version 2>&1 | head -1))" \
-    || no "ruby missing" "bin/dev shebangs into ruby and cannot run without it"
-  if "$NIXBIN/zsh" -i -c 'typeset -f dev >/dev/null' 2>/dev/null; then
-    ok "dev shell function defined"
-  else
-    no "dev function not defined" "dev.sh is not being sourced by .zshrc"
-  fi
-  [ -x "$MINIDEV_DIR/bin/dev" ] && ok "bin/dev executable" || no "bin/dev not executable"
+ALLOWED=$(git config --get gpg.ssh.allowedSignersFile)
+if [ -n "$ALLOWED" ] && [ -f "${ALLOWED/#\~/$HOME}" ]; then
+  ok "allowed_signers present"
 else
-  no "minidev not cloned" "expected at $MINIDEV_DIR"
+  meh "no allowed_signers file" "only affects local verification of signatures"
 fi
 
 # --------------------------------------------------------------------- stow
