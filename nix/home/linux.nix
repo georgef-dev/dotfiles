@@ -30,5 +30,9 @@
     unzip
   ];
 
+  # Unlike docker and tailscale above, keybase runs as a *user* service, so
+  # home-manager can own its systemd unit on Debian without sudo.
+  services.keybase.enable = true;
+
   programs.git.settings.gpg.program = "${pkgs.gnupg}/bin/gpg";
 }

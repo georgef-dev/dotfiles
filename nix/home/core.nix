@@ -30,6 +30,7 @@
     shellcheck
     mosh
     nmap
+    keybase # identity + encrypted storage, not just the gpg key
     lolcat
     stow # still needed while nvim/ghostty/joplin remain stow packages
 

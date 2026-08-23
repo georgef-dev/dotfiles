@@ -143,6 +143,22 @@ sect "Stow-managed configs"
 [ -L "$HOME/.config/nvim" ] && ok "nvim symlinked" || no ".config/nvim is not a symlink"
 [ -f "$HOME/.config/tmux/tmux.conf" ] && ok "tmux.conf generated" || meh "no ~/.config/tmux/tmux.conf"
 
+# ------------------------------------------------------------------ keybase
+sect "keybase"
+if command -v keybase >/dev/null 2>&1; then
+  ok "CLI present ($(keybase version -S 2>/dev/null | head -1))"
+  if [ "$IS_LINUX" = 1 ]; then
+    systemctl --user is-active --quiet keybase 2>/dev/null \
+      && ok "keybase user service running" \
+      || meh "keybase service not running" "systemctl --user start keybase"
+  fi
+  keybase status >/dev/null 2>&1 \
+    && ok "logged in" \
+    || meh "not logged in" "keybase login"
+else
+  no "keybase not installed"
+fi
+
 # ---------------------------------------------------------------- tailscale
 if [ "$IS_LINUX" = 1 ]; then
   sect "tailscale"
