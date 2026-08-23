@@ -218,11 +218,12 @@ cat <<'MSG'
 
 Manual steps that remain:
   - gh auth login
-  - register this machine's SSH key for commit signing (commit.gpgsign is on,
-    so commits are signed locally either way, but GitHub shows them
-    "Unverified" until the key is registered):
-      gh ssh-key add ~/.ssh/id_ed25519.pub --type signing
+  - register this machine's SSH key with GitHub. BOTH are needed:
       gh ssh-key add ~/.ssh/id_ed25519.pub --type authentication
+        required -- github https urls are rewritten to ssh, so without this
+        every clone, fetch and push fails
+      gh ssh-key add ~/.ssh/id_ed25519.pub --type signing
+        commits sign locally either way, but show "Unverified" without it
   - for the docker CLI to reach a daemon:
       sudo apt install docker.io && sudo usermod -aG docker "$USER"
   - join the tailnet if it was skipped:  sudo tailscale up --ssh

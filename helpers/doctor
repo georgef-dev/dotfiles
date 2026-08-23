@@ -130,6 +130,20 @@ if [ -n "$KEY" ]; then
   fi
 fi
 
+# The rewrite is what lets minidev's hardcoded HTTPS clone URLs work, so
+# check both the rule and that the key it depends on is actually accepted.
+REWRITE=$(git config --get url."git@github.com:".insteadOf)
+[ "$REWRITE" = "https://github.com/" ] \
+  && ok "github https -> ssh rewrite active" \
+  || no "no https->ssh rewrite" "dev clone will prompt for a password"
+
+SSH_OUT=$(ssh -o BatchMode=yes -o StrictHostKeyChecking=accept-new -T git@github.com 2>&1 || true)
+if echo "$SSH_OUT" | grep -q "successfully authenticated"; then
+  ok "ssh auth to github works ($(echo "$SSH_OUT" | sed 's/^Hi \([^!]*\)!.*/\1/'))"
+else
+  no "ssh auth to github failed" "gh ssh-key add ~/.ssh/id_ed25519.pub --type authentication"
+fi
+
 ALLOWED=$(git config --get gpg.ssh.allowedSignersFile)
 if [ -n "$ALLOWED" ] && [ -f "${ALLOWED/#\~/$HOME}" ]; then
   ok "allowed_signers present"
