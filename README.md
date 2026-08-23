@@ -96,17 +96,52 @@ Install needed Python versions using `pyenv`.
 # SEE: https://help.github.com/en/articles/adding-a-new-ssh-key-to-your-github-account
 ```
 
-# Install GPG and Keybase keys
+# GPG signing key
+
+`commit.gpgsign` is on, so **every commit fails until the signing key is
+imported**. The key lives in Keybase and travels via KBFS, so a new machine
+never needs another machine to be online.
+
+Signing key: `020388768FEBD380` (the primary `[SC]` key — `E9454F08D8C9BE1A`
+in the git config is its encryption subkey, which gpg resolves to the same
+keyblock).
+
+## One time, from a machine that already holds the secret key
+
+Uploads the private key to `/keybase/private/<you>/.keys/pgp`, encrypted with
+your Keybase device keys. It is not protected by the key passphrase alone, so
+this is a deliberate trade: convenience on every future machine against
+storing the encrypted secret on Keybase's servers.
 
 ```bash
-# SEE: https://github.com/pstadler/keybase-gpg-github
-# SEE: https://stackoverflow.com/questions/39494631/gpg-failed-to-sign-the-data-fatal-failed-to-write-commit-object-git-2-10-0
+keybase pgp push-private 020388768FEBD380
+keybase pgp list                            # confirm it is there
 ```
 
+## On every new machine
+
 ```bash
-keybase login
+keybase login                 # provisions the device; approve from an
+                              # existing device or use a paper key
 chmod 700 ~/.gnupg
-keybase pgp list
-keybase pgp export -q <ID_FROM_ABOVE> | gpg --import
-keybase pgp export -q <ID_FROM_ABOVE> --secret | gpg --allow-secret-key-import --import
+keybase pgp pull-private 020388768FEBD380
 ```
+
+Then mark it trusted, or gpg will refuse to use it:
+
+```bash
+gpg --edit-key 020388768FEBD380   # trust -> 5 -> y -> save
+```
+
+Verify with `./helpers/doctor`, or directly:
+
+```bash
+gpg --list-secret-keys 020388768FEBD380
+echo test | gpg --clearsign > /dev/null && echo "signing works"
+```
+
+Note `push-private` / `pull-private`, **not** `export --secret`. Export reads
+the local GnuPG keyring, so it only ever works on a machine that already has
+the key — which is the one machine you do not need it on.
+
+SEE: https://github.com/pstadler/keybase-gpg-github

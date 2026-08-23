@@ -65,7 +65,7 @@ printf "\n${CYAN}bootstrap: host=%s dry-run=%s${NC}\n\n" "$HOST" "$DRY_RUN"
 # from Nix. xz-utils is what the Nix installer needs to unpack itself.
 if [ "$HOST" = "vm-dev-01" ]; then
   say "APT prerequisites"
-  APT_PKGS="curl git xz-utils ca-certificates qemu-guest-agent"
+  APT_PKGS="curl git xz-utils ca-certificates qemu-guest-agent fuse3"
   MISSING=""
   for p in $APT_PKGS; do
     dpkg -s "$p" >/dev/null 2>&1 || MISSING="$MISSING $p"

@@ -168,6 +168,12 @@ if command -v keybase >/dev/null 2>&1; then
   keybase status >/dev/null 2>&1 \
     && ok "logged in" \
     || meh "not logged in" "keybase login"
+  if [ "$IS_LINUX" = 1 ]; then
+    # pull-private reads from KBFS, so without it the key import finds nothing
+    systemctl --user is-active --quiet kbfs 2>/dev/null \
+      && ok "kbfs running" \
+      || meh "kbfs not running" "keybase pgp pull-private needs it"
+  fi
 else
   no "keybase not installed"
 fi
