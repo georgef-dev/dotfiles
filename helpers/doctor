@@ -118,6 +118,19 @@ if [ -n "$KEY" ]; then
   else
     no "signing key $KEY NOT imported" "every commit will fail; import it before you try to commit"
   fi
+  # Without a pinentry gpg cannot prompt for a passphrase, so it fails on
+  # both signing AND importing a secret key -- with a message that does not
+  # obviously point here.
+  if [ "$IS_LINUX" = 1 ]; then
+    if command -v pinentry-curses >/dev/null 2>&1; then
+      ok "pinentry-curses present"
+    else
+      no "no pinentry" "gpg cannot prompt for a passphrase; secret key import fails"
+    fi
+    systemctl --user is-active --quiet gpg-agent 2>/dev/null \
+      && ok "gpg-agent running" \
+      || meh "gpg-agent not running" "it starts on demand, so this is usually fine"
+  fi
 fi
 
 # ------------------------------------------------------------------ minidev

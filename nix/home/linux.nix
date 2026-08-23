@@ -34,5 +34,18 @@
   # home-manager can own its systemd unit on Debian without sudo.
   services.keybase.enable = true;
 
+  # Headless box reached only over SSH, so pinentry has to be a terminal one:
+  # the graphical variants have no display to draw on, and gpg then fails with
+  # "No pinentry" on any operation needing the passphrase — including
+  # importing a secret key, not just signing. darwin.nix has pinentry_mac for
+  # the same reason; this is its counterpart.
+  services.gpg-agent = {
+    enable = true;
+    pinentry.package = pkgs.pinentry-curses;
+    enableZshIntegration = true;
+    defaultCacheTtl = 3600;
+    maxCacheTtl = 86400;
+  };
+
   programs.git.settings.gpg.program = "${pkgs.gnupg}/bin/gpg";
 }
