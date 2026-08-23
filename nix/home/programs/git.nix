@@ -5,7 +5,7 @@
 # on and losing a machine means revoking one key on GitHub rather than
 # rotating an identity everywhere. The GPG key stays in Keybase purely as an
 # identity proof — it no longer signs anything.
-{ config, ... }:
+{ config, pkgs, ... }:
 
 let
   signingKey = "${config.home.homeDirectory}/.ssh/id_ed25519.pub";
@@ -31,6 +31,16 @@ in
       };
       init.defaultBranch = "main";
       pull.rebase = true;
+
+      # gh's token answers HTTPS clones, the same thing osxkeychain does on
+      # the mac. Declared here because `gh auth setup-git` cannot work on a
+      # nix-managed host: it writes to ~/.config/git/config, which is a
+      # symlink into the read-only store. minidev hardcodes
+      # https://github.com/<repo> in clone.rb with no ssh path, so without
+      # this `dev clone` drops to a username/password prompt that GitHub has
+      # rejected since 2021.
+      credential."https://github.com".helper =
+        "!${pkgs.gh}/bin/gh auth git-credential";
 
       # Lets `git log --show-signature` verify SSH-signed commits locally.
       # Append one line per machine:  <email> ssh-ed25519 AAAA...
