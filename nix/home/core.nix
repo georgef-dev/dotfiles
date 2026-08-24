@@ -7,7 +7,7 @@
   imports = [
     ./programs/zsh.nix
     ./programs/git.nix
-    ./programs/tmux.nix
+    ./programs/tmux
     ./programs/direnv.nix
     ./programs/minidev.nix
   ];
