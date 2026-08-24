@@ -1,11 +1,18 @@
-# Phase 1: minimal but usable — the VM chsh's to this shell, so it has to
-# stand on its own. Phase 2 ports the rest of zsh/.zshrc-aliases and
-# zsh/.zshrc-functions and retires the stow package.
+# Port of zsh/.zshrc, zsh/.zshrc-aliases and zsh/.zshrc-functions.
 #
-# Three bugs from the old zsh/.zshrc are fixed by construction here:
+# Bugs from the old files fixed by construction here:
 #   - hardcoded /opt/homebrew zsh-syntax-highlighting path -> syntaxHighlighting
 #   - /opt/homebrew/opt/{libpq,mysql-client}/bin on PATH -> dropped, use devShells
 #   - the tec agent block appearing twice -> not carried over at all
+#   - `mkd` reads markdown with glow; it does not mkdir
+#   - `oops` was missing the leading `git`
+#   - `cleanlocalbranches` used `|` where it meant `&&`, and left `^main` unquoted
+#   - `ghcr-login` was a double-quoted alias, so $GITHUB_TOKEN was interpolated
+#     at definition time (i.e. empty) -> it is a function now
+#
+# Not carried over, deliberately: `lc` (colorls), `goodmorning` (graphite) and
+# `devswitch` (`dev tree`, a Shopify /opt/dev command the minidev fork does not
+# have). All three are work-machine tooling.
 { lib, pkgs, ... }:
 
 {
@@ -44,6 +51,19 @@
       gs = "git switch $(git branch | fzf)";
       gitdeletenontrackingbranches =
         "git branch -D $(git branch -vv | grep -v origin | awk '{print $1}')";
+
+      # `|` here was a typo for `&&` — the old alias piped checkout's (empty)
+      # stdout into `git branch`, so it ran regardless of whether checkout
+      # succeeded. `^main` was unquoted and word-split by zsh.
+      cleanlocalbranches =
+        ''git checkout main && git branch | grep -v "^main" | xargs git branch -D'';
+
+      # was `reset --soft HEAD~1` — no `git`.
+      oops = "git reset --soft HEAD~1";
+
+      set-secrets = "$(cat ~/.secrets)";
+
+      matrix = ''LC_ALL=C tr -c "[:digit:]" " " < /dev/urandom | dd cbs=$COLUMNS conv=unblock | GREP_COLOR="1;32" grep --color "[^ ]"'';
     };
 
     # Split deliberately. p10k's instant prompt must be the FIRST thing in
@@ -65,7 +85,18 @@
 
         source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/config/p10k-robbyrussell.zsh
 
-        mkd() { mkdir -p "$@" && cd "$@"; }
+        # Markdown CLI reader.
+        mkd() { glow -t "$@" }
+
+        schema_status() { opencode run "What's the status of migration: $@" }
+
+        # A function, not an alias: the old double-quoted alias expanded
+        # $GITHUB_TOKEN when the alias was defined, not when it was run.
+        ghcr-login() {
+          echo "$GITHUB_TOKEN" | docker login ghcr.io -u georgef-dev --password-stdin
+        }
+
+        source ${./cleanup.zsh}
       '')
     ];
   };

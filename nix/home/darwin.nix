@@ -13,6 +13,13 @@
 
   programs.git.settings.gpg.program = "${pkgs.gnupg}/bin/gpg";
 
+  # macOS-only: both hardcode paths that do not exist on the VM.
+  programs.zsh.shellAliases = {
+    brew-update =
+      "brew update && brew outdated && brew upgrade && brew cu --all --cleanup --yes && brew cleanup && brew doctor";
+    idrive = ''cd "$HOME/Library/Mobile Documents/com~apple~CloudDocs"'';
+  };
+
   # Homebrew must land AFTER nix on PATH so nix wins collisions. The guard
   # keeps brew out of the way inside a nix shell.
   programs.zsh.initContent = ''

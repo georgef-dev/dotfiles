@@ -5,7 +5,7 @@
 
 {
   imports = [
-    ./programs/zsh.nix
+    ./programs/zsh
     ./programs/git.nix
     ./programs/tmux
     ./programs/direnv.nix
