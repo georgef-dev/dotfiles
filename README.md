@@ -140,10 +140,18 @@ keys registered on your account.
 Delete that machine's key from GitHub (Settings → SSH and GPG keys) and drop
 its line from `allowed_signers`. Nothing else needs to change.
 
-## The GPG key
+## The GPG key — REVOKED
 
-`020388768FEBD380` is still in Keybase as an identity proof and still signs
-nothing. Old commits signed with it stay verified as long as the public key
-remains on your GitHub account.
+`020388768FEBD380` is **compromised and revoked**. Its unencrypted private key
+(`secret-key.asc`, no passphrase) was tracked in this public repository from
+commit `b970fe1` in 2022 until it was removed. Anyone who cloned the repo in
+that window holds a fully usable copy.
+
+Do not use this key. Do not re-import it. Commits it signed should be treated
+as unverifiable regardless of what GitHub displays — once the revocation
+certificate propagates, GitHub marks them unverified anyway.
+
+Commit signing is now per-machine SSH keys (see above), which is the reason
+this key has no remaining job. Nothing in `nix/` references it.
 
 SEE: https://docs.github.com/en/authentication/managing-commit-signature-verification

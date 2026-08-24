@@ -1,3 +1,13 @@
 config/coc/memos.json
 .DS_Store
 
+# Never commit key material. secret-key.asc — an unencrypted OpenPGP private
+# key — lived here from 2022 until it was removed; do not let it happen twice.
+*.asc
+*.gpg
+*.key
+*.pem
+id_*
+!id_*.pub
+.zshrc-secrets*
+.secrets
