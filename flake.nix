@@ -46,6 +46,7 @@
             ./nix/home/extras/infra.nix
             ./nix/home/extras/containers.nix
             ./nix/home/extras/media.nix
+            ./nix/home/extras/ai.nix
             host.platformModule
             {
               home = {
