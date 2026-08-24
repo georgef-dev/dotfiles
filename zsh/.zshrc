@@ -1,3 +1,6 @@
+# LEGACY — macOS/stow only, superseded by nix/home/programs/zsh/.
+# The Mac still symlinks ~/.zshrc here until Phase 4. Do not add to this file;
+# edit the Home Manager module instead.
 # ============================================================================
 # 1. P10K INSTANT PROMPT — must stay at the very top.
 # Anything that prompts the user (passwords, [y/n]) must go ABOVE this block.

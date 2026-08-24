@@ -1,3 +1,4 @@
+# LEGACY — see nix/home/programs/zsh/. Retired in Phase 4.
 # Markdown CLI reader
 function mkd() {
   glow -t "$@"
