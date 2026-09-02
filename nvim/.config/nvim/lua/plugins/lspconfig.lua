@@ -31,10 +31,7 @@ return {
           "prettier",
           "js-debug-adapter",
 
-          -- ruby stuff
-          -- "ruby-lsp",
-          -- "rubocop",
-          -- "sorbet",
+          -- ruby: ruby-lsp + rubocop come from each project's Gemfile, not Mason
 
           -- c/cpp stuff
           "clangd",
@@ -66,7 +63,6 @@ return {
           b.formatting.prettier.with {
              filetypes = { "html", "markdown", "css" },
           }, -- so prettier works only on these filetypes
-          b.formatting.rubocop,
 
           -- Lua
           b.formatting.stylua,
@@ -165,7 +161,7 @@ return {
 
     -- Simple servers with default config
     -- Note: rubocop removed - Shopify's custom cops require Rails/ActiveSupport context
-    local servers = { "html", "ts_ls", "clangd", "sorbet" }
+    local servers = { "html", "ts_ls", "clangd" }
     for _, server in ipairs(servers) do
       vim.lsp.enable(server)
     end
@@ -190,6 +186,50 @@ return {
       },
     })
     vim.lsp.enable("lua_ls")
+
+    -- ruby_lsp must run under the project's OWN toolchain, not whatever is on
+    -- Nvim's PATH. Two traps, both hit in practice:
+    --   1. cmd as a plain list inherits Nvim's cwd, so `bundle exec` resolves
+    --      whichever Gemfile sits above wherever Nvim started.
+    --   2. Even with the right Gemfile, gems in vendor/bundle have native
+    --      extensions linked to an absolute nix-store libruby. Running them
+    --      under Homebrew's same-version Ruby fails with "linked to
+    --      incompatible ... libruby". So re-enter the project env via direnv.
+    vim.lsp.config("ruby_lsp", {
+      cmd = function(dispatchers, config)
+        local root = (config and (config.cmd_cwd or config.root_dir)) or vim.fn.getcwd()
+        local argv = { "bundle", "exec", "ruby-lsp" }
+        local env = { DIRENV_LOG_FORMAT = "" }
+
+        if vim.fn.filereadable(root .. "/.envrc") == 1 and vim.fn.executable("direnv") == 1 then
+          argv = { "direnv", "exec", root, "bundle", "exec", "ruby-lsp" }
+          -- nix-direnv shells out to `nix`; if Nvim was launched from a GUI its
+          -- PATH may not include the nix profile, and direnv then silently
+          -- falls back to the ambient (wrong) Ruby.
+          local nix_bin = "/nix/var/nix/profiles/default/bin"
+          if vim.fn.isdirectory(nix_bin) == 1 then
+            env.PATH = nix_bin .. ":" .. (vim.env.PATH or "")
+          end
+        end
+
+        local gemfile = root .. "/Gemfile"
+        if vim.fn.filereadable(gemfile) == 1 then
+          env.BUNDLE_GEMFILE = gemfile
+        end
+
+        return vim.lsp.rpc.start(argv, dispatchers, { cwd = root, env = env })
+      end,
+      init_options = {
+        formatter = "none", -- conform.nvim owns Ruby formatting
+        linters = { "rubocop" },
+      },
+    })
+    vim.lsp.enable("ruby_lsp")
+
+    -- sorbet only in repos that actually have it configured
+    if vim.fn.filereadable(vim.fn.getcwd() .. "/sorbet/config") == 1 then
+      vim.lsp.enable("sorbet")
+    end
 
     -- cssls with custom settings (only if executable exists)
     if vim.fn.executable("vscode-css-language-server") == 1 then
