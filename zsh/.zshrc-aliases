@@ -17,5 +17,4 @@ alias goodmorning="gt co main && gt sync && gt submit --stack && dev up"
 alias newtask="git fetch --no-tags origin main && git checkout main"
 alias cleanlocalbranches="git checkout main | git branch | grep -v "^main" | xargs git branch -D"
 alias oops="reset --soft HEAD~1"
-alias gs='gt switch $(git branch | fzf)'
 alias rebasemain="git fetch --no-tags origin main && git rebase origin/main"
