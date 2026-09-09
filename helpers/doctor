@@ -46,9 +46,22 @@ if [ -f "$HOME/.zshrc" ]; then
   head -1 "$HOME/.zshrc" | grep -q 'p10k-instant-prompt' \
     && ok "p10k instant prompt is first line" \
     || no "p10k instant prompt not first" "it warns and self-disables unless it leads the file"
-  ! grep -q '/opt/homebrew' "$HOME/.zshrc" \
-    && ok "no macOS paths leaked into .zshrc" \
-    || no "found /opt/homebrew in .zshrc" "$(grep -n /opt/homebrew "$HOME/.zshrc" | head -3)"
+  # Linux only. On the mac /opt/homebrew in .zshrc is correct — it is the
+  # brew shellenv block from darwin.nix. This check exists to catch those
+  # hardcoded paths bleeding onto a host that has no Homebrew.
+  if [ "$IS_LINUX" = 1 ]; then
+    ! grep -q '/opt/homebrew' "$HOME/.zshrc" \
+      && ok "no macOS paths leaked into .zshrc" \
+      || no "found /opt/homebrew in .zshrc" "$(grep -n /opt/homebrew "$HOME/.zshrc" | head -3)"
+  else
+    # The mac equivalent: brew must not end up ahead of nix on PATH.
+    if [ -n "${PATH##*.nix-profile/bin*}" ] || \
+       [ "$(command -v git)" != "$HOME/.nix-profile/bin/git" ]; then
+      no "nix is not first on PATH" "git resolves to $(command -v git)"
+    else
+      ok "nix precedes homebrew on PATH"
+    fi
+  fi
   tail -5 "$HOME/.zshrc" | grep -q 'zsh-syntax-highlighting' \
     && ok "syntax-highlighting sourced last" \
     || meh "syntax-highlighting not near end of .zshrc"
@@ -207,9 +220,13 @@ fi
 sect "docker"
 if command -v docker >/dev/null 2>&1; then
   ok "docker CLI present"
-  docker info >/dev/null 2>&1 \
-    && ok "daemon reachable" \
-    || meh "daemon not reachable" "expected: install it at the system level (sudo apt install docker.io && sudo usermod -aG docker \$USER)"
+  if docker info >/dev/null 2>&1; then
+    ok "daemon reachable"
+  elif [ "$IS_LINUX" = 1 ]; then
+    meh "daemon not reachable" "sudo apt install docker.io && sudo usermod -aG docker \$USER"
+  else
+    meh "daemon not reachable" "colima start   (the CLI is from nix; colima is the daemon)"
+  fi
 else
   no "docker CLI missing"
 fi
