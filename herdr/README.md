@@ -16,13 +16,16 @@ herdr/
     apply.sh                          #   popup wrapper (prompts + layout)
     config.yaml                       #   V-layout Spreader template
     fix-macos-build.sh                #   builds the Rust binary in the Nix store
-  .stow-local-ignore                  # keeps plugins/ + spreader/ out of $HOME
+  lazygit/                            # Ctrl+s g lazygit popup
+    open.sh                           #   cd's into the focused pane's cwd, execs lazygit
+  .stow-local-ignore                  # keeps plugins/ + spreader/ + lazygit/ out of $HOME
 ```
 
-Only `.config/` is symlinked into `$HOME`. `plugins/` and `spreader/` are repo
-assets that herdr references by their absolute `~/dotfiles/herdr/...` path (see
-`plugins.json`, the `config.toml` popup command, and `apply.sh`), so they must
-not be stowed — `.stow-local-ignore` excludes them.
+Only `.config/` is symlinked into `$HOME`. `plugins/`, `spreader/`, and
+`lazygit/` are repo assets that herdr references by their absolute
+`~/dotfiles/herdr/...` path (see `plugins.json`, the `config.toml` popup
+commands, and `apply.sh`/`open.sh`), so they must not be stowed —
+`.stow-local-ignore` excludes them.
 
 ## Install
 
@@ -52,8 +55,9 @@ herdr server reload-config
 tmux-style keys under the `Ctrl+s` prefix, Rose Pine, mouse + copy-on-select,
 `alt+l` clear, no pane gaps, secure `pane_history=false`. Sidebar rows render
 the active pane's directory / worktree / branch / git-state via the sidebar
-plugin's metadata tokens. `Ctrl+h/k/l` route through `vim-herdr-navigation`;
-`Ctrl+s v` opens the Spreader popup.
+plugin's metadata tokens. `Ctrl+h/j/k/l` route through `vim-herdr-navigation`;
+`Ctrl+s v` opens the Spreader popup; `Ctrl+s g` opens lazygit over the focused
+pane's directory.
 
 ### plugins/active-pane-sidebar (custom)
 Python-stdlib plugin. On pane/workspace focus events it reports `active_dir`,
@@ -72,6 +76,12 @@ Pane command order is `dev cd -> dev tree -> apps`. See `spreader/README.md`.
 macOS AMFI SIGKILLs unsigned locally-built Rust binaries, so `fix-macos-build.sh`
 builds the Spreader binary inside the trusted Nix store and GC-roots it; the
 plugin config dir symlinks `nix-build` at that store path.
+
+### lazygit (custom `Ctrl+s g` launcher)
+`lazygit/open.sh` reads `$HERDR_ACTIVE_PANE_CWD` (falling back to `$PWD`),
+aborts with a "Not a git repo" message when the focused pane isn't inside a
+work tree, otherwise `cd`s there and execs `lazygit`. The popup is 90% x 90%.
+Requires `lazygit` on `$PATH` (Homebrew: `brew install lazygit`).
 
 ## Related packages
 - `zsh/.zshrc-functions` — precmd hook feeding the sidebar plugin.

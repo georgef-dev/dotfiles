@@ -66,6 +66,12 @@ command = "vim-herdr-navigation.left"
 description = "navigate left (vim/herdr)"
 
 [[keys.command]]
+key = "ctrl+j"
+type = "plugin_action"
+command = "vim-herdr-navigation.down"
+description = "navigate down (vim/herdr)"
+
+[[keys.command]]
 key = "ctrl+k"
 type = "plugin_action"
 command = "vim-herdr-navigation.up"
@@ -86,6 +92,15 @@ description = "create named V workspace"
 width = "70%"
 height = 26
 
+# Open lazygit in a popup over the focused pane's directory.
+[[keys.command]]
+key = "prefix+g"
+type = "popup"
+command = "/Users/georgeferreira/dotfiles/herdr/lazygit/open.sh"
+description = "lazygit on focused pane"
+width = "90%"
+height = "90%"
+
 [ui]
 mouse_capture = true
 copy_on_select = true
@@ -104,7 +119,8 @@ row_gap = 0
 rows = [
   ["state_icon", "workspace"],
   ["$active_dir"],
-  ["$worktree", "$branch", "$git_state"],
+  ["$worktree"],
+  ["$branch", "$git_state"],
   ["$pane_context"],
 ]
 

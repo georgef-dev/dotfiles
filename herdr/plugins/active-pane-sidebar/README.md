@@ -24,7 +24,8 @@ row_gap = 0
 rows = [
   ["state_icon", "workspace"],
   ["$active_dir"],
-  ["$worktree", "$branch", "$git_state"],
+  ["$worktree"],
+  ["$branch", "$git_state"],
   ["$pane_context"],
 ]
 ```
