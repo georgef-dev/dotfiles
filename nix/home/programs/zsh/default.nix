@@ -48,7 +48,6 @@
       fzc = ''fzf --height $(( $LINES / 2 )) -m --preview="bat --color=always {}"'';
       newtask = "git fetch --no-tags origin main && git checkout main";
       rebasemain = "git fetch --no-tags origin main && git rebase origin/main";
-      gs = "git switch $(git branch | fzf)";
       gitdeletenontrackingbranches =
         "git branch -D $(git branch -vv | grep -v origin | awk '{print $1}')";
 
