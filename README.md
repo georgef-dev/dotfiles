@@ -123,14 +123,19 @@ git commit --allow-empty -m test && git log --show-signature -1
 
 ## Verifying your own signatures locally
 
-`gpg.ssh.allowedSignersFile` points at `~/.config/git/allowed_signers`. Add
-one line per machine, otherwise `git log --show-signature` cannot verify even
-your own commits:
+`gpg.ssh.allowedSignersFile` points at `~/.config/git/allowed_signers`, which
+needs one line per machine — without it `git log --show-signature` cannot
+verify even your own commits.
 
+```bash
+./helpers/allowed-signers                  # add this machine
+./helpers/allowed-signers vm-dev-01        # also pull keys from those hosts
+./helpers/allowed-signers --list
 ```
-fs.georgee@gmail.com ssh-ed25519 AAAAC3Nz...   # m3-pro
-fs.georgee@gmail.com ssh-ed25519 AAAAC3Nz...   # vm-dev-01
-```
+
+Idempotent; re-running updates a key in place rather than duplicating it. The
+principal it writes is `user.email`, which is often *not* the comment baked
+into the key — git matches on the former.
 
 This only affects local verification — GitHub verifies independently from the
 keys registered on your account.
