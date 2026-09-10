@@ -34,7 +34,9 @@ commands, and `apply.sh`/`open.sh`), so they must not be stowed —
 stow herdr                      # -> ~/.config/herdr/config.toml
 
 # 2. Custom sidebar plugin (registers the absolute dotfiles path)
-herdr plugin install ~/dotfiles/herdr/plugins/active-pane-sidebar
+# `link`, not `install`: install takes OWNER/REPO and would read a path's
+# empty first component as the owner ("GitHub owner must not be empty").
+herdr plugin link ~/dotfiles/herdr/plugins/active-pane-sidebar
 # zsh precmd hook that feeds it lives in zsh/.zshrc-functions
 
 # 3. Spreader base plugin + config + macOS-safe binary
