@@ -1,0 +1,239 @@
+#!/usr/bin/env bash
+# Bare machine -> working environment. Idempotent; safe to re-run.
+#
+#   helpers/bootstrap [--host vm-dev-01|mac] [--dry-run]
+#
+# On Darwin this REFUSES to change anything unless given --host mac. The Mac
+# is a working machine; migrating it is a deliberate act, never a side effect
+# of running this script to see what it does.
+set -euo pipefail
+
+CYAN='\033[0;36m'; GREEN='\033[0;32m'; YELLOW='\033[0;33m'; RED='\033[0;31m'; NC='\033[0m'
+DOTFILES_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+REPO_URL="https://github.com/georgef-dev/dotfiles.git"
+
+HOST=""
+DRY_RUN=0
+CHANGED=(); SKIPPED=(); WOULD=()
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --host) HOST="${2:-}"; shift 2 ;;
+    --dry-run) DRY_RUN=1; shift ;;
+    -h|--help) sed -n '2,9p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    *) printf "${RED}unknown argument: %s${NC}\n" "$1" >&2; exit 2 ;;
+  esac
+done
+
+say()  { printf "${CYAN}==> %s${NC}\n" "$1"; }
+ok()   { printf "  ${GREEN}%s${NC}\n" "$1"; SKIPPED+=("$1"); }
+did()  { if [ "$DRY_RUN" = 1 ]; then printf "  ${YELLOW}would: %s${NC}\n" "$1"; WOULD+=("$1");
+         else printf "  ${GREEN}%s${NC}\n" "$1"; CHANGED+=("$1"); fi; }
+warn() { printf "  ${YELLOW}%s${NC}\n" "$1"; }
+run()  { if [ "$DRY_RUN" = 1 ]; then printf "  ${YELLOW}[dry-run] %s${NC}\n" "$*"; else eval "$*"; fi; }
+
+# ---------------------------------------------------------------- host guard
+UNAME="$(uname -s)"
+if [ -z "$HOST" ]; then
+  if [ "$UNAME" = "Darwin" ]; then
+    cat <<'MSG'
+This is a Mac and no --host was given, so nothing will be changed.
+
+Migrating this machine is opt-in. When you are ready:
+
+    helpers/bootstrap --host mac --dry-run   # read the plan first
+    helpers/bootstrap --host mac             # then, from a SECOND terminal
+
+Everything it does is additive: Homebrew stays installed, and Nix simply
+wins on PATH. Roll back with `home-manager generations`.
+MSG
+    exit 0
+  fi
+  HOST="vm-dev-01"
+fi
+
+case "$HOST" in
+  mac)       [ "$UNAME" = "Darwin" ] || { printf "${RED}--host mac on non-Darwin${NC}\n"; exit 1; } ;;
+  vm-dev-01) [ "$UNAME" = "Linux" ]  || { printf "${RED}--host vm-dev-01 on non-Linux${NC}\n"; exit 1; } ;;
+  *) printf "${RED}unknown host: %s (expected mac or vm-dev-01)${NC}\n" "$HOST"; exit 2 ;;
+esac
+
+printf "\n${CYAN}bootstrap: host=%s dry-run=%s${NC}\n\n" "$HOST" "$DRY_RUN"
+
+# ------------------------------------------------------- 1. apt prerequisites
+# git is needed to clone the repo that contains the flake, so it cannot come
+# from Nix. xz-utils is what the Nix installer needs to unpack itself.
+if [ "$HOST" = "vm-dev-01" ]; then
+  say "APT prerequisites"
+  APT_PKGS="curl git xz-utils ca-certificates qemu-guest-agent fuse3"
+  MISSING=""
+  for p in $APT_PKGS; do
+    dpkg -s "$p" >/dev/null 2>&1 || MISSING="$MISSING $p"
+  done
+  if [ -n "$MISSING" ]; then
+    run "sudo apt-get update -qq"
+    run "sudo apt-get install -y$MISSING"
+    did "installed:$MISSING"
+  else
+    ok "all present"
+  fi
+fi
+
+# --------------------------------------------------------------- 2. install nix
+say "Nix"
+if command -v nix >/dev/null 2>&1; then
+  ok "already installed ($(nix --version 2>/dev/null || echo unknown))"
+elif [ "$HOST" = "mac" ]; then
+  printf "${RED}  nix not found on the Mac — install it manually first${NC}\n"; exit 1
+else
+  run "curl -fsSL https://install.determinate.systems/nix | sh -s -- install --no-confirm"
+  did "installed nix (Determinate)"
+fi
+
+# Make nix usable within THIS invocation, not just in the next login shell.
+NIX_PROFILE_SH=/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+# shellcheck disable=SC1090
+[ -f "$NIX_PROFILE_SH" ] && . "$NIX_PROFILE_SH"
+
+# ------------------------------------------------------------ 3. clone dotfiles
+say "Dotfiles"
+if [ -d "$DOTFILES_DIR/.git" ]; then
+  ok "already at $DOTFILES_DIR"
+else
+  run "git clone $REPO_URL $HOME/dotfiles"
+  DOTFILES_DIR="$HOME/dotfiles"
+  did "cloned to $DOTFILES_DIR"
+fi
+
+# --------------------------------------------------------------- 4. tailscale
+# Deliberately NOT a nix package. tailscale is a daemon plus a CLI that must
+# stay in version lockstep, and home-manager cannot manage a system systemd
+# unit on Debian — pkgs.tailscale would give a CLI with nothing to talk to,
+# the same trap as the docker client. The official installer wires up
+# tailscaled, the TUN device, and apt-based updates.
+if [ "$HOST" = "vm-dev-01" ]; then
+  say "Tailscale"
+  if command -v tailscale >/dev/null 2>&1; then
+    ok "already installed ($(tailscale version 2>/dev/null | head -1))"
+  else
+    run "curl -fsSL https://tailscale.com/install.sh | sh"
+    did "installed tailscale"
+  fi
+
+  # Joining the tailnet needs auth. An auth key can come from the
+  # environment for unattended rebuilds; otherwise it stays a manual step,
+  # because a key does not belong in this repo.
+  if tailscale status >/dev/null 2>&1; then
+    ok "already on the tailnet"
+  elif [ -n "${TS_AUTHKEY:-}" ]; then
+    run "sudo tailscale up --ssh --auth-key '$TS_AUTHKEY'"
+    did "joined tailnet with --ssh"
+  else
+    warn "not on the tailnet" "run: sudo tailscale up --ssh"
+  fi
+fi
+
+# ----------------------------------------------------------------- 5. minidev
+# Cloned over HTTPS on purpose: a fresh VM has no SSH key yet, and the repo
+# vendors its deps (no submodules), so a plain clone is complete.
+say "minidev"
+MINIDEV_DIR="$HOME/src/github.com/georgef-dev/minidev"
+if [ -d "$MINIDEV_DIR/.git" ]; then
+  ok "already at $MINIDEV_DIR"
+else
+  run "mkdir -p '$(dirname "$MINIDEV_DIR")'"
+  run "git clone https://github.com/georgef-dev/minidev.git '$MINIDEV_DIR'"
+  did "cloned minidev"
+fi
+
+# ------------------------------------------------------------- 6. home-manager
+# -b bak is load-bearing: without it home-manager ERRORS OUT on any file that
+# already exists, and on the Mac every dotfile is currently a stow symlink.
+say "Home Manager"
+run "nix run home-manager/master -- switch -b bak --flake '$DOTFILES_DIR#gf@$HOST'"
+did "activated gf@$HOST"
+
+# The profile is populated now, but this script's PATH was fixed before it
+# existed. Prepend it so the stow step below can actually find stow, instead
+# of skipping with a warning and leaving ~/.config/nvim unlinked.
+PATH="$HOME/.nix-profile/bin:$PATH"
+export PATH
+
+# --------------------------------------------------------------- 7. login shell
+# chsh rejects a shell that is not listed in /etc/shells, and nix-installed
+# shells never are. Linux only — the Mac keeps its system zsh.
+if [ "$HOST" = "vm-dev-01" ]; then
+  say "Login shell"
+  NIX_ZSH="$HOME/.nix-profile/bin/zsh"
+  if [ ! -x "$NIX_ZSH" ]; then
+    warn "$NIX_ZSH not found; skipping"
+  elif [ "$(getent passwd "$USER" | cut -d: -f7)" = "$NIX_ZSH" ]; then
+    # getent, not $SHELL: $SHELL is whatever this session started with, so it
+    # still reads the old shell after a successful chsh and would re-run it.
+    ok "already $NIX_ZSH"
+  else
+    grep -qxF "$NIX_ZSH" /etc/shells 2>/dev/null \
+      || run "echo '$NIX_ZSH' | sudo tee -a /etc/shells >/dev/null"
+    run "chsh -s '$NIX_ZSH'"
+    did "login shell -> $NIX_ZSH (re-login to take effect)"
+  fi
+fi
+
+# ---------------------------------------------------------------- 8. ssh key
+# Commits are signed with SSH, using a key this machine generates itself and
+# that never leaves it. No passphrase: the box is reached over tailscale and
+# an unattended rebuild should not stall on a prompt.
+say "SSH signing key"
+SSH_KEY="$HOME/.ssh/id_ed25519"
+if [ -f "$SSH_KEY" ]; then
+  ok "already at $SSH_KEY"
+else
+  run "mkdir -p '$HOME/.ssh' && chmod 700 '$HOME/.ssh'"
+  run "ssh-keygen -t ed25519 -f '$SSH_KEY' -N '' -C '$USER@$(hostname)'"
+  did "generated $SSH_KEY"
+fi
+
+# --------------------------------------------------------------------- 9. stow
+# Configs home-manager deliberately does not own: nvim pins its own plugins
+# via lazy-lock.json, and ghostty/joplin are macOS GUI apps.
+say "Stow"
+STOW_PACKAGES="nvim herdr"
+[ "$HOST" = "mac" ] && STOW_PACKAGES="nvim herdr ghostty joplin"
+if command -v stow >/dev/null 2>&1; then
+  for pkg in $STOW_PACKAGES; do
+    [ -d "$DOTFILES_DIR/$pkg" ] && run "stow -d '$DOTFILES_DIR' -t '$HOME' -R $pkg"
+  done
+  did "stowed: $STOW_PACKAGES"
+else
+  warn "stow still not on PATH after activation — is it in core.nix?"
+fi
+
+# ------------------------------------------------------------------- summary
+printf "\n${CYAN}Summary${NC}\n"
+for c in "${CHANGED[@]:-}"; do [ -n "$c" ] && printf "  ${GREEN}changed${NC}  %s\n" "$c"; done
+for w in "${WOULD[@]:-}";   do [ -n "$w" ] && printf "  ${YELLOW}would${NC}    %s\n" "$w"; done
+for s in "${SKIPPED[@]:-}"; do [ -n "$s" ] && printf "  ${YELLOW}skipped${NC}  %s\n" "$s"; done
+
+cat <<'MSG'
+
+Manual steps that remain:
+  - gh auth login
+  - register this machine's SSH key with GitHub. BOTH are needed:
+      gh ssh-key add ~/.ssh/id_ed25519.pub --type authentication
+        required -- github https urls are rewritten to ssh, so without this
+        every clone, fetch and push fails
+      gh ssh-key add ~/.ssh/id_ed25519.pub --type signing
+        commits sign locally either way, but show "Unverified" without it
+  - for the docker CLI to reach a daemon:
+      sudo apt install docker.io && sudo usermod -aG docker "$USER"
+  - join the tailnet if it was skipped:  sudo tailscale up --ssh
+      (or export TS_AUTHKEY=... before running this script)
+
+IMPORTANT: this shell still has the PATH it started with, so nvim and the
+other new tools are not on it yet. Log out and back in, or run:
+
+    exec "$HOME/.nix-profile/bin/zsh" -l
+
+Then check everything with:  ./helpers/doctor
+MSG
+printf "\n${GREEN}Done.${NC}\n\n"

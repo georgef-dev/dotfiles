@@ -1,0 +1,56 @@
+id = "georgef.active-pane-sidebar"
+name = "Active Pane Sidebar"
+version = "0.1.0"
+min_herdr_version = "0.7.4"
+description = "Show focused-pane directory, worktree, Git state, and pane context in the workspace sidebar."
+platforms = ["linux", "macos"]
+
+[[actions]]
+id = "refresh"
+title = "Refresh active pane sidebar metadata"
+contexts = ["global"]
+command = ["python3", "active_pane_sidebar.py"]
+
+[[events]]
+on = "pane.focused"
+command = ["python3", "active_pane_sidebar.py"]
+
+[[events]]
+on = "pane.created"
+command = ["python3", "active_pane_sidebar.py"]
+
+[[events]]
+on = "pane.closed"
+command = ["python3", "active_pane_sidebar.py"]
+
+[[events]]
+on = "pane.moved"
+command = ["python3", "active_pane_sidebar.py"]
+
+[[events]]
+on = "pane.agent_detected"
+command = ["python3", "active_pane_sidebar.py"]
+
+[[events]]
+on = "pane.agent_status_changed"
+command = ["python3", "active_pane_sidebar.py"]
+
+[[events]]
+on = "tab.focused"
+command = ["python3", "active_pane_sidebar.py"]
+
+[[events]]
+on = "workspace.focused"
+command = ["python3", "active_pane_sidebar.py"]
+
+[[events]]
+on = "workspace.created"
+command = ["python3", "active_pane_sidebar.py"]
+
+[[events]]
+on = "worktree.created"
+command = ["python3", "active_pane_sidebar.py"]
+
+[[events]]
+on = "worktree.opened"
+command = ["python3", "active_pane_sidebar.py"]

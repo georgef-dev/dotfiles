@@ -1,11 +1,5 @@
-# Markdown CLI reader
-function mkd() {
-  glow -t "$@"
-}
-
-function schema_status() {
-  opencode run "What's the status of migration: $@"
-}
+# Sourced by programs/zsh/default.nix from the nix store. Copied verbatim
+# from zsh/.zshrc-functions; edit here, not there.
 
 # Delete local branches that are already merged upstream.
 # Defaults to origin's HEAD (usually origin/main), fetches/prunes first, and

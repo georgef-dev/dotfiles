@@ -1,0 +1,139 @@
+# Herdr configuration tuned to match ~/dotfiles/tmux/.tmux.conf.
+
+onboarding = false
+
+[theme]
+name = "rose-pine"
+
+[theme.custom]
+# Match the transparent Rose Pine tmux status bar.
+panel_bg = "reset"
+
+[terminal]
+# Match tmux split-window -c "#{pane_current_path}".
+new_cwd = "follow"
+
+[keys]
+prefix = "ctrl+s"
+
+# tmux-compatible session and tab behavior.
+help = "prefix+?"
+detach = "prefix+d"
+new_tab = "prefix+c"
+rename_tab = "prefix+comma"
+previous_tab = "prefix+p"
+next_tab = "prefix+n"
+switch_tab = "prefix+1..9"
+last_pane = "prefix+;"
+
+# tmux copy mode and vim-style pane navigation.
+copy_mode = "prefix+["
+focus_pane_left = "prefix+h"
+focus_pane_down = "prefix+j"
+focus_pane_up = "prefix+k"
+focus_pane_right = "prefix+l"
+
+# Match tmux's standard split keys, leaving q/a/v available for layout macros.
+split_vertical = "prefix+%"
+split_horizontal = 'prefix+"'
+
+close_pane = "prefix+x"
+zoom = "prefix+z"
+resize_mode = "prefix+r"
+workspace_picker = ["prefix+w"]
+toggle_sidebar = "prefix+b"
+
+# Vim-style movement while workspace navigation is open.
+navigate_workspace_up = "k"
+navigate_workspace_down = "j"
+navigate_pane_left = "h"
+navigate_pane_down = "down"
+navigate_pane_up = "up"
+navigate_pane_right = "l"
+
+# Reproduce the tmux Meta+l -> Ctrl+l binding.
+[[keys.command]]
+key = "alt+l"
+type = "shell"
+command = '"$HERDR_BIN_PATH" pane send-keys "$HERDR_ACTIVE_PANE_ID" ctrl+l'
+description = "clear pane"
+
+# Seamless Ctrl+h/j/k/l navigation across Neovim splits and Herdr panes.
+[[keys.command]]
+key = "ctrl+h"
+type = "plugin_action"
+command = "vim-herdr-navigation.left"
+description = "navigate left (vim/herdr)"
+
+[[keys.command]]
+key = "ctrl+j"
+type = "plugin_action"
+command = "vim-herdr-navigation.down"
+description = "navigate down (vim/herdr)"
+
+[[keys.command]]
+key = "ctrl+k"
+type = "plugin_action"
+command = "vim-herdr-navigation.up"
+description = "navigate up (vim/herdr)"
+
+[[keys.command]]
+key = "ctrl+l"
+type = "plugin_action"
+command = "vim-herdr-navigation.right"
+description = "navigate right (vim/herdr)"
+
+# Prompt for a name, then create the saved V-shaped workspace from this pane's directory.
+[[keys.command]]
+key = "prefix+v"
+type = "popup"
+command = "/Users/georgeferreira/dotfiles/herdr/spreader/apply.sh"
+description = "create named V workspace"
+width = "70%"
+height = 26
+
+# Open lazygit in a popup over the focused pane's directory.
+[[keys.command]]
+key = "prefix+g"
+type = "popup"
+command = "/Users/georgeferreira/dotfiles/herdr/lazygit/open.sh"
+description = "lazygit on focused pane"
+width = "90%"
+height = "90%"
+
+[ui]
+mouse_capture = true
+copy_on_select = true
+pane_borders = true
+pane_gaps = false
+prompt_new_tab_name = false
+hide_tab_bar_when_single_tab = false
+show_agent_labels_on_pane_borders = true
+agent_panel_sort = "priority"
+sidebar_width = 34
+sidebar_max_width = 40
+
+# Each workspace follows its focused pane through plugin-reported metadata.
+[ui.sidebar.spaces]
+row_gap = 0
+rows = [
+  ["state_icon", "workspace"],
+  ["$active_dir"],
+  ["$worktree"],
+  ["$branch", "$git_state"],
+  ["$pane_context"],
+]
+
+[ui.toast]
+delivery = "herdr"
+delay_seconds = 1
+
+[ui.sound]
+enabled = false
+
+[session]
+resume_agents_on_restore = true
+
+[experimental]
+# Pane output may contain prompts, tokens, or other secrets.
+pane_history = false

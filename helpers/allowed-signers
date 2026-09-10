@@ -1,0 +1,111 @@
+#!/usr/bin/env bash
+# Maintain ~/.config/git/allowed_signers, the file git needs to verify
+# SSH-signed commits locally. Without it `git log --show-signature` cannot
+# verify even your own commits. GitHub verifies independently, so this only
+# affects what you see on your own machine.
+#
+#   helpers/allowed-signers                 # add this machine's key
+#   helpers/allowed-signers vm-dev-01       # also pull keys from these hosts
+#   helpers/allowed-signers --list          # show current contents
+#
+# Idempotent: a key already present is updated in place, never duplicated.
+set -euo pipefail
+
+GREEN='\033[0;32m'; YELLOW='\033[0;33m'; RED='\033[0;31m'; CYAN='\033[0;36m'; NC='\033[0m'
+
+FILE="$(git config --get gpg.ssh.allowedSignersFile || true)"
+FILE="${FILE:-$HOME/.config/git/allowed_signers}"
+FILE="${FILE/#\~/$HOME}"
+
+# The principal must match user.email, NOT the comment baked into the key --
+# they are often different and only user.email is what git matches on.
+EMAIL="$(git config --get user.email || true)"
+if [ -z "$EMAIL" ]; then
+  printf "${RED}git user.email is not set; cannot pick a principal.${NC}\n" >&2
+  exit 1
+fi
+
+if [ "${1:-}" = "--list" ]; then
+  [ -f "$FILE" ] && cat "$FILE" || printf "${YELLOW}%s does not exist yet${NC}\n" "$FILE"
+  exit 0
+fi
+
+mkdir -p "$(dirname "$FILE")"
+touch "$FILE"
+
+# Adds one key, keyed on the base64 material so re-runs update rather than
+# append. $1 = "ssh-ed25519 AAAA... comment", $2 = label for the trailing note.
+add_key() {
+  local line="$1" label="$2" keytype b64 entry
+  keytype="$(printf '%s' "$line" | awk '{print $1}')"
+  b64="$(printf '%s' "$line" | awk '{print $2}')"
+
+  if [ -z "$keytype" ] || [ -z "$b64" ]; then
+    printf "  ${RED}skipped %s: unparseable key${NC}\n" "$label"
+    return
+  fi
+
+  entry="$EMAIL $keytype $b64 # $label"
+
+  if grep -qF "$b64" "$FILE" 2>/dev/null; then
+    # Same key already listed -- refresh the line in case email or label moved.
+    local tmp
+    tmp="$(mktemp)"
+    grep -vF "$b64" "$FILE" > "$tmp" || true
+    printf '%s\n' "$entry" >> "$tmp"
+    mv "$tmp" "$FILE"
+    printf "  ${GREEN}updated${NC}  %s\n" "$label"
+  else
+    printf '%s\n' "$entry" >> "$FILE"
+    printf "  ${GREEN}added${NC}    %s\n" "$label"
+  fi
+}
+
+printf "\n${CYAN}allowed_signers${NC}  %s\n${CYAN}principal${NC}        %s\n\n" "$FILE" "$EMAIL"
+
+# --- this machine ---------------------------------------------------------
+LOCAL_KEY="$(git config --get user.signingkey || true)"
+LOCAL_KEY="${LOCAL_KEY/#\~/$HOME}"
+[ -n "$LOCAL_KEY" ] && [ -f "$LOCAL_KEY" ] || LOCAL_KEY="$HOME/.ssh/id_ed25519.pub"
+
+if [ -f "$LOCAL_KEY" ]; then
+  add_key "$(cat "$LOCAL_KEY")" "$(hostname -s)"
+else
+  printf "  ${RED}no local public key at %s${NC}\n" "$LOCAL_KEY"
+fi
+
+# --- other machines, over ssh --------------------------------------------
+# A hard timeout is required, not just ssh's own options: Tailscale SSH can
+# interpose a browser re-auth prompt that BatchMode cannot suppress, and it
+# waits forever. -n keeps ssh off this script's stdin.
+TIMEOUT_CMD=""
+for c in timeout gtimeout; do
+  command -v "$c" >/dev/null 2>&1 && { TIMEOUT_CMD="$c"; break; }
+done
+
+fetch_remote_key() {
+  local host="$1"
+  if [ -n "$TIMEOUT_CMD" ]; then
+    "$TIMEOUT_CMD" 10 ssh -n -o BatchMode=yes -o ConnectTimeout=5 \
+      -o NumberOfPasswordPrompts=0 "$host" 'cat ~/.ssh/id_ed25519.pub' 2>/dev/null
+  else
+    ssh -n -o BatchMode=yes -o ConnectTimeout=5 \
+      -o NumberOfPasswordPrompts=0 "$host" 'cat ~/.ssh/id_ed25519.pub' 2>/dev/null
+  fi
+}
+
+if [ $# -gt 0 ] && [ -z "$TIMEOUT_CMD" ]; then
+  printf "  ${YELLOW}note${NC}     no timeout(1) found; a stalled host will block\n"
+fi
+
+for host in "$@"; do
+  if remote_key="$(fetch_remote_key "$host")" && [ -n "$remote_key" ]; then
+    add_key "$remote_key" "$host"
+  else
+    printf "  ${YELLOW}skipped${NC}  %s (unreachable, needs re-auth, or no key there)\n" "$host"
+    printf "           try:  ssh %s true\n" "$host"
+  fi
+done
+
+chmod 600 "$FILE"
+printf "\n${CYAN}%s now lists %s key(s).${NC}\n\n" "$FILE" "$(grep -c . "$FILE")"

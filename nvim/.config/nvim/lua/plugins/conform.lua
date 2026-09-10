@@ -3,6 +3,10 @@ return {
   event = { "BufWritePre" },
   cmd = { "ConformInfo" },
   opts = {
+    format_on_save = {
+      timeout_ms = 3000,
+      lsp_format = "never", -- conform runs the CLI formatters; LSPs never format
+    },
     formatters_by_ft = {
       ruby = { "rubocop" },
       lua = { "stylua" },

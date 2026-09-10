@@ -1,0 +1,22 @@
+# Generic V layout rooted at the invocation cwd (no workspace root override).
+# Shape:
+#   +-------------+----------+
+#   |             |  shell   |
+#   |    nvim     |----------|
+#   |   (focus)   |  shell   |
+#   +-------------+----------+
+workspaces:
+  - name: dev
+    tabs:
+      - label: work
+        panes:
+          - command: devx pi
+            focus: true
+          # Herdr ratios size the existing pane. Keep nvim at 60% width.
+          - split: right
+            ratio: 0.6
+            command: nvim
+          # Keep the right-top shell at 70%, leaving 30% below.
+          - split: down
+            ratio: 0.7
+            # empty shell pane under the right column

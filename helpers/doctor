@@ -1,0 +1,235 @@
+#!/usr/bin/env bash
+# Read-only health check for a Home Manager host. Changes nothing.
+#   helpers/doctor
+# Exit code is the number of failures.
+set -uo pipefail
+
+GREEN='\033[0;32m'; RED='\033[0;31m'; YELLOW='\033[0;33m'; CYAN='\033[0;36m'; NC='\033[0m'
+PASS=0; FAIL=0; WARN=0
+
+ok()   { printf "  ${GREEN}pass${NC}  %s\n" "$1"; PASS=$((PASS+1)); }
+no()   { printf "  ${RED}FAIL${NC}  %s\n" "$1"; [ -n "${2:-}" ] && printf "        %s\n" "$2"; FAIL=$((FAIL+1)); }
+meh()  { printf "  ${YELLOW}warn${NC}  %s\n" "$1"; [ -n "${2:-}" ] && printf "        %s\n" "$2"; WARN=$((WARN+1)); }
+sect() { printf "\n${CYAN}%s${NC}\n" "$1"; }
+
+IS_LINUX=0; [ "$(uname -s)" = "Linux" ] && IS_LINUX=1
+NIXBIN="$HOME/.nix-profile/bin"
+
+# --------------------------------------------------------------- activation
+sect "Home Manager"
+if [ -d "$HOME/.local/state/nix/profiles" ] && ls "$HOME"/.local/state/nix/profiles/home-manager* >/dev/null 2>&1; then
+  GEN=$(ls -d "$HOME"/.local/state/nix/profiles/home-manager-*-link 2>/dev/null | wc -l | tr -d ' ')
+  ok "activated ($GEN generation(s))"
+else
+  no "no home-manager generation found" "did 'home-manager switch' actually complete?"
+fi
+command -v home-manager >/dev/null 2>&1 \
+  && ok "home-manager on PATH" \
+  || meh "home-manager not on PATH" "fine if you only ever use 'nix run home-manager'"
+
+# --------------------------------------------------------------------- shell
+sect "Shell"
+[ -x "$NIXBIN/zsh" ] && ok "nix zsh present" || no "$NIXBIN/zsh missing"
+
+if [ "$IS_LINUX" = 1 ]; then
+  LOGIN_SHELL=$(getent passwd "$USER" 2>/dev/null | cut -d: -f7)
+  [ "$LOGIN_SHELL" = "$NIXBIN/zsh" ] \
+    && ok "login shell is nix zsh" \
+    || no "login shell is '$LOGIN_SHELL'" "expected $NIXBIN/zsh — log out and back in if you just ran chsh"
+  grep -qxF "$NIXBIN/zsh" /etc/shells 2>/dev/null \
+    && ok "listed in /etc/shells" \
+    || no "not in /etc/shells" "chsh will refuse until it is"
+fi
+
+if [ -f "$HOME/.zshrc" ]; then
+  ok ".zshrc generated"
+  head -1 "$HOME/.zshrc" | grep -q 'p10k-instant-prompt' \
+    && ok "p10k instant prompt is first line" \
+    || no "p10k instant prompt not first" "it warns and self-disables unless it leads the file"
+  # Linux only. On the mac /opt/homebrew in .zshrc is correct — it is the
+  # brew shellenv block from darwin.nix. This check exists to catch those
+  # hardcoded paths bleeding onto a host that has no Homebrew.
+  if [ "$IS_LINUX" = 1 ]; then
+    ! grep -q '/opt/homebrew' "$HOME/.zshrc" \
+      && ok "no macOS paths leaked into .zshrc" \
+      || no "found /opt/homebrew in .zshrc" "$(grep -n /opt/homebrew "$HOME/.zshrc" | head -3)"
+  else
+    # The mac equivalent: brew must not end up ahead of nix on PATH.
+    if [ -n "${PATH##*.nix-profile/bin*}" ] || \
+       [ "$(command -v git)" != "$HOME/.nix-profile/bin/git" ]; then
+      no "nix is not first on PATH" "git resolves to $(command -v git)"
+    else
+      ok "nix precedes homebrew on PATH"
+    fi
+  fi
+  tail -5 "$HOME/.zshrc" | grep -q 'zsh-syntax-highlighting' \
+    && ok "syntax-highlighting sourced last" \
+    || meh "syntax-highlighting not near end of .zshrc"
+else
+  no ".zshrc not generated"
+fi
+
+if [ -x "$NIXBIN/zsh" ]; then
+  OUT=$("$NIXBIN/zsh" -i -c 'echo __ZOK__' 2>&1)
+  echo "$OUT" | grep -q '__ZOK__' \
+    && ok "interactive zsh starts" \
+    || no "interactive zsh failed" "$(echo "$OUT" | head -3)"
+  echo "$OUT" | grep -qi 'command not found\|no such file' \
+    && meh "startup emitted missing-file errors" "$(echo "$OUT" | grep -i 'command not found\|no such file' | head -3)"
+fi
+
+# ------------------------------------------------------------ generic linux
+if [ "$IS_LINUX" = 1 ]; then
+  sect "Non-NixOS integration"
+  # shellcheck disable=SC2016
+  XDD=$("$NIXBIN/zsh" -i -c 'echo $XDG_DATA_DIRS' 2>/dev/null | tail -1)
+  echo "$XDD" | grep -q '/nix/' \
+    && ok "XDG_DATA_DIRS includes nix paths" \
+    || no "XDG_DATA_DIRS has no nix paths" "targets.genericLinux.enable may not be set"
+  LOCERR=$(locale 2>&1 >/dev/null | head -2)
+  [ -z "$LOCERR" ] && ok "locale is clean" || no "locale errors" "$LOCERR"
+fi
+
+# ---------------------------------------------------------------- toolchain
+sect "Tools resolve to nix"
+for t in git nvim tmux rg jq fzf gh direnv terraform; do
+  P=$(command -v "$t" 2>/dev/null)
+  if [ -z "$P" ]; then no "$t not found"
+  elif echo "$P" | grep -q '/nix/store\|.nix-profile'; then ok "$t -> ${P}"
+  else meh "$t -> $P" "not from nix"
+  fi
+done
+
+sect "Ambient fallback runtimes"
+for t in python3 node go; do
+  if ! command -v "$t" >/dev/null 2>&1; then no "$t missing"; continue; fi
+  case "$t" in
+    go) V=$(go version 2>&1 | head -1) ;;   # go wants `go version`, not --version
+    *)  V=$("$t" --version 2>&1 | head -1) ;;
+  esac
+  ok "$t ($V)"
+done
+
+# ------------------------------------------------------------------- direnv
+sect "direnv"
+if "$NIXBIN/zsh" -i -c 'echo $precmd_functions' 2>/dev/null | grep -q '_direnv_hook'; then
+  ok "chpwd hook installed"
+else
+  no "direnv hook not active in zsh" "per-project devShells will not load"
+fi
+
+# ---------------------------------------------------------------------- git
+sect "git"
+[ "$(git config --get user.email)" = "fs.georgee@gmail.com" ] \
+  && ok "user.email" || no "user.email is '$(git config --get user.email)'"
+[ "$(git config --get commit.gpgsign)" = "true" ] \
+  && ok "commit.gpgsign on" || meh "commit.gpgsign not on"
+FMT=$(git config --get gpg.format)
+[ "$FMT" = "ssh" ] && ok "signing format is ssh" || no "gpg.format is '$FMT'" "expected ssh"
+
+KEY=$(git config --get user.signingkey)
+if [ -n "$KEY" ]; then
+  KEY_EXPANDED="${KEY/#\~/$HOME}"
+  if [ -f "$KEY_EXPANDED" ]; then
+    ok "signing key $KEY_EXPANDED"
+    # The real test: can this machine actually produce a signature?
+    if echo test | ssh-keygen -Y sign -f "${KEY_EXPANDED%.pub}" -n git >/dev/null 2>&1; then
+      ok "can sign (private half usable, no passphrase prompt)"
+    else
+      no "cannot sign with $KEY_EXPANDED" "private half missing or passphrase-locked"
+    fi
+  else
+    no "signing key $KEY_EXPANDED does not exist" "ssh-keygen -t ed25519 -f ${KEY_EXPANDED%.pub}"
+  fi
+fi
+
+# The rewrite is what lets minidev's hardcoded HTTPS clone URLs work, so
+# check both the rule and that the key it depends on is actually accepted.
+REWRITE=$(git config --get url."git@github.com:".insteadOf)
+[ "$REWRITE" = "https://github.com/" ] \
+  && ok "github https -> ssh rewrite active" \
+  || no "no https->ssh rewrite" "dev clone will prompt for a password"
+
+SSH_OUT=$(ssh -o BatchMode=yes -o StrictHostKeyChecking=accept-new -T git@github.com 2>&1 || true)
+if echo "$SSH_OUT" | grep -q "successfully authenticated"; then
+  ok "ssh auth to github works ($(echo "$SSH_OUT" | sed 's/^Hi \([^!]*\)!.*/\1/'))"
+else
+  no "ssh auth to github failed" "gh ssh-key add ~/.ssh/id_ed25519.pub --type authentication"
+fi
+
+ALLOWED=$(git config --get gpg.ssh.allowedSignersFile)
+if [ -n "$ALLOWED" ] && [ -f "${ALLOWED/#\~/$HOME}" ]; then
+  ok "allowed_signers present"
+else
+  meh "no allowed_signers file" "only affects local verification of signatures"
+fi
+
+# --------------------------------------------------------------------- stow
+sect "Stow-managed configs"
+[ -L "$HOME/.config/nvim" ] && ok "nvim symlinked" || no ".config/nvim is not a symlink"
+[ -f "$HOME/.config/tmux/tmux.conf" ] && ok "tmux.conf generated" || meh "no ~/.config/tmux/tmux.conf"
+
+# ------------------------------------------------------------------ keybase
+sect "keybase"
+if command -v keybase >/dev/null 2>&1; then
+  ok "CLI present ($(keybase version -S 2>/dev/null | head -1))"
+  if [ "$IS_LINUX" = 1 ]; then
+    systemctl --user is-active --quiet keybase 2>/dev/null \
+      && ok "keybase user service running" \
+      || meh "keybase service not running" "systemctl --user start keybase"
+  fi
+  keybase status >/dev/null 2>&1 \
+    && ok "logged in" \
+    || meh "not logged in" "keybase login"
+  if [ "$IS_LINUX" = 1 ]; then
+    # pull-private reads from KBFS, so without it the key import finds nothing
+    systemctl --user is-active --quiet kbfs 2>/dev/null \
+      && ok "kbfs running" \
+      || meh "kbfs not running" "keybase pgp pull-private needs it"
+  fi
+else
+  no "keybase not installed"
+fi
+
+# ---------------------------------------------------------------- tailscale
+if [ "$IS_LINUX" = 1 ]; then
+  sect "tailscale"
+  if command -v tailscale >/dev/null 2>&1; then
+    ok "CLI present ($(tailscale version 2>/dev/null | head -1))"
+    if systemctl is-active --quiet tailscaled 2>/dev/null; then
+      ok "tailscaled running"
+    else
+      no "tailscaled not running" "sudo systemctl enable --now tailscaled"
+    fi
+    if tailscale status >/dev/null 2>&1; then
+      ok "on the tailnet ($(tailscale ip -4 2>/dev/null | head -1))"
+      if tailscale status --json 2>/dev/null | grep -q '"RunningSSHServer": *true'; then
+        ok "tailscale ssh enabled"
+      else
+        meh "tailscale ssh not enabled" "sudo tailscale up --ssh"
+      fi
+    else
+      no "not on the tailnet" "sudo tailscale up --ssh"
+    fi
+  else
+    no "tailscale not installed"
+  fi
+fi
+
+# ------------------------------------------------------------------- docker
+sect "docker"
+if command -v docker >/dev/null 2>&1; then
+  ok "docker CLI present"
+  if docker info >/dev/null 2>&1; then
+    ok "daemon reachable"
+  elif [ "$IS_LINUX" = 1 ]; then
+    meh "daemon not reachable" "sudo apt install docker.io && sudo usermod -aG docker \$USER"
+  else
+    meh "daemon not reachable" "colima start   (the CLI is from nix; colima is the daemon)"
+  fi
+else
+  no "docker CLI missing"
+fi
+
+printf "\n${CYAN}%d passed, %d failed, %d warnings${NC}\n\n" "$PASS" "$FAIL" "$WARN"
+exit "$FAIL"

@@ -14,7 +14,6 @@ top=$(git rev-parse --show-toplevel 2>/dev/null)
 worktree=$(echo "$top" | sed -n 's|.*/trees/\([^/]*\).*|\1|p')
 
 # Colors (Rose Pine palette)
-LABEL='#[fg=#908caa]'
 WT='#[fg=#c4a7e7]'        # iris
 BR_ICON='#[fg=#c4a7e7]'   # iris (purple) for branch glyph
 BR='#[fg=#ebbcba]'        # rose
