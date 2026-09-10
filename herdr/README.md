@@ -37,7 +37,7 @@ stow herdr                      # -> ~/.config/herdr/config.toml
 # `link`, not `install`: install takes OWNER/REPO and would read a path's
 # empty first component as the owner ("GitHub owner must not be empty").
 herdr plugin link ~/dotfiles/herdr/plugins/active-pane-sidebar
-# zsh precmd hook that feeds it lives in zsh/.zshrc-functions
+# zsh precmd hook that feeds it lives in nix/home/programs/zsh/
 
 # 3. Spreader base plugin + config + macOS-safe binary
 herdr plugin install yuk1ty/herdr-spreader          # or the current source
@@ -86,7 +86,7 @@ work tree, otherwise `cd`s there and execs `lazygit`. The popup is 90% x 90%.
 Requires `lazygit` on `$PATH` (Homebrew: `brew install lazygit`).
 
 ## Related packages
-- `zsh/.zshrc-functions` — precmd hook feeding the sidebar plugin.
+- `nix/home/programs/zsh/default.nix` — precmd hook feeding the sidebar plugin.
 - `nvim/.config/nvim/lua/plugins/nvim-tmux-navigation.lua` — seamless nvim/herdr/tmux navigation.
 - `nvim/.config/nvim/lua/plugins/test.lua` — vim-test `herdr` strategy (splits + reuses its own pane).
 

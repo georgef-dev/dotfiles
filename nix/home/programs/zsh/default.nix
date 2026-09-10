@@ -1,4 +1,4 @@
-# Port of zsh/.zshrc, zsh/.zshrc-aliases and zsh/.zshrc-functions.
+# Owns the shell config formerly in the zsh/ stow package, retired in Phase 4.
 #
 # Bugs from the old files fixed by construction here:
 #   - hardcoded /opt/homebrew zsh-syntax-highlighting path -> syntaxHighlighting
@@ -90,6 +90,23 @@
         # Re-run `p10k configure`, then copy ~/.p10k.zsh back over
         # nix/home/programs/zsh/p10k.zsh to change it.
         [[ -r ~/.p10k.zsh ]] && source ~/.p10k.zsh
+
+        # Keep the herdr workspace sidebar aligned with this pane after each
+        # prompt. Ported from zsh/.zshrc-functions in Phase 4; it had stopped
+        # running at the mac migration, when that file stopped being sourced.
+        autoload -Uz add-zsh-hook
+        _herdr_active_pane_sidebar_precmd() {
+          emulate -L zsh
+          [[ -n "''${HERDR_PANE_ID:-}" ]] || return 0
+
+          local script="$HOME/dotfiles/herdr/plugins/active-pane-sidebar/active_pane_sidebar.py"
+          [[ -x "$script" ]] || return 0
+          "$script" --pane-id "$HERDR_PANE_ID" >/dev/null 2>&1 &!
+        }
+
+        if (( ''${precmd_functions[(Ie)_herdr_active_pane_sidebar_precmd]} == 0 )); then
+          add-zsh-hook precmd _herdr_active_pane_sidebar_precmd
+        fi
 
         # Rebuild and activate this host's home-manager config.
         #   hms                  switch

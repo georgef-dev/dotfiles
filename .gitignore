@@ -11,3 +11,10 @@ id_*
 !id_*.pub
 .zshrc-secrets*
 .secrets
+
+# herdr writes runtime state into ~/.config/herdr, which is a stow symlink
+# into this repo, so its logs and session state land here uninvited.
+herdr/.config/herdr/*.log
+herdr/.config/herdr/session.json
+herdr/.config/herdr/release-notes.json
+herdr/.config/herdr/.plugins.lock

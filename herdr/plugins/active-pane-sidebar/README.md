@@ -39,7 +39,7 @@ herdr plugin action invoke georgef.active-pane-sidebar.refresh
 
 ## Refresh behavior
 
-Manifest hooks refresh metadata when pane, tab, workspace, worktree, or agent focus/state changes. The zsh `precmd` hook in `~/dotfiles/zsh/.zshrc-functions` also refreshes after each shell command, so `cd` and Git changes appear without a polling process.
+Manifest hooks refresh metadata when pane, tab, workspace, worktree, or agent focus/state changes. The zsh `precmd` hook in `nix/home/programs/zsh/default.nix` also refreshes after each shell command, so `cd` and Git changes appear without a polling process.
 
 Only the focused pane for a workspace may update that workspace's tokens. A prompt completing in another split cannot overwrite the displayed context.
 
