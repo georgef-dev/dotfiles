@@ -91,6 +91,25 @@
         # nix/home/programs/zsh/p10k.zsh to change it.
         [[ -r ~/.p10k.zsh ]] && source ~/.p10k.zsh
 
+        # Rebuild and activate this host's home-manager config.
+        #   hms                  switch
+        #   hms --show-trace     extra flags are passed through
+        #
+        # A timestamped backup suffix rather than a plain `bak`: -b only
+        # writes a backup when a file is actually in the way, so this costs
+        # nothing normally, but it stops a second collision from aborting the
+        # switch because ~/.zshrc.bak already exists.
+        hms() {
+          local host
+          case "$(uname -s)" in
+            Darwin) host=mac ;;
+            Linux)  host=vm-dev-01 ;;
+            *) print -u2 "hms: unsupported platform: $(uname -s)"; return 1 ;;
+          esac
+          home-manager switch -b "bak-$(date +%Y%m%d%H%M%S)" \
+            --flake "$HOME/dotfiles#gf@$host" "$@"
+        }
+
         # Markdown CLI reader.
         mkd() { glow -t "$@" }
 
