@@ -197,8 +197,8 @@ fi
 # Configs home-manager deliberately does not own: nvim pins its own plugins
 # via lazy-lock.json, and ghostty/joplin are macOS GUI apps.
 say "Stow"
-STOW_PACKAGES="nvim"
-[ "$HOST" = "mac" ] && STOW_PACKAGES="nvim ghostty joplin"
+STOW_PACKAGES="nvim herdr"
+[ "$HOST" = "mac" ] && STOW_PACKAGES="nvim herdr ghostty joplin"
 if command -v stow >/dev/null 2>&1; then
   for pkg in $STOW_PACKAGES; do
     [ -d "$DOTFILES_DIR/$pkg" ] && run "stow -d '$DOTFILES_DIR' -t '$HOME' -R $pkg"
