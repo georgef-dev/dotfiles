@@ -7,6 +7,13 @@
   # nix glibc — without it, git/perl emit `setlocale` warnings on every call.
   targets.genericLinux.enable = true;
 
+  # genericLinux.enable turns this on by default, which makes every activation
+  # warn that the GPU is not set up and adds a non-nixos-gpu package to the
+  # profile. The check is advisory only -- it reads /run/opengl-driver and
+  # prints -- and this is a headless Proxmox VM reached over SSH with no GPU
+  # and no graphical apps. Flip it back if that ever changes.
+  targets.genericLinux.gpu.enable = false;
+
   # Two tools are deliberately absent from this list because they are
   # daemon+CLI pairs that must stay in version lockstep, and home-manager
   # cannot manage a system systemd unit on Debian:
