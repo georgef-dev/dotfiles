@@ -28,6 +28,8 @@ is opt-in:
 
 # Nix / Home Manager
 
+Day-to-day tasks: [docs/using-nix-home-manager.md](docs/using-nix-home-manager.md).
+
 Packages and most dotfiles are declared in a flake and pinned by
 `flake.lock`, so both machines get identical versions.
 
