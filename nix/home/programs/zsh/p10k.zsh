@@ -789,10 +789,15 @@
 
   # Tip: If you want to see just the icon without "pure" and "impure", uncomment the next line.
   # The segment shows $IN_NIX_SHELL by default, which is always the literal
-  # "impure" -- true but useless. Show the devShell's name instead, so the
-  # prompt says WHICH toolchain is live. mkShell appends "-env", stripped
-  # here. Falls back to $IN_NIX_SHELL for shells that set no name.
-  typeset -g POWERLEVEL9K_NIX_SHELL_CONTENT_EXPANSION='${${name:+${name%-env}}:-$IN_NIX_SHELL}'
+  # "impure" -- true but useless. Show what is actually loaded instead:
+  #
+  #   1. the devShell's name, minus the "-env" mkShell appends
+  #   2. an unnamed mkShell defaults to "nix-shell-env", which says nothing,
+  #      so fall through to the direnv project directory
+  #   3. otherwise $IN_NIX_SHELL, for a bare `nix develop` with no direnv
+  #
+  # Pure expansion, no command substitution -- this runs on every prompt.
+  typeset -g POWERLEVEL9K_NIX_SHELL_CONTENT_EXPANSION='${${${name%-env}:#nix-shell}:-${${DIRENV_DIR:t}:-$IN_NIX_SHELL}}'
 
   # Custom icon.
   # typeset -g POWERLEVEL9K_NIX_SHELL_VISUAL_IDENTIFIER_EXPANSION='⭐'
