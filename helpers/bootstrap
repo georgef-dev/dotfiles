@@ -199,9 +199,21 @@ fi
 say "Stow"
 STOW_PACKAGES="nvim herdr"
 [ "$HOST" = "mac" ] && STOW_PACKAGES="nvim herdr ghostty joplin"
+
+# herdr is stowed --no-folding so ~/.config/herdr is a real directory with
+# only config.toml symlinked. Folded, the whole directory is one link into
+# this repo, and everything herdr writes -- logs, session.json, plugins.json,
+# and any `herdr plugin install` checkout -- lands in the working tree.
+no_folding_pkg() { [ "$1" = "herdr" ]; }
+
 if command -v stow >/dev/null 2>&1; then
   for pkg in $STOW_PACKAGES; do
-    [ -d "$DOTFILES_DIR/$pkg" ] && run "stow -d '$DOTFILES_DIR' -t '$HOME' -R $pkg"
+    [ -d "$DOTFILES_DIR/$pkg" ] || continue
+    if no_folding_pkg "$pkg"; then
+      run "stow --no-folding -d '$DOTFILES_DIR' -t '$HOME' -R $pkg"
+    else
+      run "stow -d '$DOTFILES_DIR' -t '$HOME' -R $pkg"
+    fi
   done
   did "stowed: $STOW_PACKAGES"
 else
