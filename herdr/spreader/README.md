@@ -32,11 +32,10 @@ config_dir=$(herdr plugin config-dir herdr-spreader)
 ln -sfn ~/dotfiles/herdr/spreader/config.yaml "$config_dir/config.yaml"
 ```
 
-On this managed macOS machine, locally built unsigned Rust binaries are blocked by AMFI. Build Spreader into the trusted Nix store and link the plugin to it:
-
-```bash
-~/dotfiles/herdr/spreader/fix-macos-build.sh
-```
+On macOS, locally built unsigned Rust binaries are blocked by AMFI.
+`nix/pkgs/herdr-spreader.nix` builds the binary in the trusted Nix store, and
+`nix/home/programs/herdr.nix` links the plugin to it on `hms` — nothing to run
+by hand.
 
 Apply from the active pane's project directory:
 
