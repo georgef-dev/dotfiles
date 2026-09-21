@@ -10,6 +10,7 @@
     ./programs/tmux
     ./programs/direnv.nix
     ./programs/minidev.nix
+    ./programs/herdr.nix
   ];
 
   programs.home-manager.enable = true;
@@ -30,11 +31,6 @@
     shellcheck
     mosh
     nmap
-    # Terminal multiplexer. Config is the herdr/ stow package, not a nix
-    # module -- its plugins reference absolute ~/dotfiles paths.
-    # Resolves to 0.8.0 from the pinned nixpkgs; 0.9.0 is current upstream,
-    # so `nix flake update` is the lever if a newer version is needed.
-    herdr
     keybase # identity + encrypted storage, not just the gpg key
     lolcat
     stow # still needed while nvim/ghostty/joplin remain stow packages
