@@ -15,7 +15,6 @@ herdr/
   spreader/                           # Ctrl+s v workspace launcher
     apply.sh                          #   popup wrapper (prompts + layout)
     config.yaml                       #   V-layout Spreader template
-    fix-macos-build.sh                #   builds the Rust binary in the Nix store
   lazygit/                            # Ctrl+s g lazygit popup
     open.sh                           #   cd's into the focused pane's cwd, execs lazygit
   .stow-local-ignore                  # keeps plugins/ + spreader/ + lazygit/ out of $HOME
@@ -30,26 +29,24 @@ commands, and `apply.sh`/`open.sh`), so they must not be stowed —
 ## Install
 
 ```bash
-# 1. Config
-stow herdr                      # -> ~/.config/herdr/config.toml
-
-# 2. Custom sidebar plugin (registers the absolute dotfiles path)
-# `link`, not `install`: install takes OWNER/REPO and would read a path's
-# empty first component as the owner ("GitHub owner must not be empty").
-herdr plugin link ~/dotfiles/herdr/plugins/active-pane-sidebar
-# zsh precmd hook that feeds it lives in nix/home/programs/zsh/
-
-# 3. Spreader base plugin + config + macOS-safe binary
-herdr plugin install yuk1ty/herdr-spreader          # or the current source
-ln -sf ~/dotfiles/herdr/spreader/config.yaml \
-       "$(herdr plugin config-dir herdr-spreader)/config.yaml"
-~/dotfiles/herdr/spreader/fix-macos-build.sh        # builds + GC-roots the binary
-
-# 4. Third-party navigation plugin (for Ctrl+h/j/k/l with Neovim)
-herdr plugin install <vim-herdr-navigation source>
-
-herdr server reload-config
+hms             # links all three plugins and wires spreader's config
+stow herdr      # -> ~/.config/herdr/config.toml
 ```
+
+`nix/home/programs/herdr.nix` owns the plugin wiring. There is nothing to
+install by hand:
+
+| Plugin | Source |
+| --- | --- |
+| `vim-herdr-navigation` | pinned in `nix/pkgs/`, linked from the store |
+| `herdr-spreader` | pinned in `nix/pkgs/`, binary prebuilt by nix |
+| `georgef.active-pane-sidebar` | linked from this repo, so edits are live |
+
+Do **not** use `herdr plugin install`: it clones into
+`~/.config/herdr/plugins/`, which is a stow symlink into this repo, so the
+plugin's source and its `.git` land in the working tree.
+
+The zsh `precmd` hook feeding the sidebar lives in `nix/home/programs/zsh/`.
 
 ## What's here
 
@@ -75,9 +72,10 @@ fallback when `fzf` is absent. New worktrees are created once in the wrapper via
 `dev tree add` (never per pane); each pane runs an idempotent `dev tree switch`.
 Pane command order is `dev cd -> dev tree -> apps`. See `spreader/README.md`.
 
-macOS AMFI SIGKILLs unsigned locally-built Rust binaries, so `fix-macos-build.sh`
-builds the Spreader binary inside the trusted Nix store and GC-roots it; the
-plugin config dir symlinks `nix-build` at that store path.
+macOS AMFI SIGKILLs unsigned locally-built Rust binaries. `nix/pkgs/herdr-spreader.nix`
+builds the binary in the trusted Nix store and lays it out at
+`target/release/herdr-spreader` where the manifest's action expects it, which
+is what `fix-macos-build.sh` used to do by hand.
 
 ### lazygit (custom `Ctrl+s g` launcher)
 `lazygit/open.sh` reads `$HERDR_ACTIVE_PANE_CWD` (falling back to `$PWD`),
