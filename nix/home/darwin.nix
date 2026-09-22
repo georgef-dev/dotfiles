@@ -8,6 +8,14 @@
     reattach-to-user-namespace # tmux clipboard
     colima # docker daemon backend
     lima
+
+    # Ships docker-credential-osxkeychain. Without a credential helper
+    # `docker login` writes the secret base64-encoded into
+    # ~/.docker/config.json, in the clear. It used to come from the Docker
+    # Desktop cask, so removing that cask left nothing providing it.
+    # Set "credsStore": "osxkeychain" in ~/.docker/config.json to use it.
+    docker-credential-helpers
+
     mas
   ];
 
