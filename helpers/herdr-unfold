@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+# One-time migration: convert ~/.config/herdr from a folded stow symlink into
+# a real directory with only config.toml linked.
+#
+#   helpers/herdr-unfold             # show what would change
+#   helpers/herdr-unfold --yes       # do it
+#
+# Folded, ~/.config/herdr is a single symlink into this repo, so everything
+# herdr writes -- logs, session.json, plugins.json, and any
+# `herdr plugin install` checkout -- lands in the working tree. Unfolded, only
+# config.toml points at the repo and herdr's own files stay in ~/.config.
+#
+# Run once per machine. Fresh machines get this from helpers/bootstrap.
+set -euo pipefail
+
+GREEN='\033[0;32m'; YELLOW='\033[0;33m'; RED='\033[0;31m'; CYAN='\033[0;36m'; NC='\033[0m'
+DOTFILES_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+TARGET="$HOME/.config/herdr"
+REPO_DIR="$DOTFILES_DIR/herdr/.config/herdr"
+
+CONFIRM=0
+[ "${1:-}" = "--yes" ] && CONFIRM=1
+
+if [ ! -L "$TARGET" ]; then
+  printf "${GREEN}Already unfolded: %s is a real directory.${NC}\n" "$TARGET"
+  exit 0
+fi
+
+# herdr holds these files open, rewrites session.json on a timer, and keeps
+# its IPC sockets here. Moving them out from under a live server leaves it
+# writing to orphaned inodes.
+#
+# The socket is the reliable signal: pgrep finds nothing on a macOS where ps
+# is entitlement-restricted, even with the server plainly up.
+if [ -S "$TARGET/herdr.sock" ]; then
+  printf "${RED}herdr appears to be running${NC} (%s exists).\n" "$TARGET/herdr.sock"
+  printf "Stop it first, or this migration races it:\n"
+  printf "  herdr server stop\n"
+  exit 1
+fi
+
+# Everything in the repo except the one file stow owns.
+runtime=()
+while IFS= read -r f; do
+  [ "$(basename "$f")" = "config.toml" ] && continue
+  runtime+=("$f")
+done < <(find "$REPO_DIR" -mindepth 1 -maxdepth 1 2>/dev/null)
+
+if [ "$CONFIRM" != 1 ]; then
+  printf "\n${CYAN}Dry run — nothing will change.${NC}\n\n"
+  printf "Would unstow herdr, then restow it with --no-folding so that\n"
+  printf "  %s\nbecomes a real directory with config.toml symlinked.\n\n" "$TARGET"
+  if [ "${#runtime[@]}" -gt 0 ]; then
+    printf "Would move these out of the repo and into it:\n"
+    for f in "${runtime[@]}"; do printf "  %s\n" "${f#"$DOTFILES_DIR"/}"; done
+  else
+    printf "No runtime files to move.\n"
+  fi
+  printf "\n${YELLOW}Re-run with --yes to proceed.${NC}\n\n"
+  exit 0
+fi
+
+printf "\n${CYAN}Unfolding %s${NC}\n" "$TARGET"
+
+stow -D -d "$DOTFILES_DIR" -t "$HOME" herdr 2>/dev/null || true
+# stow leaves the link when it does not recognise it as its own, which happens
+# when the link was written through the ~/dotfiles symlink rather than the
+# resolved path.
+[ -L "$TARGET" ] && rm "$TARGET"
+mkdir -p "$TARGET"
+printf "  ${GREEN}%s is now a real directory${NC}\n" "$TARGET"
+
+for f in "${runtime[@]}"; do
+  mv "$f" "$TARGET/"
+  printf "  ${GREEN}moved${NC} %s\n" "$(basename "$f")"
+done
+
+stow --no-folding -d "$DOTFILES_DIR" -t "$HOME" -R herdr
+printf "  ${GREEN}config.toml relinked${NC}\n"
+
+printf "\n${GREEN}Done.${NC} Start herdr again, then re-run ${CYAN}hms${NC} to relink plugins.\n\n"

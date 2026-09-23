@@ -160,6 +160,7 @@ gh ssh-key add ~/.ssh/id_ed25519.pub --type signing
 | `helpers/doctor` | read-only health check; exit code is the failure count |
 | `helpers/allowed-signers` | write `~/.config/git/allowed_signers` |
 | `helpers/teardown` | undo a bootstrap on the VM; refuses to run on macOS |
+| `helpers/herdr-unfold` | one-time: stop herdr writing into the repo |
 
 ---
 

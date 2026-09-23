@@ -42,6 +42,21 @@ install by hand:
 | `herdr-spreader` | pinned in `nix/pkgs/`, binary prebuilt by nix |
 | `georgef.active-pane-sidebar` | linked from this repo, so edits are live |
 
+`herdr` is stowed `--no-folding`, so `~/.config/herdr` is a real directory
+with only `config.toml` symlinked. Folded, the whole directory is one link
+into this repo and everything herdr writes — logs, `session.json`,
+`plugins.json`, its IPC sockets — lands in the working tree.
+
+On a machine set up before that change, convert it once:
+
+```bash
+herdr server stop
+./helpers/herdr-unfold          # dry run
+./helpers/herdr-unfold --yes
+herdr                           # workspaces and layout restore from session.json
+hms                             # relink plugins at the new location
+```
+
 Do **not** use `herdr plugin install`: it clones into
 `~/.config/herdr/plugins/`, which is a stow symlink into this repo, so the
 plugin's source and its `.git` land in the working tree.
