@@ -1,0 +1,123 @@
+#!/usr/bin/env bash
+# Reconcile this machine with its host's bundles.
+#
+#   helpers/sync            # report drift, change nothing
+#   helpers/sync --apply    # fix it
+#
+# `hms` already converges everything home-manager owns: drop a bundle, switch,
+# and its packages leave ~/.nix-profile and its generated files are deleted.
+# This covers what home-manager cannot see:
+#
+#   stow packages   linked by hand, so they survive a bundle being dropped
+#   herdr plugins   registered imperatively in ~/.config/herdr/plugins.json
+#   minidev         a git clone in ~/src, not a package
+#   nix store       old packages stay on disk until garbage collection
+set -euo pipefail
+
+GREEN='\033[0;32m'; RED='\033[0;31m'; YELLOW='\033[0;33m'; CYAN='\033[0;36m'; NC='\033[0m'
+DOTFILES_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/host.sh
+. "$DOTFILES_DIR/helpers/lib/host.sh"
+
+APPLY=0
+[ "${1:-}" = "--apply" ] && APPLY=1
+[ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ] && { sed -n '2,17p' "$0" | sed 's/^# \{0,1\}//'; exit 0; }
+
+HOST="$(detect_host || true)"
+if [ -z "$HOST" ]; then
+  printf "${RED}No host in helpers/lib/host.sh matches %s@%s.${NC}\n" \
+    "${USER:-?}" "$(this_hostname)" >&2
+  exit 1
+fi
+
+WANTED="$(host_stow_packages "$HOST")"
+DRIFT=0
+
+printf "\n${CYAN}host${NC}     %s\n${CYAN}bundles${NC}  %s\n\n" "$HOST" "$(host_bundles "$HOST")"
+
+act() {
+  DRIFT=$((DRIFT + 1))
+  if [ "$APPLY" = 1 ]; then
+    printf "  ${GREEN}fixing${NC}  %s\n" "$1"
+    shift; "$@"
+  else
+    printf "  ${YELLOW}drift${NC}   %s\n" "$1"
+  fi
+}
+
+wants() { case " $WANTED " in *" $1 "*) return 0 ;; *) return 1 ;; esac; }
+
+# ------------------------------------------------------------ stow packages
+printf "${CYAN}stow${NC}\n"
+for pkg in $ALL_STOW_PACKAGES; do
+  [ -d "$DOTFILES_DIR/$pkg" ] || continue
+  # A package is "linked" if stow would have something to remove. -v is
+  # required: without it a simulated unstow prints nothing at all, which
+  # reads as "not linked" for every package.
+  # Captured rather than piped to `grep -q`: under `set -o pipefail`, grep
+  # exiting early on its first match SIGPIPEs stow, and the pipeline then
+  # reports failure for a package that IS linked.
+  linked=0
+  probe="$(stow -D -n -v -d "$DOTFILES_DIR" -t "$HOME" "$pkg" 2>&1 || true)"
+  case "$probe" in *UNLINK*) linked=1 ;; esac
+
+  if wants "$pkg" && [ "$linked" = 0 ]; then
+    if stow_no_folding "$pkg"; then
+      act "stow $pkg (bundle wants it)" \
+        stow --no-folding -d "$DOTFILES_DIR" -t "$HOME" -R "$pkg"
+    else
+      act "stow $pkg (bundle wants it)" \
+        stow -d "$DOTFILES_DIR" -t "$HOME" -R "$pkg"
+    fi
+  elif ! wants "$pkg" && [ "$linked" = 1 ]; then
+    act "unstow $pkg (no bundle wants it)" \
+      stow -D -d "$DOTFILES_DIR" -t "$HOME" "$pkg"
+  fi
+done
+[ "$DRIFT" = 0 ] && printf "  ${GREEN}in sync${NC}\n"
+
+# ----------------------------------------------------------- herdr plugins
+printf "\n${CYAN}herdr plugins${NC}\n"
+if command -v herdr >/dev/null 2>&1; then
+  if host_has_bundle "$HOST" terminal; then
+    printf "  ${GREEN}terminal bundle active; hms links them${NC}\n"
+  else
+    while read -r plugin; do
+      [ -n "$plugin" ] || continue
+      act "unlink herdr plugin $plugin (terminal bundle dropped)" \
+        herdr plugin unlink "$plugin"
+    done < <(herdr plugin list 2>/dev/null | sed -n 's/^- \([^ ]*\) .*/\1/p')
+  fi
+else
+  printf "  ${GREEN}herdr not installed${NC}\n"
+fi
+
+# ---------------------------------------------------------------- orphans
+printf "\n${CYAN}orphans${NC}\n"
+MINIDEV_DIR="$HOME/src/github.com/georgef-dev/minidev"
+if [ -d "$MINIDEV_DIR" ] && ! host_has_bundle "$HOST" terminal; then
+  # Reported, never deleted: it is a git checkout that may hold local work.
+  printf "  ${YELLOW}drift${NC}   %s exists but no bundle wants it\n" "${MINIDEV_DIR/#$HOME/\~}"
+  printf "          remove by hand once you are sure nothing is unpushed\n"
+  DRIFT=$((DRIFT + 1))
+else
+  printf "  ${GREEN}none${NC}\n"
+fi
+
+# ------------------------------------------------------------------ store
+printf "\n${CYAN}nix store${NC}\n"
+printf "  %s across %s home-manager generations\n" \
+  "$(du -sh /nix/store 2>/dev/null | cut -f1)" \
+  "$(home-manager generations 2>/dev/null | wc -l | tr -d ' ')"
+printf "  dropped packages stay on disk until:\n"
+printf "    home-manager expire-generations \"-30 days\" && nix-collect-garbage -d\n"
+
+# ---------------------------------------------------------------- summary
+printf "\n"
+if [ "$DRIFT" = 0 ]; then
+  printf "${GREEN}In sync.${NC}\n\n"
+elif [ "$APPLY" = 1 ]; then
+  printf "${GREEN}Applied %s change(s).${NC} Run hms if you have not already.\n\n" "$DRIFT"
+else
+  printf "${YELLOW}%s item(s) drifted. Re-run with --apply.${NC}\n\n" "$DRIFT"
+fi

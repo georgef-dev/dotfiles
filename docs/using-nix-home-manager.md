@@ -30,7 +30,7 @@ and each host in `flake.nix` lists the ones it wants:
 | `infra` | terraform toolchain, cloudflared, istioctl |
 | `containers` | docker CLI, buildx, compose, lazydocker |
 | `media` | ffmpeg, tesseract, pandoc, graphviz, httrack |
-| `terminal` | tmux, herdr + plugins, mosh, minidev |
+| `terminal` | herdr + plugins, mosh, minidev |
 
 A host that omits `dev` gets no editor and no ambient runtimes — that is the point.
 `terminal` is deliberately separate from `dev`: cloning a repo and moving between
@@ -41,6 +41,19 @@ productive without a toolchain.
 
 **Adding a host**: add it to `hosts` in `flake.nix`, to `HOST_TABLE` in
 `helpers/lib/host.sh`, and to the `case` in `hms`.
+
+**Changing a host's bundles**: edit both `flake.nix` and `HOST_TABLE`, then:
+
+```bash
+hms                 # packages converge on their own -- dropped ones leave
+                    # ~/.nix-profile and their generated files are deleted
+./helpers/sync      # report what home-manager cannot see
+./helpers/sync --apply
+```
+
+`sync` covers stow packages (linked by hand, so they survive a dropped
+bundle), herdr's imperative plugin registrations, the minidev checkout, and
+reminds you that dropped packages sit in the store until garbage collection.
 
 ---
 
@@ -194,7 +207,8 @@ gh ssh-key add ~/.ssh/id_ed25519.pub --type signing
 | `helpers/allowed-signers` | write `~/.config/git/allowed_signers` |
 | `helpers/teardown` | undo a bootstrap on the VM; refuses to run on macOS |
 | `helpers/herdr-unfold` | one-time: stop herdr writing into the repo |
-| `helpers/lib/host.sh` | host table shared by bootstrap and doctor |
+| `helpers/sync` | reconcile a machine after its bundles change |
+| `helpers/lib/host.sh` | host table shared by bootstrap, doctor and sync |
 
 ---
 

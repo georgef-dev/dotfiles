@@ -101,7 +101,6 @@ fi
 sect "Tools resolve to nix"
 TOOLS="git rg jq fzf gh direnv"
 has_bundle dev      && TOOLS="$TOOLS nvim"
-has_bundle terminal && TOOLS="$TOOLS tmux"
 has_bundle infra    && TOOLS="$TOOLS terraform"
 for t in $TOOLS; do
   P=$(command -v "$t" 2>/dev/null)
@@ -180,9 +179,7 @@ fi
 # --------------------------------------------------------------------- stow
 sect "Stow-managed configs"
 [ -L "$HOME/.config/nvim" ] && ok "nvim symlinked" || no ".config/nvim is not a symlink"
-if has_bundle terminal; then
-  [ -f "$HOME/.config/tmux/tmux.conf" ] && ok "tmux.conf generated" || meh "no tmux.conf"
-fi
+
 
 # ------------------------------------------------------------------ keybase
 sect "keybase"

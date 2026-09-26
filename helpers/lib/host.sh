@@ -17,6 +17,26 @@ host_hostname(){ host_field "$1" 2; }
 host_user()    { host_field "$1" 3; }
 host_bundles() { host_field "$1" 4; }
 
+# Stow packages a host should have linked, derived from its bundles. Shared by
+# bootstrap (which links them) and sync (which also unlinks what is no longer
+# wanted), so the two cannot disagree.
+host_stow_packages() {
+  local h="$1" pkgs=""
+  host_has_bundle "$h" dev      && pkgs="$pkgs nvim"
+  host_has_bundle "$h" terminal && pkgs="$pkgs herdr"
+  [ "$h" = "mac" ] && pkgs="$pkgs ghostty joplin"
+  printf '%s' "${pkgs# }"
+}
+
+# Every stow package this repo can link, wanted or not.
+# shellcheck disable=SC2034  # consumed by helpers/sync
+ALL_STOW_PACKAGES="nvim herdr ghostty joplin"
+
+# herdr must not be folded: folded, ~/.config/herdr is a single symlink into
+# this repo and everything herdr writes -- logs, session.json, plugins.json,
+# its sockets -- lands in the working tree.
+stow_no_folding() { [ "$1" = "herdr" ]; }
+
 host_has_bundle() {
   case " $(host_bundles "$1") " in *" $2 "*) return 0 ;; *) return 1 ;; esac
 }
