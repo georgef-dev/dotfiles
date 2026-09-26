@@ -13,6 +13,13 @@ meh()  { printf "  ${YELLOW}warn${NC}  %s\n" "$1"; [ -n "${2:-}" ] && printf "  
 sect() { printf "\n${CYAN}%s${NC}\n" "$1"; }
 
 IS_LINUX=0; [ "$(uname -s)" = "Linux" ] && IS_LINUX=1
+
+# shellcheck source=lib/host.sh
+. "$(cd "$(dirname "$0")" && pwd)/lib/host.sh"
+# Which host's config this machine runs, so bundle-specific checks are skipped
+# rather than reported as failures on a host that never wanted the tool.
+THIS_HOST="$(detect_host || true)"
+has_bundle() { [ -n "$THIS_HOST" ] && host_has_bundle "$THIS_HOST" "$1"; }
 NIXBIN="$HOME/.nix-profile/bin"
 
 # --------------------------------------------------------------- activation
@@ -92,7 +99,10 @@ fi
 
 # ---------------------------------------------------------------- toolchain
 sect "Tools resolve to nix"
-for t in git nvim tmux rg jq fzf gh direnv terraform; do
+TOOLS="git rg jq fzf gh direnv"
+has_bundle dev      && TOOLS="$TOOLS nvim"
+has_bundle infra    && TOOLS="$TOOLS terraform"
+for t in $TOOLS; do
   P=$(command -v "$t" 2>/dev/null)
   if [ -z "$P" ]; then no "$t not found"
   elif echo "$P" | grep -q '/nix/store\|.nix-profile'; then ok "$t -> ${P}"
@@ -100,6 +110,7 @@ for t in git nvim tmux rg jq fzf gh direnv terraform; do
   fi
 done
 
+if has_bundle dev; then
 sect "Ambient fallback runtimes"
 for t in python3 node go; do
   if ! command -v "$t" >/dev/null 2>&1; then no "$t missing"; continue; fi
@@ -109,6 +120,7 @@ for t in python3 node go; do
   esac
   ok "$t ($V)"
 done
+fi
 
 # ------------------------------------------------------------------- direnv
 sect "direnv"
@@ -167,7 +179,7 @@ fi
 # --------------------------------------------------------------------- stow
 sect "Stow-managed configs"
 [ -L "$HOME/.config/nvim" ] && ok "nvim symlinked" || no ".config/nvim is not a symlink"
-[ -f "$HOME/.config/tmux/tmux.conf" ] && ok "tmux.conf generated" || meh "no ~/.config/tmux/tmux.conf"
+
 
 # ------------------------------------------------------------------ keybase
 sect "keybase"
@@ -217,6 +229,7 @@ if [ "$IS_LINUX" = 1 ]; then
 fi
 
 # ------------------------------------------------------------------- docker
+if has_bundle containers; then
 sect "docker"
 if command -v docker >/dev/null 2>&1; then
   ok "docker CLI present"
@@ -229,6 +242,7 @@ if command -v docker >/dev/null 2>&1; then
   fi
 else
   no "docker CLI missing"
+fi
 fi
 
 printf "\n${CYAN}%d passed, %d failed, %d warnings${NC}\n\n" "$PASS" "$FAIL" "$WARN"

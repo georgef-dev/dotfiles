@@ -1,27 +1,56 @@
 #!/usr/bin/env bash
 # Bare machine -> working environment. Idempotent; safe to re-run.
 #
-#   helpers/bootstrap [--host vm-dev-01|mac] [--dry-run]
-#
-# On Darwin this REFUSES to change anything unless given --host mac. The Mac
-# is a working machine; migrating it is a deliberate act, never a side effect
-# of running this script to see what it does.
+# --host is REQUIRED and is verified against this machine's hostname and user
+# before anything is touched. Run with no arguments for help.
 set -euo pipefail
 
 CYAN='\033[0;36m'; GREEN='\033[0;32m'; YELLOW='\033[0;33m'; RED='\033[0;31m'; NC='\033[0m'
 DOTFILES_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/host.sh
+. "$DOTFILES_DIR/helpers/lib/host.sh"
 REPO_URL="https://github.com/georgef-dev/dotfiles.git"
 
 HOST=""
 DRY_RUN=0
 CHANGED=(); SKIPPED=(); WOULD=()
 
+usage() {
+  local name want_host want_user detected
+  printf "usage: helpers/bootstrap --host <host> [--dry-run]\n\n"
+
+  printf "${CYAN}hosts${NC}\n"
+  for name in $(host_names); do
+    want_host="$(host_hostname "$name")"
+    want_user="$(host_user "$name")"
+    [ "$want_host" = "*" ] && want_host="<any, macOS>"
+    printf "  %-12s %-30s %s\n" "$name" "${want_user}@${want_host}" "$(host_bundles "$name")"
+  done
+
+  printf "\n${CYAN}this machine${NC}\n"
+  detected="$(detect_host || true)"
+  if [ -n "$detected" ]; then
+    printf "  hostname %s, user %s  ->  ${GREEN}matches: %s${NC}\n" \
+      "$(this_hostname)" "${USER:-?}" "$detected"
+  else
+    printf "  hostname %s, user %s  ->  ${YELLOW}matches no host${NC}\n" \
+      "$(this_hostname)" "${USER:-?}"
+    printf "  add it to helpers/lib/host.sh and flake.nix before bootstrapping\n"
+  fi
+
+  printf "\n${CYAN}flags${NC}\n"
+  printf "  --host <name>   which configuration to apply; required\n"
+  printf "  --dry-run       print every step, change nothing\n"
+  printf "  -h, --help      this message\n\n"
+  printf "Nothing runs without --host. Try --dry-run first.\n\n"
+}
+
 while [ $# -gt 0 ]; do
   case "$1" in
     --host) HOST="${2:-}"; shift 2 ;;
     --dry-run) DRY_RUN=1; shift ;;
-    -h|--help) sed -n '2,9p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
-    *) printf "${RED}unknown argument: %s${NC}\n" "$1" >&2; exit 2 ;;
+    -h|--help) usage; exit 0 ;;
+    *) printf "${RED}unknown argument: %s${NC}\n\n" "$1" >&2; usage >&2; exit 2 ;;
   esac
 done
 
@@ -33,37 +62,56 @@ warn() { printf "  ${YELLOW}%s${NC}\n" "$1"; }
 run()  { if [ "$DRY_RUN" = 1 ]; then printf "  ${YELLOW}[dry-run] %s${NC}\n" "$*"; else eval "$*"; fi; }
 
 # ---------------------------------------------------------------- host guard
-UNAME="$(uname -s)"
+# No --host at all: print help and change nothing. This used to default to
+# vm-dev-01 on Linux, which let a run on an unrelated box get as far as
+# installing nix and filling its disk before failing.
 if [ -z "$HOST" ]; then
-  if [ "$UNAME" = "Darwin" ]; then
-    cat <<'MSG'
-This is a Mac and no --host was given, so nothing will be changed.
-
-Migrating this machine is opt-in. When you are ready:
-
-    helpers/bootstrap --host mac --dry-run   # read the plan first
-    helpers/bootstrap --host mac             # then, from a SECOND terminal
-
-Everything it does is additive: Homebrew stays installed, and Nix simply
-wins on PATH. Roll back with `home-manager generations`.
-MSG
-    exit 0
-  fi
-  HOST="vm-dev-01"
+  usage
+  exit 0
 fi
 
-case "$HOST" in
-  mac)       [ "$UNAME" = "Darwin" ] || { printf "${RED}--host mac on non-Darwin${NC}\n"; exit 1; } ;;
-  vm-dev-01) [ "$UNAME" = "Linux" ]  || { printf "${RED}--host vm-dev-01 on non-Linux${NC}\n"; exit 1; } ;;
-  *) printf "${RED}unknown host: %s (expected mac or vm-dev-01)${NC}\n" "$HOST"; exit 2 ;;
-esac
+if ! host_row "$HOST" | grep -q .; then
+  printf "${RED}unknown host: %s${NC}\n\n" "$HOST" >&2
+  usage >&2
+  exit 2
+fi
+
+# Identity check. The config hardcodes a username and home directory, so
+# applying the wrong host writes into a home that may not exist, as the wrong
+# user. Refuse before touching anything.
+WANT_HOST="$(host_hostname "$HOST")"
+WANT_USER="$(host_user "$HOST")"
+ME_HOST="$(this_hostname)"
+ME_USER="${USER:-$(id -un)}"
+MISMATCH=""
+
+if [ "$WANT_HOST" = "*" ]; then
+  [ "$(uname -s)" = "Darwin" ] || MISMATCH="${MISMATCH}  host '$HOST' is macOS, this is $(uname -s)\n"
+elif [ "$WANT_HOST" != "$ME_HOST" ]; then
+  MISMATCH="${MISMATCH}  hostname is '$ME_HOST', host '$HOST' expects '$WANT_HOST'\n"
+fi
+[ "$WANT_USER" = "$ME_USER" ] || \
+  MISMATCH="${MISMATCH}  user is '$ME_USER', host '$HOST' expects '$WANT_USER'\n"
+
+if [ -n "$MISMATCH" ]; then
+  printf "${RED}This machine does not match --host %s:${NC}\n" "$HOST" >&2
+  printf "$MISMATCH" >&2
+  DETECTED="$(detect_host || true)"
+  if [ -n "$DETECTED" ]; then
+    printf "\nThis machine looks like ${GREEN}%s${NC}. Did you mean --host %s?\n" \
+      "$DETECTED" "$DETECTED" >&2
+  else
+    printf "\nNo host in helpers/lib/host.sh describes this machine.\n" >&2
+  fi
+  exit 1
+fi
 
 printf "\n${CYAN}bootstrap: host=%s dry-run=%s${NC}\n\n" "$HOST" "$DRY_RUN"
 
 # ------------------------------------------------------- 1. apt prerequisites
 # git is needed to clone the repo that contains the flake, so it cannot come
 # from Nix. xz-utils is what the Nix installer needs to unpack itself.
-if [ "$HOST" = "vm-dev-01" ]; then
+if [ "$(uname -s)" = "Linux" ]; then
   say "APT prerequisites"
   APT_PKGS="curl git xz-utils ca-certificates qemu-guest-agent fuse3"
   MISSING=""
@@ -111,7 +159,7 @@ fi
 # unit on Debian — pkgs.tailscale would give a CLI with nothing to talk to,
 # the same trap as the docker client. The official installer wires up
 # tailscaled, the TUN device, and apt-based updates.
-if [ "$HOST" = "vm-dev-01" ]; then
+if [ "$(uname -s)" = "Linux" ]; then
   say "Tailscale"
   if command -v tailscale >/dev/null 2>&1; then
     ok "already installed ($(tailscale version 2>/dev/null | head -1))"
@@ -136,6 +184,7 @@ fi
 # ----------------------------------------------------------------- 5. minidev
 # Cloned over HTTPS on purpose: a fresh VM has no SSH key yet, and the repo
 # vendors its deps (no submodules), so a plain clone is complete.
+if host_has_bundle "$HOST" terminal; then
 say "minidev"
 MINIDEV_DIR="$HOME/src/github.com/georgef-dev/minidev"
 if [ -d "$MINIDEV_DIR/.git" ]; then
@@ -144,6 +193,7 @@ else
   run "mkdir -p '$(dirname "$MINIDEV_DIR")'"
   run "git clone https://github.com/georgef-dev/minidev.git '$MINIDEV_DIR'"
   did "cloned minidev"
+fi
 fi
 
 # ------------------------------------------------------------- 6. home-manager
@@ -162,7 +212,7 @@ export PATH
 # --------------------------------------------------------------- 7. login shell
 # chsh rejects a shell that is not listed in /etc/shells, and nix-installed
 # shells never are. Linux only — the Mac keeps its system zsh.
-if [ "$HOST" = "vm-dev-01" ]; then
+if [ "$(uname -s)" = "Linux" ]; then
   say "Login shell"
   NIX_ZSH="$HOME/.nix-profile/bin/zsh"
   if [ ! -x "$NIX_ZSH" ]; then
@@ -197,19 +247,16 @@ fi
 # Configs home-manager deliberately does not own: nvim pins its own plugins
 # via lazy-lock.json, and ghostty/joplin are macOS GUI apps.
 say "Stow"
-STOW_PACKAGES="nvim herdr"
-[ "$HOST" = "mac" ] && STOW_PACKAGES="nvim herdr ghostty joplin"
+STOW_PACKAGES="$(host_stow_packages "$HOST")"
 
 # herdr is stowed --no-folding so ~/.config/herdr is a real directory with
 # only config.toml symlinked. Folded, the whole directory is one link into
 # this repo, and everything herdr writes -- logs, session.json, plugins.json,
 # and any `herdr plugin install` checkout -- lands in the working tree.
-no_folding_pkg() { [ "$1" = "herdr" ]; }
-
 if command -v stow >/dev/null 2>&1; then
   for pkg in $STOW_PACKAGES; do
     [ -d "$DOTFILES_DIR/$pkg" ] || continue
-    if no_folding_pkg "$pkg"; then
+    if stow_no_folding "$pkg"; then
       run "stow --no-folding -d '$DOTFILES_DIR' -t '$HOME' -R $pkg"
     else
       run "stow -d '$DOTFILES_DIR' -t '$HOME' -R $pkg"
