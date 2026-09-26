@@ -118,10 +118,21 @@
         # switch because ~/.zshrc.bak already exists.
         hms() {
           local host
-          case "$(uname -s)" in
-            Darwin) host=mac ;;
-            Linux)  host=vm-dev-01 ;;
-            *) print -u2 "hms: unsupported platform: $(uname -s)"; return 1 ;;
+          # Keyed on hostname, not uname: there is more than one linux host
+          # now. Must stay in step with `hosts` in flake.nix and the table in
+          # helpers/lib/host.sh. The mac matches on uname because macOS
+          # rewrites its hostname on some networks.
+          case "$(hostname -s)" in
+            vm-dev-01)            host=vm-dev-01 ;;
+            infra-vm-coreapp-nuc) host=infra-nuc ;;
+            *)
+              if [[ "$(uname -s)" == Darwin ]]; then
+                host=mac
+              else
+                print -u2 "hms: no host for $(hostname -s); see helpers/lib/host.sh"
+                return 1
+              fi
+              ;;
           esac
           home-manager switch -b "bak-$(date +%Y%m%d%H%M%S)" \
             --flake "$HOME/dotfiles#gf@$host" "$@"

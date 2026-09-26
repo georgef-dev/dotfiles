@@ -6,11 +6,39 @@ and `vm-dev-01` run identical versions.
 | | |
 | --- | --- |
 | Repo | `~/dotfiles` |
-| Hosts | `gf@mac` (aarch64-darwin), `gf@vm-dev-01` (x86_64-linux) |
+| Hosts | `gf@mac`, `gf@vm-dev-01`, `gf@infra-nuc` |
 | Apply changes | `hms` |
 | Health check | `./helpers/doctor` |
 
-`hms` picks the flake ref from `uname`, so it is the same command on both.
+`hms` picks the flake ref from the hostname, so it is the same command everywhere.
+
+## Hosts and bundles
+
+`core.nix` is portable and always applied. Everything optional is a **bundle**,
+and each host in `flake.nix` lists the ones it wants:
+
+| Host | User | Bundles |
+| --- | --- | --- |
+| `mac` | georgeferreira | dev ai infra containers media herdr minidev |
+| `vm-dev-01` | georgeferreira | dev ai infra containers media herdr minidev |
+| `infra-nuc` | devops | ai herdr |
+
+| Bundle | Contents |
+| --- | --- |
+| `dev` | neovim, language servers, ambient python3/node/go |
+| `ai` | claude-code, codex, opencode, rtk |
+| `infra` | terraform toolchain, cloudflared, istioctl |
+| `containers` | docker CLI, buildx, compose, lazydocker |
+| `media` | ffmpeg, tesseract, pandoc, graphviz, httrack |
+| `herdr` | the multiplexer and its three plugins |
+| `minidev` | ruby and the `dev` shell function |
+
+A host that omits `dev` gets no editor and no ambient runtimes — that is the point.
+`helpers/bootstrap` and `helpers/doctor` read the same table from
+`helpers/lib/host.sh`, so stow packages and health checks follow the bundles too.
+
+**Adding a host**: add it to `hosts` in `flake.nix`, to `HOST_TABLE` in
+`helpers/lib/host.sh`, and to the `case` in `hms`.
 
 ---
 
@@ -43,9 +71,11 @@ Then put it in the right file:
 | File | For |
 | --- | --- |
 | `nix/home/core.nix` | portable, safe on any host including a work machine |
-| `nix/home/extras/{infra,containers,media,ai}.nix` | opt-in groups |
+| `nix/home/extras/{dev,ai,infra,containers,media}.nix` | opt-in bundles |
 | `nix/home/darwin.nix` | macOS only |
-| `nix/home/linux.nix` | VM only |
+| `nix/home/linux.nix` | the dev VM |
+| `nix/home/server.nix` | service hosts |
+| `nix/home/linux-base.nix` | every non-NixOS linux host |
 
 ```nix
 home.packages = with pkgs; [
@@ -141,8 +171,9 @@ exec "$HOME/.nix-profile/bin/zsh" -l
 
 Add the host to `hosts` in `flake.nix` and to the `case` in `hms` first.
 
-On macOS `bootstrap` does nothing without `--host mac` — migrating a working
-machine is deliberate. Use `--dry-run` to read the plan.
+`bootstrap` does nothing without `--host`, on any platform — run it bare for help,
+which also prints which host this machine matches. It refuses outright if the
+hostname or user does not match the host you asked for.
 
 Then, per machine:
 
@@ -161,6 +192,7 @@ gh ssh-key add ~/.ssh/id_ed25519.pub --type signing
 | `helpers/allowed-signers` | write `~/.config/git/allowed_signers` |
 | `helpers/teardown` | undo a bootstrap on the VM; refuses to run on macOS |
 | `helpers/herdr-unfold` | one-time: stop herdr writing into the repo |
+| `helpers/lib/host.sh` | host table shared by bootstrap and doctor |
 
 ---
 

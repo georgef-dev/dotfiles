@@ -1,18 +1,9 @@
-# Debian 13 VM (x86_64-linux), accessed over SSH only.
+# The Debian dev VM (x86_64-linux), accessed over SSH only. Shared non-NixOS
+# settings live in linux-base.nix; this file is the dev-workstation half.
 { pkgs, ... }:
 
 {
-  # The single most important non-NixOS setting. Fixes XDG_DATA_DIRS so
-  # completions and desktop files resolve, and points LOCALE_ARCHIVE at the
-  # nix glibc — without it, git/perl emit `setlocale` warnings on every call.
-  targets.genericLinux.enable = true;
-
-  # genericLinux.enable turns this on by default, which makes every activation
-  # warn that the GPU is not set up and adds a non-nixos-gpu package to the
-  # profile. The check is advisory only -- it reads /run/opengl-driver and
-  # prints -- and this is a headless Proxmox VM reached over SSH with no GPU
-  # and no graphical apps. Flip it back if that ever changes.
-  targets.genericLinux.gpu.enable = false;
+  imports = [ ./linux-base.nix ];
 
   # Two tools are deliberately absent from this list because they are
   # daemon+CLI pairs that must stay in version lockstep, and home-manager

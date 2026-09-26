@@ -11,26 +11,52 @@
 
   outputs = { nixpkgs, home-manager, ... }:
     let
-      # Per-host identity. homeDirectory is derived from the username so the
-      # two cannot drift apart — out of sync, home-manager writes into a
-      # directory that does not exist and activation fails.
-      username = "georgeferreira";
+      # ---------------------------------------------------------------------
+      # Optional modules, picked per host. core.nix is always included; a host
+      # adds only what it is actually for. A typo here fails at eval naming
+      # the missing attribute, so a host's list cannot silently drift.
+      # ---------------------------------------------------------------------
+      bundles = {
+        dev = ./nix/home/extras/dev.nix; # editor, LSPs, ambient runtimes
+        ai = ./nix/home/extras/ai.nix;
+        infra = ./nix/home/extras/infra.nix;
+        containers = ./nix/home/extras/containers.nix;
+        media = ./nix/home/extras/media.nix;
+        herdr = ./nix/home/programs/herdr.nix;
+        minidev = ./nix/home/programs/minidev.nix;
+      };
 
-      homeFor = system:
-        if builtins.match ".*-darwin" system != null
-        then "/Users/${username}"
-        else "/home/${username}";
+      workstation = [ "dev" "ai" "infra" "containers" "media" "herdr" "minidev" ];
 
+      # homeDirectory is derived from username so the two cannot drift apart;
+      # out of sync, home-manager writes into a directory that does not exist.
       hosts = {
         mac = {
           system = "aarch64-darwin";
-          platformModule = ./nix/home/darwin.nix;
+          username = "georgeferreira";
+          platform = ./nix/home/darwin.nix;
+          bundles = workstation;
         };
         vm-dev-01 = {
           system = "x86_64-linux";
-          platformModule = ./nix/home/linux.nix;
+          username = "georgeferreira";
+          platform = ./nix/home/linux.nix;
+          bundles = workstation;
+        };
+        # Homelab container host. AI tooling and a multiplexer, no dev
+        # toolchain -- see nix/home/server.nix for what it deliberately omits.
+        infra-nuc = {
+          system = "x86_64-linux";
+          username = "devops";
+          platform = ./nix/home/server.nix;
+          bundles = [ "ai" "herdr" ];
         };
       };
+
+      homeFor = host:
+        if builtins.match ".*-darwin" host.system != null
+        then "/Users/${host.username}"
+        else "/home/${host.username}";
 
       # terraform is BUSL-licensed and therefore "unfree" in nixpkgs.
       pkgsFor = system: import nixpkgs {
@@ -38,30 +64,27 @@
         config.allowUnfree = true;
       };
 
-      mkHome = name: host:
+      mkHome = host:
         home-manager.lib.homeManagerConfiguration {
           pkgs = pkgsFor host.system;
           modules = [
             ./nix/home/core.nix
-            ./nix/home/extras/infra.nix
-            ./nix/home/extras/containers.nix
-            ./nix/home/extras/media.nix
-            ./nix/home/extras/ai.nix
-            host.platformModule
+            host.platform
             {
               home = {
-                inherit username;
-                homeDirectory = homeFor host.system;
+                inherit (host) username;
+                homeDirectory = homeFor host;
                 stateVersion = "25.05";
               };
             }
-          ];
+          ] ++ map (name: bundles.${name}) host.bundles;
         };
 
     in {
       homeConfigurations = {
-        "gf@mac" = mkHome "mac" hosts.mac;
-        "gf@vm-dev-01" = mkHome "vm-dev-01" hosts.vm-dev-01;
+        "gf@mac" = mkHome hosts.mac;
+        "gf@vm-dev-01" = mkHome hosts.vm-dev-01;
+        "gf@infra-nuc" = mkHome hosts.infra-nuc;
       };
 
       devShells = nixpkgs.lib.genAttrs
