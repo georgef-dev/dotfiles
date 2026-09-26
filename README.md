@@ -11,19 +11,26 @@
 
 ```bash
 git clone https://github.com/georgef-dev/dotfiles.git ~/dotfiles
-cd ~/dotfiles && ./helpers/bootstrap
+cd ~/dotfiles && ./helpers/bootstrap          # prints help + which host you are
+./helpers/bootstrap --host <host> --dry-run   # read the plan
+./helpers/bootstrap --host <host>             # apply it
 ```
 
-On a bare Debian VM that is everything: it installs apt prerequisites,
-installs Nix, activates Home Manager, sets the login shell, and stows the
-configs Home Manager does not own.
+`--host` is **required** and is checked against this machine's hostname and
+user before anything is touched — applying the wrong host would write into
+another user's home directory. Run bare for the host list.
 
-On macOS it does **nothing** unless you pass `--host mac`. Migrating the Mac
-is opt-in:
+On a bare Linux box that is everything: apt prerequisites, Nix, Tailscale,
+Home Manager, the login shell, an SSH key, and the stow packages this host
+wants. On macOS, run it from a **second terminal** so you keep a working
+shell if the new one fails.
+
+Per machine, once:
 
 ```bash
-./helpers/bootstrap --host mac --dry-run   # read the plan
-./helpers/bootstrap --host mac             # then run it from a SECOND terminal
+gh ssh-key add ~/.ssh/id_ed25519.pub --type authentication   # required: git
+gh ssh-key add ~/.ssh/id_ed25519.pub --type signing          # commits verify
+./helpers/allowed-signers <other-host>                       # verify locally
 ```
 
 # Nix / Home Manager
@@ -34,22 +41,32 @@ Packages and most dotfiles are declared in a flake and pinned by
 `flake.lock`, so both machines get identical versions.
 
 ```bash
-home-manager switch -b bak --flake ~/dotfiles#gf@mac        # or #gf@vm-dev-01
-nix flake check                                             # validate changes
-nix flake update && home-manager switch --flake ...         # upgrade everything
-home-manager generations                                    # roll back
+hms                     # rebuild + activate this host
+nix flake check         # validate a change before switching
+nix flake update        # upgrade everything, then hms
+home-manager generations # roll back
+./helpers/doctor        # health check
+./helpers/sync          # reconcile after changing a host's bundles
 ```
 
-`-b bak` matters: without it Home Manager refuses to overwrite a file that
-already exists. With it, the old file is renamed `.bak`.
+Three hosts, each taking `core.nix` plus the bundles it is for:
+
+| Host | Bundles |
+| --- | --- |
+| `mac` | dev ai infra containers media terminal |
+| `vm-dev-01` | dev ai infra containers media terminal |
+| `infra-nuc` | ai terminal |
 
 Layout:
 
-- `nix/home/core.nix` — portable baseline, safe on any host
-- `nix/home/extras/` — opt-in groups (`infra`, `containers`, `media`)
-- `nix/home/{darwin,linux}.nix` — platform specifics
-- `nix/home/programs/` — zsh, git, tmux, direnv
+- `nix/home/core.nix` — portable baseline, on every host
+- `nix/home/extras/` — the bundles (`dev`, `ai`, `infra`, `containers`,
+  `media`, `terminal`)
+- `nix/home/{darwin,linux,server,linux-base}.nix` — platform modules
+- `nix/home/programs/` — zsh, git, direnv, herdr, minidev
+- `nix/pkgs/` — packages not in nixpkgs, pinned to a commit
 - `nix/devshells/` — per-project toolchains
+- `reference/` — retired configs, kept for reference, imported by nothing
 
 # Per-project runtimes
 
@@ -66,37 +83,25 @@ Available shells: `default` (python3/node/go), `node`, `python`, `ruby`,
 
 macOS only, and only for GUI casks and `mas`. Every CLI tool comes from Nix.
 
-# iTerm
-
-- Import preferences from local folder
-- Import profile JSON
-
 # Stow
 
-Configs Home Manager does not own are still managed with
-[GNU Stow](https://www.gnu.org/software/stow/): `nvim` (it pins its own
-plugins via `lazy-lock.json`), plus the macOS GUI apps `ghostty` and
-`joplin`. Each folder is a package (except `manual_config` and `helpers`).
+A few configs Home Manager does not own are still linked with
+[GNU Stow](https://www.gnu.org/software/stow/):
 
-For each desired config, run `stow <package>`.
+| Package | Why not Home Manager |
+| --- | --- |
+| `nvim` | pins its own plugins via `lazy-lock.json` |
+| `herdr` | its plugins reference absolute `~/dotfiles` paths |
+| `ghostty`, `joplin` | macOS GUI apps |
 
-Example: `stow nvim` will create the sumlinks for `$HOME/.config/nvim`.
+`helpers/bootstrap` links the ones this host's bundles want, and
+`helpers/sync` relinks or unlinks them when those bundles change. You should
+not need to run `stow` by hand.
+
 # nvim
 
-Open nvim and run: `:Lazy`
-
-# Python
-
-Install needed Python versions using `pyenv`.
-
-- 3.10.0 -> `pyenv install 3.10.0`
-
-# Setup Github SSH Key
-
-```bash
-# SEE: https://help.github.com/en/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
-# SEE: https://help.github.com/en/articles/adding-a-new-ssh-key-to-your-github-account
-```
+Open nvim and run `:Lazy`. Plugin versions are pinned in `lazy-lock.json`;
+commit it after `:Lazy update`.
 
 # Commit signing
 
