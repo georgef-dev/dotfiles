@@ -184,7 +184,7 @@ fi
 # ----------------------------------------------------------------- 5. minidev
 # Cloned over HTTPS on purpose: a fresh VM has no SSH key yet, and the repo
 # vendors its deps (no submodules), so a plain clone is complete.
-if host_has_bundle "$HOST" minidev; then
+if host_has_bundle "$HOST" terminal; then
 say "minidev"
 MINIDEV_DIR="$HOME/src/github.com/georgef-dev/minidev"
 if [ -d "$MINIDEV_DIR/.git" ]; then
@@ -248,10 +248,10 @@ fi
 # via lazy-lock.json, and ghostty/joplin are macOS GUI apps.
 say "Stow"
 # Derived from the host's bundles: no editor config without `dev`, no herdr
-# config without `herdr`. ghostty and joplin are macOS GUI apps.
+# config without `terminal`. ghostty and joplin are macOS GUI apps.
 STOW_PACKAGES=""
 host_has_bundle "$HOST" dev   && STOW_PACKAGES="$STOW_PACKAGES nvim"
-host_has_bundle "$HOST" herdr && STOW_PACKAGES="$STOW_PACKAGES herdr"
+host_has_bundle "$HOST" terminal && STOW_PACKAGES="$STOW_PACKAGES herdr"
 [ "$HOST" = "mac" ] && STOW_PACKAGES="$STOW_PACKAGES ghostty joplin"
 STOW_PACKAGES="$(printf '%s' "$STOW_PACKAGES" | sed 's/^ //')"
 

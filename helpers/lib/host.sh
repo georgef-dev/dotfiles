@@ -6,9 +6,9 @@
 #
 # The mac's hostname is not stable -- macOS rewrites it on some networks --
 # so it matches on uname instead, written here as "*".
-HOST_TABLE='mac|*|georgeferreira|dev ai infra containers media herdr minidev
-vm-dev-01|vm-dev-01|georgeferreira|dev ai infra containers media herdr minidev
-infra-nuc|infra-vm-coreapp-nuc|devops|ai herdr'
+HOST_TABLE='mac|*|georgeferreira|dev ai infra containers media terminal
+vm-dev-01|vm-dev-01|georgeferreira|dev ai infra containers media terminal
+infra-nuc|infra-vm-coreapp-nuc|devops|ai terminal'
 
 host_row()     { printf '%s\n' "$HOST_TABLE" | awk -F'|' -v h="$1" '$1==h'; }
 host_names()   { printf '%s\n' "$HOST_TABLE" | cut -d'|' -f1; }

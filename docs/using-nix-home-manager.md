@@ -19,9 +19,9 @@ and each host in `flake.nix` lists the ones it wants:
 
 | Host | User | Bundles |
 | --- | --- | --- |
-| `mac` | georgeferreira | dev ai infra containers media herdr minidev |
-| `vm-dev-01` | georgeferreira | dev ai infra containers media herdr minidev |
-| `infra-nuc` | devops | ai herdr |
+| `mac` | georgeferreira | dev ai infra containers media terminal |
+| `vm-dev-01` | georgeferreira | dev ai infra containers media terminal |
+| `infra-nuc` | devops | ai terminal |
 
 | Bundle | Contents |
 | --- | --- |
@@ -30,10 +30,12 @@ and each host in `flake.nix` lists the ones it wants:
 | `infra` | terraform toolchain, cloudflared, istioctl |
 | `containers` | docker CLI, buildx, compose, lazydocker |
 | `media` | ffmpeg, tesseract, pandoc, graphviz, httrack |
-| `herdr` | the multiplexer and its three plugins |
-| `minidev` | ruby and the `dev` shell function |
+| `terminal` | tmux, herdr + plugins, mosh, minidev |
 
 A host that omits `dev` gets no editor and no ambient runtimes — that is the point.
+`terminal` is deliberately separate from `dev`: cloning a repo and moving between
+worktrees is not an editor concern, so a server can take `ai` + `terminal` and be
+productive without a toolchain.
 `helpers/bootstrap` and `helpers/doctor` read the same table from
 `helpers/lib/host.sh`, so stow packages and health checks follow the bundles too.
 
@@ -71,7 +73,7 @@ Then put it in the right file:
 | File | For |
 | --- | --- |
 | `nix/home/core.nix` | portable, safe on any host including a work machine |
-| `nix/home/extras/{dev,ai,infra,containers,media}.nix` | opt-in bundles |
+| `nix/home/extras/{dev,ai,infra,containers,media,terminal}.nix` | opt-in bundles |
 | `nix/home/darwin.nix` | macOS only |
 | `nix/home/linux.nix` | the dev VM |
 | `nix/home/server.nix` | service hosts |

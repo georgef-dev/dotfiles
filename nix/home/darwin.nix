@@ -5,7 +5,6 @@
 {
   home.packages = with pkgs; [
     pinentry_mac
-    reattach-to-user-namespace # tmux clipboard
     colima # docker daemon backend
     lima
 

@@ -22,11 +22,10 @@
         infra = ./nix/home/extras/infra.nix;
         containers = ./nix/home/extras/containers.nix;
         media = ./nix/home/extras/media.nix;
-        herdr = ./nix/home/programs/herdr.nix;
-        minidev = ./nix/home/programs/minidev.nix;
+        terminal = ./nix/home/extras/terminal.nix; # tmux, herdr, mosh, minidev
       };
 
-      workstation = [ "dev" "ai" "infra" "containers" "media" "herdr" "minidev" ];
+      workstation = [ "dev" "ai" "infra" "containers" "media" "terminal" ];
 
       # homeDirectory is derived from username so the two cannot drift apart;
       # out of sync, home-manager writes into a directory that does not exist.
@@ -49,7 +48,7 @@
           system = "x86_64-linux";
           username = "devops";
           platform = ./nix/home/server.nix;
-          bundles = [ "ai" "herdr" ];
+          bundles = [ "ai" "terminal" ];
         };
       };
 

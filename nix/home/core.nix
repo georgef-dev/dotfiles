@@ -11,7 +11,6 @@
   imports = [
     ./programs/zsh
     ./programs/git.nix
-    ./programs/tmux
     ./programs/direnv.nix
   ];
 
@@ -29,7 +28,6 @@
     glow
     lazygit
     shellcheck
-    mosh
     nmap
     keybase # identity + encrypted storage, not just the gpg key
     lolcat
