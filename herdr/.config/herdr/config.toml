@@ -102,6 +102,13 @@ description = "lazygit on focused pane"
 width = "90%"
 height = "90%"
 
+# Open the PR status popup (GitHub + Meteorite where configured).
+[[keys.command]]
+key = "prefix+u"
+type = "plugin_action"
+command = "georgef.pr-status.open"
+description = "open PR status board"
+
 [ui]
 mouse_capture = true
 copy_on_select = true
