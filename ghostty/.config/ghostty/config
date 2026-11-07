@@ -1,4 +1,5 @@
 macos-option-as-alt = left
+macos-titlebar-style = hidden
 font-family = Hack Nerd Font Mono
 font-family = Symbols Nerd Font Mono
 font-size = 12
