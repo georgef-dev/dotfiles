@@ -17,3 +17,4 @@ window-save-state = always
 copy-on-select = clipboard
 confirm-close-surface = false
 shell-integration = zsh
+keybind = shift+escape=text:\x1b
