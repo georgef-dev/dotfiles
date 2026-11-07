@@ -3,11 +3,12 @@
 onboarding = false
 
 [theme]
-name = "rose-pine"
+name = "dracula"
 
 [theme.custom]
-# Match the transparent Rose Pine tmux status bar.
+# Keep the panel transparent so it follows the terminal background.
 panel_bg = "reset"
+sidebar_bg = "#222430"
 
 [terminal]
 # Match tmux split-window -c "#{pane_current_path}".

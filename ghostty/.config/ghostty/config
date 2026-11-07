@@ -3,7 +3,7 @@ macos-titlebar-style = hidden
 font-family = Hack Nerd Font Mono
 font-family = Symbols Nerd Font Mono
 font-size = 12
-theme = dark:Rose Pine,light:Rose Pine Dawn
+theme = Dracula Dusk
 
 cursor-style = block
 cursor-style-blink = false
