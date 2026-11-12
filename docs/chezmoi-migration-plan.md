@@ -1,10 +1,15 @@
-# Chezmoi migration plan and Mac agent handoff
+# Chezmoi migration plan: Omarchy first
 
 Read the [goal and boundaries](chezmoi-migration-goal.md) first. This PR contains
-planning only. Continue implementation on this PR's branch from the personal Mac;
-there is no need to merge the plan before starting the work.
+planning only. Continue implementation on this PR's branch from the Dell XPS
+running Omarchy. There is no need to merge the plan before starting the work.
 
-## 1. Inspect the Mac and establish the current state
+The Dell is new and only starting to be used, making it the first target with
+less established configuration to disrupt. Build the shared setup here, validate
+portability on the personal Mac next, and migrate the development VM afterward.
+Keep the Mac's and VM's current environments working in the meantime.
+
+## 1. Inspect the Dell and establish the current state
 
 Read repository and ancestor `AGENTS.md` guidance, the README,
 `docs/using-nix-home-manager.md`, and relevant component documentation. Existing
@@ -14,7 +19,9 @@ unrelated conventions and update guidance as the implementation changes.
 
 Compare declarations with the actual machine: installed packages, active shell,
 PATH, configuration locations, symlink targets, user services, and local changes.
-Identify which tools are actually used and which are historical. Inspect without
+Distinguish Omarchy-provided defaults, local customizations, and missing tools.
+Use the existing dotfiles as a reference for the desired workflow rather than
+assuming every declared package is needed here. Inspect without
 collecting or committing secrets.
 
 Useful starting points in this repository:
@@ -49,11 +56,11 @@ and Stow without two tools managing the same target.
 Document the choices briefly as part of implementation. File formats, exact
 commands, and template structure are intentionally not prescribed by this plan.
 
-## 3. Migrate a small useful slice on the personal Mac
+## 3. Establish a small useful slice on the Dell
 
 Start with a manageable configuration and a few everyday CLI tools. Preserve
-existing settings when transferring ownership, preview the resulting changes,
-and verify the native binaries are the ones the shell actually resolves.
+existing Omarchy settings and integrations when introducing shared preferences,
+preview the resulting changes, and verify the native binaries are the ones the shell actually resolves.
 
 Establish the normal edit, preview, apply, commit, and synchronize workflow. Check
 that a repeated apply is uneventful before expanding the migration. Installation
@@ -62,9 +69,11 @@ should not unexpectedly perform a broad upgrade or remove unrelated packages.
 ## 4. Expand to the daily workflow
 
 Migrate the selected global packages and configurations incrementally. Preserve
-Git identity and per-machine SSH signing, Zsh/prompt behavior, editor mappings and
-plugin locks, directory navigation, Herdr integrations, and wanted applications.
+Git identity and per-machine SSH signing, wanted shell/prompt behavior, editor
+mappings and plugin locks, directory navigation, Herdr integrations, and wanted applications.
 Retain the distinction between portable preferences and platform integration.
+Inspect Omarchy shell initialization before choosing whether to keep its shell
+or adopt the existing Zsh workflow; preserve required environment integration.
 
 Pay particular attention to:
 
@@ -81,23 +90,29 @@ Pay particular attention to:
 Keep Nix and direnv usable for projects. Verify existing devShell entry points,
 including references to this repository, before retiring related shell setup.
 
-## 5. Prepare the other machines without claiming untested support
+## 5. Validate on the personal Mac, then prepare the VM
 
-Represent the VM and Omarchy selections in the shared inventory and configuration
-model. Replace assumptions that all Linux systems use apt. Keep Omarchy desktop
-defaults and user overrides compatible, and make desktop applications optional
-for the VM. Work-Mac adoption remains selective and must respect Shopify's setup.
+Once the Dell workflow is useful, adopt the same source on the personal Mac.
+Inventory its live Home Manager and Stow ownership before transferring files and
+packages to chezmoi and Homebrew. Preserve the working Mac environment until each
+replacement is verified. Use this second platform to validate the shared model
+and refine platform differences without duplicating the inventory.
 
-Use rendering, previews, or other suitable checks available on the Mac to examine
-Linux output. Record real Linux application and smoke testing as pending until
-performed on those machines. Leave infra-nuc operational while its scope remains
-unresolved.
+Prepare the VM selection next, keeping desktop applications optional. Replace
+assumptions that all Linux systems use apt. Work-Mac adoption remains selective
+and must respect Shopify's setup.
+
+Use rendering and previews where useful, but record actual application and smoke
+testing as pending until performed on each target. Leave infra-nuc operational
+while its scope remains unresolved.
 
 ## 6. Retire obsolete ownership and document the new workflow
 
-After replacement tools and configurations work, remove the personal Mac's
-dependency on Home Manager for its global environment. Do not uninstall Nix or
-delete project devShells. Avoid removing declarations still needed by hosts that
+On each migrated machine, retire previous configuration and global-package
+ownership only after replacements work. The Dell may have no Home Manager
+environment to retire; inspect rather than assume. Retire the personal Mac's
+Home Manager dependency when its own migration is verified. Do not uninstall Nix
+or delete project devShells. Avoid removing declarations still needed by hosts that
 have not migrated, and distinguish staged coexistence from the final design.
 
 Update the README, agent guidance, and bootstrap/health-check documentation so
@@ -108,15 +123,16 @@ adapt them where useful; avoid leaving two competing documented workflows.
 
 Record the following in the implementation PR as work progresses:
 
-- What changed on the Mac, which files and packages changed ownership, and how
-  recovery works.
+- What changed on the Dell and each subsequent target, which files and packages
+  changed ownership, and how recovery works.
 - Successful preview/apply/reapply, a fresh terminal session, key tool resolution,
   Git configuration/signing checks, and representative editor/Herdr behavior.
-- A working project Nix environment after global-package migration.
+- A working project Nix environment on the Dell, and continued project Nix
+  functionality after migration on the Mac and VM.
 - Any missing native equivalents, additional package sources, deferred decisions,
   and remaining Nix global dependencies.
-- Separate status for Mac validation, VM validation, and Omarchy validation, plus
-  a concise next-machine adoption procedure.
+- Separate status for Omarchy validation first, Mac validation next, and VM
+  validation afterward, plus a concise next-machine adoption procedure.
 
 Keep commits reviewable and this branch usable as a handoff. The goal is a working,
 understandable migration, with implementation details chosen from evidence on the

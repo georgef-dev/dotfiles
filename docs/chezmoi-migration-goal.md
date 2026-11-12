@@ -18,9 +18,9 @@ that capability independently of retiring Home Manager and global Nix packages.
 
 | Machine | Intended treatment |
 | --- | --- |
-| Personal MacBook | First migration target; Homebrew for native packages and applications |
+| Personal MacBook | Second target to validate portability; Homebrew for native packages and applications |
 | Development VM | Shared development workflow; apt for native packages |
-| Dell XPS running Omarchy (`gf-omarchy`) | Shared development workflow; Omarchy/Arch package tooling and desktop integration |
+| Dell XPS running Omarchy (`gf-omarchy`) | First migration target; Omarchy/Arch package tooling and desktop integration |
 | Shopify-managed work MacBook | Optional, selective reuse within employer constraints; drift is expected |
 
 The repository also defines `infra-nuc`. Its continued role is an open question;
@@ -64,16 +64,17 @@ Preserve per-machine SSH signing and authentication identities.
 ## Decisions left to implementation
 
 Choose the source layout, inventory schema, host selection, script organization,
-template usage, and transition away from Stow after inspecting the real Mac.
+template usage, and transition away from Stow after inspecting the Dell and its existing Omarchy setup.
 Earlier conversational snippets were illustrations, not an agreed implementation.
 Use the simplest arrangement that meets the outcomes above; avoid building a
 general-purpose package-management framework.
 
 ## Success criteria
 
-The personal Mac has its familiar workflow using native global packages and
-chezmoi-managed configuration, with project Nix environments still functional.
-Repeated application makes no unnecessary changes. A clear record identifies
-what was exercised on the Mac and what still needs testing on Linux. Eventually,
-the VM and Omarchy machine can adopt their selected tools from the same source,
-without requiring the work Mac or infra-nuc to migrate at the same time.
+The Dell has the desired development workflow using native global packages and
+chezmoi-managed configuration, while retaining Omarchy desktop integration and
+supporting Nix project environments. Repeated application makes no unnecessary
+changes. The personal Mac then validates portability, followed by the VM. A clear
+record identifies what was exercised on each machine and what remains untested.
+The existing Mac and VM setups stay operational until each is migrated; neither
+the work Mac nor infra-nuc must migrate at the same time.
