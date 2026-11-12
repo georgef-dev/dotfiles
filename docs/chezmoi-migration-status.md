@@ -93,3 +93,9 @@ separate from static configuration validation. No existing workspace or pane is 
 The first [cleanup decisions](package-cleanup.md) select btop instead of htop,
 and retain tree, wget, and mosh. Glow, nmap, and lolcat are excluded from the new
 inventory. The legacy sources remain available until their hosts migrate.
+
+Keybase is retained, with its Dell package source still to be selected. GnuPG is
+excluded as a personal tool; the OS package remains because pacman requires it.
+Legacy GnuPG package/agent/pinentry and GPG_TTY declarations, plus an old PGP-import
+warning in the health check, remain to be retired during legacy-host migration.
+These configuration references do not establish active personal use.

@@ -21,5 +21,24 @@ Dropped entries are not migrated into the new inventory. Existing Mac/VM
 Home Manager declarations and historical Brewfile entries remain until those
 hosts migrate; this decision does not uninstall their existing software.
 
-GnuPG and Keybase still need a separate decision because of their possible
-identity and encrypted-storage uses.
+## Identity and encrypted storage
+
+| Tool | Decision |
+| --- | --- |
+| Keybase | Keep |
+| GnuPG | Leave out of the personal tool inventory; retire legacy personal setup during host migration |
+
+Keybase installation on the Dell is pending a reviewed package source: it is not
+in this machine's configured package repositories. Its legacy Mac/VM setup stays
+in place until those hosts migrate.
+
+GnuPG remains installed on the Dell as an operating-system dependency required
+by pacman (and gpgme). Dropping it as a personal tool does not remove that package
+or change system package verification. Git already uses SSH commit signing.
+
+Legacy configuration still declares GnuPG, gpg-agent/pinentry, and `GPG_TTY` in
+`nix/home/core.nix`, `nix/home/linux.nix`, and
+`nix/home/programs/zsh/default.nix`. `helpers/doctor` also mentions an old Keybase
+PGP import in a KBFS warning; it does not execute that import. These references
+are not proof of active personal use. Revisit them during Mac/VM migration rather
+than carrying the legacy PGP setup into the new environment.
