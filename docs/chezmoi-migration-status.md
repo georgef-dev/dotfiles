@@ -44,16 +44,54 @@ The original checkout under `~/src/github.com/georgef-dev/dotfiles` was left
 untouched. The active chezmoi checkout is `~/Work/dotfiles` on the PR branch.
 Backups of the initial target files are outside Git; see the usage document.
 
-### Remaining Dell work
+### Dell audit: 2026-11-12
 
-- Neovim migration is deferred by the user: keep trying Omarchy's current LazyVim
-  setup. No editor-side navigation handoff or custom editor plugins are deployed.
-- Assess minidev, custom packages, remaining CLI bundles, desktop applications,
-  and system services; extend inventory selections based on actual use.
-- Decide whether Bash remains the preferred shell or whether the established Zsh
-  workflow is worth adopting. Do not replace Omarchy integration incidentally.
-- Broader global-package/role inventory and any third-party repositories remain
-  to be designed as software is added. Removal is always a separate decision.
+The selected Dell baseline is working. All 34 inventory packages are installed;
+`chezmoi verify` succeeds and file-only diff is empty. The four-profile migration
+check passes, as do all eight workspace-launcher and eight sidebar tests.
+
+An interactive Bash startup selects Neovim and loads minidev; real `dev cd`
+navigation succeeds. Herdr configuration validates, all three plugins are enabled,
+and all six plugin actions are registered. Docker service/socket and the Nix
+socket are active; both sockets are enabled for boot. Nix's existing default
+project shell runs Node, Python, and Go. The current commit's SSH signature verifies.
+RTK reports its global Codex hook, instructions, and reference configured.
+
+A scan of the current contents of branch-changed files found no common private-key
+or credential-token patterns. This is a limited pattern check, not proof that
+all possible secrets are absent. Credentials and application runtime state remain
+outside chezmoi ownership.
+
+### Deliberate deferrals and remaining decisions
+
+- Keep trying Omarchy's Neovim setup; personal editor migration and editor-side
+  Herdr navigation handoff remain deferred.
+- Bash remains in use. No switch to Zsh is needed to finish this baseline.
+- Keybase account login and other application sign-ins are user-local steps;
+  this audit did not inspect credentials or exercise authenticated services.
+- RTK's Codex setup was checked; automatic command rewriting and integration
+  with each other agent were not exercised by this audit.
+- Selected GUI packages are installed, and Etcher's desktop entry was checked
+  during setup. Interactive GUI behavior and the nonworking Docker hotkey were
+  not retested.
+  Use `sudo lazydocker` from a terminal with Omarchy's default access model.
+- Remaining legacy Homebrew formulae and Mac App Store selections need review
+  on the Mac. They are not implicitly retained or dropped. Linux service choices
+  beyond the selected Docker/Nix baseline have not been newly migrated.
+
+### Personal Mac handoff
+
+Continue on `plan/chezmoi-migration`, draft PR #13. Read the goal, plan, usage
+instructions, and [package decisions](package-cleanup.md) before implementation.
+Inspect the Mac's actual Home Manager, Stow, shell, and package ownership first.
+The personal-Mac profile is still guarded: do not apply the Omarchy profile there.
+
+Implement Homebrew formula/cask selection from the shared inventory, including
+Mac-only decisions currently recorded in the decision log. Null mappings mean
+unresolved sources, not unwanted tools. Preserve Colima as the Mac Docker backend,
+project-scoped runtimes, local identity/signing, and Nix project dependencies.
+Transfer configuration ownership in small verified steps before retiring Home
+Manager/Stow on that host. Mac, VM, and work-machine validation is still pending.
 
 ## Other machines
 
@@ -72,7 +110,7 @@ activated or changed.
 ## Herdr migration details
 
 The core Herdr config is rendered from the existing source with portable popup
-paths and Ctrl+S bindings. Ctrl+S then V opens the user-selected personal layout:
+paths and Ctrl+S bindings. Ctrl+S then lowercase `v` opens the user-selected personal layout:
 a workspace-name prompt, Neovim on the left, and two shells on the right in the
 invoking directory. This launcher uses native Herdr APIs rather than the
 Shopify-specific Spreader wrapper, which remains for legacy hosts. Chezmoi deploys the pinned navigation archive outside

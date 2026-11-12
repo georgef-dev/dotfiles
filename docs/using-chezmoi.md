@@ -146,6 +146,7 @@ Your bindings now use Ctrl+S as the prefix:
 | Ctrl+S, then `b` / `w` | Toggle sidebar / select workspace |
 | Ctrl+S, then `v` | Name a workspace; Neovim left, two shells right |
 | Ctrl+S, then `g` | Lazygit popup in the focused pane's directory |
+| Ctrl+S, then `Alt+g` | Built-in pane search |
 | Ctrl+S, then `u` | GitHub PR status popup |
 
 Ctrl+H/J/K/L uses the pinned navigation plugin: shells change Herdr panes and
@@ -187,3 +188,11 @@ minidev through its own checkout. Chezmoi does not overwrite or update it.
 
 On this Dell, open a new terminal or run
 `source ~/.config/dotfiles/bash.sh` to load the `dev` shell function.
+
+## Containers on the Dell
+
+Docker uses Omarchy's existing socket activation and authorization model. The
+socket is enabled for boot; an inactive daemon can be normal before first use.
+Run `sudo docker ...` or `sudo lazydocker` from a terminal. No docker-group access
+was granted during migration. Docker CLI, Compose, Buildx, and lazydocker are
+selected across personal machines; the Mac uses Colima as its Docker backend.
