@@ -198,3 +198,17 @@ Etcher's Dell installation is pending a reviewed package source: it is not in
 this machine's configured repositories. Retain the existing `balenaetcher`
 Homebrew cask selection for Mac migration. wkhtmltopdf is excluded from the new
 inventory; existing installations and legacy declarations remain until migration.
+
+## Mac hardware utilities
+
+| App | Decision |
+| --- | --- |
+| CalDigit Docking Utility | Keep for Mac |
+| CalDigit Thunderbolt Charging | Keep for Mac |
+| Logi Options+ | Keep for Mac |
+| Logi Tune | Keep for Mac |
+
+Retain the existing Homebrew cask selections (`caldigit-docking-utility`,
+`caldigit-thunderbolt-charging`, `logi-options+`, and `logitune`) for personal Mac
+migration. Mac app installation support remains pending; this decision adds no
+Linux packages or replacement utilities.
