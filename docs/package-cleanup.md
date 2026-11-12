@@ -68,3 +68,17 @@ its native package inventory. This selection does not change Docker services,
 contexts, credentials, or existing container data. Mac and Debian installation
 sources remain to be verified during their migrations; null apt mappings mark
 unresolved package sources rather than dropped tools.
+
+## Media and documents
+
+| Tool | Decision |
+| --- | --- |
+| ffmpeg | Drop |
+| tesseract | Drop |
+| pandoc | Drop |
+| graphviz | Drop |
+| httrack | Drop |
+
+None are selected for the new personal inventory. Existing installations and
+legacy Mac/VM declarations remain until those hosts migrate; packages needed by
+other applications can remain as dependencies.
