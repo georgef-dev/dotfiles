@@ -124,3 +124,7 @@ packages:
     arch: spotify
     brew: null
     apt: null
+  - tool: gimp
+    arch: gimp
+    brew: null
+    apt: gimp

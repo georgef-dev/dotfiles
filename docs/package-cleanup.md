@@ -146,3 +146,18 @@ Discord and Spotify use native packages from the Dell's configured repositories.
 Mac cask installation and Debian sources remain pending host migration, marked
 with null mappings. Zoom is excluded from the new inventory; existing
 installations and legacy host declarations remain until migration.
+
+## Design and database apps
+
+| App | Decision |
+| --- | --- |
+| GIMP | Keep |
+| DBeaver | Drop |
+| draw.io | Drop |
+| Figma | Drop |
+| Miro | Drop |
+
+GIMP uses the native Arch package on the Dell. Its Mac cask installation remains
+pending host migration; the apt mapping is provisional, like the other Debian
+mappings. The dropped apps are excluded from the new inventory; existing
+installations and legacy host declarations remain until migration.
