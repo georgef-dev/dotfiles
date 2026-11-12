@@ -161,3 +161,15 @@ GIMP uses the native Arch package on the Dell. Its Mac cask installation remains
 pending host migration; the apt mapping is provisional, like the other Debian
 mappings. The dropped apps are excluded from the new inventory; existing
 installations and legacy host declarations remain until migration.
+
+## Connectivity and cloud apps
+
+| App | Decision |
+| --- | --- |
+| Google Drive | Drop |
+| Cloudflare WARP | Drop |
+| OpenVPN Connect | Drop |
+| AWS Session Manager plugin | Drop |
+
+All four are excluded from the new personal inventory. Existing installations,
+network settings, and legacy host declarations remain unchanged until migration.
