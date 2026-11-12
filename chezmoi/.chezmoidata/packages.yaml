@@ -103,3 +103,16 @@ packages:
     arch: ruby
     brew: ruby
     apt: ruby
+  # Desktop apps: Homebrew cask/vendor apt sources need host migration support.
+  - tool: 1password
+    arch: 1password
+    brew: null
+    apt: null
+  - tool: google-chrome
+    arch: google-chrome
+    brew: null
+    apt: null
+  - tool: firefox
+    arch: firefox
+    brew: null
+    apt: null

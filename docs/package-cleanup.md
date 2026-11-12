@@ -116,3 +116,20 @@ Native Python remains a dependency of the Herdr helpers, and native Ruby remains
 a dependency of minidev. These tool dependencies do not select project runtime
 versions. Existing OS/application dependencies and legacy host installations are
 not removed by this decision.
+
+## Browsers, passwords, and notes
+
+| App | Decision |
+| --- | --- |
+| 1Password | Keep |
+| Google Chrome | Keep |
+| Firefox | Keep |
+| Chromium | Drop from personal inventory |
+| Joplin | Drop |
+| Obsidian | Drop from personal inventory |
+
+The kept apps use native packages from this Dell's configured repositories.
+Mac cask installation and Debian package sources remain pending host migration,
+represented by null mappings. Chrome is already the Dell's default browser;
+this selection does not change it. Existing Omarchy applications are not
+uninstalled, and the legacy Joplin configuration remains until host migration.
