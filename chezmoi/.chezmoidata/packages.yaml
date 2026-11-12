@@ -47,3 +47,15 @@ packages:
     arch: nix
     brew: null
     apt: nix-bin
+  - tool: herdr
+    arch: herdr
+    brew: null
+    apt: null
+  - tool: python3
+    arch: python
+    brew: python
+    apt: python3
+  - tool: lazygit
+    arch: lazygit
+    brew: lazygit
+    apt: null

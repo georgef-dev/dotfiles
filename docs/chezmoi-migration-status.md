@@ -1,6 +1,6 @@
 # Migration status
 
-## Omarchy Dell: initial CLI slice applied
+## Omarchy Dell: CLI and core Herdr migration
 
 The first implementation is on `plan/chezmoi-migration`, following the
 [goal](chezmoi-migration-goal.md) and [plan](chezmoi-migration-plan.md).
@@ -46,12 +46,8 @@ Backups of the initial target files are outside Git; see the usage document.
 
 ### Remaining Dell work
 
-- Choose and migrate the desired Neovim configuration. Omarchy's current LazyVim
-  setup remains active; the repository contains a different plugin configuration.
-- Port the wanted Herdr workflow. The repository configuration contains Mac-only
-  paths and depends on plugins whose native installation/build strategy must be
-  established. Preserve runtime data and verify plugin actions before replacing
-  working bindings.
+- Neovim migration is deferred by the user: keep trying Omarchy's current LazyVim
+  setup. No editor-side navigation handoff or custom editor plugins are deployed.
 - Assess minidev, custom packages, remaining CLI bundles, desktop applications,
   and system services; extend inventory selections based on actual use.
 - Decide whether Bash remains the preferred shell or whether the established Zsh
@@ -72,3 +68,22 @@ Non-Omarchy profiles currently fail before package installation and ignore the
 new managed files. They have rendered/guard checks, not real platform validation.
 No Home Manager modules or Stow packages were removed, and no other host was
 activated or changed.
+
+## Herdr migration details
+
+The core Herdr config is rendered from the existing source with portable popup
+paths and Ctrl+S bindings. Ctrl+S then V opens the user-selected personal layout:
+a workspace-name prompt, Neovim on the left, and two shells on the right in the
+invoking directory. This launcher uses native Herdr APIs rather than the
+Shopify-specific Spreader wrapper, which remains for legacy hosts. Chezmoi deploys the pinned navigation archive outside
+Git and registers it plus the personal sidebar and PR-board plugins. A Bash
+prompt hook replaces the legacy Zsh sidebar refresh for this host. Herdr, Python,
+and lazygit are included in the native inventory.
+
+The focused integration check covers config schema, portable paths, plugin source
+registration, archive deployment with a local fixture, apply/reapply, unchanged
+session data, rejection of folded directory symlinks, and prompt-hook idempotence.
+Seven focused launcher tests cover the returned workspace/pane IDs, cwd and
+layout, default naming, cancellation, failure cleanup, readiness timeout, and
+argument quoting. Interactive popup behavior and crossing Neovim boundaries remain
+separate from static configuration validation. No existing workspace or pane is closed.

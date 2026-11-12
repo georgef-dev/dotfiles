@@ -1,0 +1,20 @@
+# shellcheck shell=bash
+# Personal Bash additions, loaded after Omarchy's defaults.
+export EDITOR=nvim
+export VISUAL=nvim
+export SUDO_EDITOR=nvim
+
+# Native direnv can load project environments, including Nix flakes once installed.
+if command -v direnv >/dev/null 2>&1; then
+  eval "$(direnv hook bash)"
+fi
+
+# Keep sidebar metadata current as the shell changes directories.
+_dotfiles_herdr_sidebar_prompt() {
+  [[ -n "${HERDR_PANE_ID:-}" ]] || return 0
+  python3 {{ joinPath .chezmoi.workingTree "herdr/plugins/active-pane-sidebar/active_pane_sidebar.py" | shellQuote }} --pane-id "$HERDR_PANE_ID" >/dev/null 2>&1 &
+  disown "$!" 2>/dev/null || true
+}
+if [[ " ${PROMPT_COMMAND[*]:-} " != *" _dotfiles_herdr_sidebar_prompt "* ]]; then
+  PROMPT_COMMAND+=(_dotfiles_herdr_sidebar_prompt)
+fi

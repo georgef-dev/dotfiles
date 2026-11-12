@@ -1,8 +1,8 @@
 # Using chezmoi on the Omarchy Dell
 
 The Dell is the first migrated host. Chezmoi manages a small CLI baseline and
-Git/Bash preferences; Omarchy still manages its desktop, terminal, Neovim, and
-Herdr configuration. The personal Mac, VM, and infra-nuc retain Home Manager and
+Git/Bash preferences and Herdr configuration. Omarchy still manages its desktop,
+terminal, and Neovim configuration. The personal Mac, VM, and infra-nuc retain Home Manager and
 Stow for now. Their existing bootstrap and `hms` commands are unchanged.
 
 ## Source and local settings
@@ -103,13 +103,16 @@ The existing `~/dotfiles` references on legacy hosts remain valid there.
 
 ```bash
 python3 tests/check-chezmoi.py
-shellcheck chezmoi/dot_bashrc chezmoi/dot_config/dotfiles/bash.sh
+python3 -m unittest discover -s tests -p test_herdr_workspace.py
+shellcheck chezmoi/dot_bashrc
+chezmoi execute-template < chezmoi/dot_config/dotfiles/bash.sh.tmpl | shellcheck -s bash -
 chezmoi verify
 ```
 
 The integration check renders all profiles, checks script syntax, verifies
 non-migrated profile guards, and on Omarchy applies twice to a temporary HOME with
-a package-command stub. It never installs packages or changes the real HOME.
+package/plugin command stubs and a local archive fixture. It never downloads
+third-party code, installs packages, or changes the real HOME.
 
 Before the Dell's first apply, affected files were backed up under
 `~/.local/state/dotfiles/backups/20261112T023556Z/`. The accompanying
@@ -119,3 +122,46 @@ in that list (also `.config/mise/config.toml`, added just afterward), and open a
 new terminal. Stop applying this source until its desired state is corrected.
 Installed native packages and the Nix socket are separate from file recovery;
 no package removal is required to restore the previous shell and Git behavior.
+
+## Herdr on the Dell
+
+Chezmoi renders `herdr/.config/herdr/config.toml` into the real
+`~/.config/herdr/config.toml`, substituting checkout-relative popup paths. The
+legacy Stow source stays in place for the Mac and VM. Only the config file is
+managed: logs, sockets, sessions, and `plugins.json` remain Herdr-owned and outside
+Git. A before-apply check refuses a symlinked Herdr directory.
+
+Your bindings now use Ctrl+S as the prefix:
+
+| Keys | Action |
+| --- | --- |
+| Ctrl+S, then `?` | Active keybinding help |
+| Ctrl+S, then `%` / `"` | Split right / down |
+| Ctrl+S, then `h/j/k/l` | Focus a neighboring pane |
+| Ctrl+S, then `b` / `w` | Toggle sidebar / select workspace |
+| Ctrl+S, then `v` | Name a workspace; Neovim left, two shells right |
+| Ctrl+S, then `g` | Lazygit popup in the focused pane's directory |
+| Ctrl+S, then `u` | GitHub PR status popup |
+
+Ctrl+H/J/K/L uses the pinned navigation plugin: shells change Herdr panes and
+Neovim receives its usual window-navigation keys. Leaving Neovim at a split edge
+still requires the prefix bindings because its configuration is intentionally
+unchanged. The workspace launcher uses native Herdr commands in the invoking
+pane's directory. It waits for the editor shell to start and closes only its new
+workspace if setup fails. The old Shopify Spreader wrapper remains for legacy
+hosts; the Dell needs no Spreader build or Shopify dev tooling.
+
+The navigation archive is pinned and checksum-verified, then deployed under
+`~/.local/share/dotfiles/herdr/`. The two personal Python plugins are linked from
+this checkout. The after-apply script registers these sources with Herdr, so no
+plugin registry or downloaded source enters the repository. The Bash prompt
+refreshes the sidebar's directory/worktree/Git metadata inside Herdr panes.
+
+`chezmoi diff` always displays the directory safety-check script. To see file-only
+drift, use `chezmoi diff --exclude scripts`. Plugin registration runs only when
+its rendered script changes. No server stop or restart is part of apply.
+
+Check with `herdr config check`, `herdr plugin list`, and
+`herdr plugin action list`. If an existing client hasn't picked up the new
+settings, reload config from Herdr's menu or run `herdr server reload-config`
+inside a Herdr pane. Keep the server and its existing processes running.

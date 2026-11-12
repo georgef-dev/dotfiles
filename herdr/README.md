@@ -4,6 +4,12 @@ My [herdr](https://github.com/yuk1ty/herdr) terminal-multiplexer setup: config,
 custom plugin, and the Spreader workspace launcher. Tuned to mirror my tmux
 muscle memory (`Ctrl+s` prefix, tmux-style keys, Rose Pine).
 
+On the Omarchy Dell, [chezmoi](../docs/using-chezmoi.md#herdr-on-the-dell) manages
+this configuration and plugin registration. Its Ctrl+s v launcher uses
+`workspace/open.py`: name a workspace, then open Neovim left and two shells right
+in the invoking directory. Neovim itself keeps Omarchy's configuration. The
+Home Manager/Stow and Shopify Spreader instructions below apply to legacy hosts.
+
 Launch herdr **outside** tmux — an outer tmux would swallow the `Ctrl+s` prefix.
 
 ## Layout

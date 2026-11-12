@@ -4,6 +4,7 @@
 .config/dotfiles
 .config/git/config
 .config/git/ignore
+.config/herdr
 .config/nix
 .config/mise/config.toml
 {{ end }}

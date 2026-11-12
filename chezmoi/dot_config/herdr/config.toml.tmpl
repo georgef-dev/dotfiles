@@ -1,0 +1,12 @@
+{{- /* Keep the legacy config authoritative while its hosts still use Stow. */ -}}
+{{- $config := include (joinPath .chezmoi.workingTree "herdr/.config/herdr/config.toml") | fromToml -}}
+{{- range $command := $config.keys.command -}}
+  {{- if eq $command.key "prefix+v" -}}
+    {{- $_ := set $command "command" (printf "python3 %s" (joinPath $.chezmoi.workingTree "herdr/workspace/open.py" | shellQuote)) -}}
+    {{- $_ := set $command "description" "create personal workspace" -}}
+    {{- $_ := set $command "height" 8 -}}
+  {{- else if eq $command.key "prefix+g" -}}
+    {{- $_ := set $command "command" (joinPath $.chezmoi.workingTree "herdr/lazygit/open.sh" | shellQuote) -}}
+  {{- end -}}
+{{- end -}}
+{{ $config | toToml }}

@@ -1,0 +1,8 @@
+{{ if eq .profile "omarchy" -}}
+# Same navigation revision as the legacy Nix package; no build is needed.
+[".local/share/dotfiles/herdr/vim-herdr-navigation"]
+    type = "archive"
+    url = {{ .herdr_navigation.url | quote }}
+    stripComponents = 1
+    checksum.sha256 = {{ .herdr_navigation.sha256 | quote }}
+{{ end -}}
