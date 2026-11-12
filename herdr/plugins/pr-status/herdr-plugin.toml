@@ -1,0 +1,20 @@
+id = "georgef.pr-status"
+name = "PR Status"
+version = "0.1.0"
+min_herdr_version = "0.7.4"
+description = "Popup listing your open PRs with check and review status (GitHub; Meteorite optional)."
+platforms = ["linux", "macos"]
+
+[[actions]]
+id = "open"
+title = "Open PR status board"
+contexts = ["global"]
+command = ["/bin/sh", "open.sh"]
+
+[[panes]]
+id = "board"
+title = "My PRs"
+placement = "popup"
+width = "92%"
+height = "80%"
+command = ["python3", "pr_status.py"]
