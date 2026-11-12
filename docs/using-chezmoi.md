@@ -44,13 +44,17 @@ Open a new terminal to load shell changes.
 
 `chezmoi/.chezmoidata/packages.yaml` is the authoritative inventory for this first
 CLI slice. Each tool records native package names; the installer uses the Arch
-mapping on Omarchy. Homebrew and apt mappings are preparation, not tested support.
+mapping on Omarchy. Homebrew and apt mappings are preparation, not tested support. Entries marked
+`source: aur` use `omarchy pkg aur add`; unmarked entries use repository packages.
+AUR recipe changes should be reviewed during normal package upgrades.
 `nix` is project infrastructure; its Mac installation path remains a later choice.
 
 When the rendered package list changes, the before-install script calls
 `omarchy pkg add` to install missing packages. It does not remove software or
 upgrade the system. A manually removed package can be restored with
-`omarchy pkg add <package>`; an unchanged apply does not rerun the installer.
+`omarchy pkg add <package>` for repository packages, or
+`omarchy pkg aur add <package>` for AUR packages; an unchanged apply does not
+rerun the installer.
 Continue normal Omarchy updates through `omarchy update`.
 
 Omarchy also declares GitHub CLI through mise. A user override disables mise management

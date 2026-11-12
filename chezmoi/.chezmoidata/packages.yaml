@@ -1,4 +1,4 @@
-# Native package names for the shared CLI baseline. Only the Omarchy profile
+# Native package names for the shared personal inventory. Only the Omarchy profile
 # installs these today; verify the other mappings when migrating those machines.
 packages:
   - tool: chezmoi
@@ -128,3 +128,19 @@ packages:
     arch: gimp
     brew: null
     apt: gimp
+  # Reviewed AUR recipes repackage vendor binaries; upgrades remain OS-managed.
+  - tool: keybase
+    arch: keybase-bin
+    source: aur
+    brew: null
+    apt: null
+  - tool: rtk
+    arch: rtk-bin
+    source: aur
+    brew: rtk
+    apt: null
+  - tool: balenaEtcher
+    arch: etcher-bin
+    source: aur
+    brew: null
+    apt: null

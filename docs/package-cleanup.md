@@ -28,9 +28,8 @@ hosts migrate; this decision does not uninstall their existing software.
 | Keybase | Keep |
 | GnuPG | Leave out of the personal tool inventory; retire legacy personal setup during host migration |
 
-Keybase installation on the Dell is pending a reviewed package source: it is not
-in this machine's configured package repositories. Its legacy Mac/VM setup stays
-in place until those hosts migrate.
+Keybase uses the reviewed AUR `keybase-bin` package on the Dell, including the
+GUI and KBFS. Its legacy Mac/VM setup stays in place until those hosts migrate.
 
 GnuPG remains installed on the Dell as an operating-system dependency required
 by pacman (and gpgme). Dropping it as a personal tool does not remove that package
@@ -49,7 +48,7 @@ than carrying the legacy PGP setup into the new environment.
 | --- | --- |
 | Claude Code | Keep; retain Omarchy's existing mise provider on the Dell |
 | Codex | Keep; retain Omarchy's existing mise provider on the Dell |
-| rtk | Keep; Dell installation pending a reviewed package source |
+| rtk | Keep; use the reviewed AUR `rtk-bin` package on the Dell |
 | OpenCode | Keep; retain Omarchy's existing mise provider on the Dell |
 
 No duplicate Claude Code, Codex, or OpenCode packages are introduced. OpenCode
@@ -194,8 +193,7 @@ installations and legacy host declarations remain until migration.
 | balenaEtcher | Keep |
 | wkhtmltopdf | Drop |
 
-Etcher's Dell installation is pending a reviewed package source: it is not in
-this machine's configured repositories. Retain the existing `balenaetcher`
+Etcher uses the reviewed AUR `etcher-bin` package on the Dell. Retain the existing `balenaetcher`
 Homebrew cask selection for Mac migration. wkhtmltopdf is excluded from the new
 inventory; existing installations and legacy declarations remain until migration.
 
@@ -212,3 +210,24 @@ Retain the existing Homebrew cask selections (`caldigit-docking-utility`,
 `caldigit-thunderbolt-charging`, `logi-options+`, and `logitune`) for personal Mac
 migration. Mac app installation support remains pending; this decision adds no
 Linux packages or replacement utilities.
+
+## Reviewed AUR sources on the Dell
+
+The shared inventory marks these packages with `source: aur`; the installer
+routes them through `omarchy pkg aur add`, separately from repository packages.
+Normal Omarchy/AUR updates own upgrades; chezmoi installs missing packages only.
+
+| Tool | AUR package | Vendor source |
+| --- | --- | --- |
+| Keybase | `keybase-bin` | Keybase's Debian binary, vendor-maintained recipe |
+| rtk | `rtk-bin` | `rtk-ai/rtk` GitHub release binary |
+| balenaEtcher | `etcher-bin` | `balena-io/etcher` GitHub release Debian binary |
+
+Recipes, wrapper scripts, and Keybase's post-install hook were inspected before
+installation, and source checksums were verified during packaging. These are
+community/AUR packages rather than configured repository packages; review recipe
+changes during upgrades. The binary recipes avoid global Rust/Node build tools.
+
+Package installation does not log into Keybase, import PGP keys, flash drives,
+or initialize rtk's agent hooks. Keybase's vendor post-install hook sets up the
+`/keybase` redirector and its permissions; account login remains interactive.

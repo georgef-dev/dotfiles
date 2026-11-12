@@ -94,12 +94,12 @@ The first [cleanup decisions](package-cleanup.md) select btop instead of htop,
 and retain tree, wget, and mosh. Glow, nmap, and lolcat are excluded from the new
 inventory. The legacy sources remain available until their hosts migrate.
 
-Keybase is retained, with its Dell package source still to be selected. GnuPG is
+Keybase is retained through the reviewed AUR `keybase-bin` package. GnuPG is
 excluded as a personal tool; the OS package remains because pacman requires it.
 Legacy GnuPG package/agent/pinentry and GPG_TTY declarations, plus an old PGP-import
 warning in the health check, remain to be retired during legacy-host migration.
 These configuration references do not establish active personal use.
 
 AI-tool cleanup retains Claude Code, Codex, and OpenCode through Omarchy's existing
-mise providers. rtk is kept, with its Dell package source still pending. Keeping
+mise providers. rtk is kept through the reviewed AUR `rtk-bin` package. Keeping
 OpenCode does not deploy the legacy shell/editor integrations.

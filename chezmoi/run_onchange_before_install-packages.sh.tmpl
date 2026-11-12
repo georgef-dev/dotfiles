@@ -16,7 +16,12 @@ fi
 
 # Omarchy installs missing packages without upgrading or removing anything.
 # Rendering the inventory here makes changes trigger this run_onchange script.
-omarchy pkg add{{ range .packages }} {{ .arch | quote }}{{ end }}
+omarchy pkg add{{ range .packages }}{{ if ne (get . "source") "aur" }} {{ .arch | quote }}{{ end }}{{ end }}
+{{ $aur := list -}}
+{{ range .packages }}{{ if eq (get . "source") "aur" }}{{ $aur = append $aur .arch }}{{ end }}{{ end -}}
+{{ if $aur -}}
+omarchy pkg aur add{{ range $aur }} {{ . | quote }}{{ end }}
+{{ end -}}
 
 {{ else -}}
 printf '%s\n' 'This chezmoi profile is not migrated yet; no packages were installed.' >&2

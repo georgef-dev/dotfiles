@@ -75,7 +75,11 @@ gitSigningKey = ""
                 assert run('git', 'config', '--file', str(git_config), 'init.defaultBranch').stdout.strip() == 'main'
                 run('bash', '-n', str(home / '.bashrc'))
                 run(*args, 'apply', env=env)
-                assert len(log.read_text().splitlines()) == 1, 'installer reran on unchanged apply'
+                calls = log.read_text().splitlines()
+                assert len(calls) == 2, 'expected one repository and one AUR call across apply/reapply'
+                assert calls[0].startswith('pkg add ')
+                assert calls[1] == 'pkg aur add keybase-bin rtk-bin etcher-bin'
+                assert not {'keybase-bin', 'rtk-bin', 'etcher-bin'} & set(calls[0].split())
                 # The always-run directory safety check is intentionally shown as a script.
                 drift = run(*args, 'diff', '--exclude', 'scripts', '--no-pager', env=env).stdout
                 assert drift == '', drift
