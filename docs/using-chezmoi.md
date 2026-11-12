@@ -55,7 +55,9 @@ Continue normal Omarchy updates through `omarchy update`.
 
 Omarchy also declares GitHub CLI through mise. A user override disables mise management
 for `gh`, so the installed Arch package supplies it while other Omarchy mise
-integrations continue to work. No existing mise installations are deleted.
+integrations continue to work. The same override disables OpenCode, which was
+removed from the selected AI-tool inventory. Claude Code and Codex retain their
+Omarchy mise providers. No existing mise installations are deleted.
 
 ## Adopting this branch on another Omarchy installation
 

@@ -1,3 +1,4 @@
 # GitHub CLI comes from the native package inventory, not a second mise install.
+# OpenCode is excluded from the selected personal AI tools.
 [settings]
-disable_tools = ["gh"]
+disable_tools = ["gh", "opencode"]

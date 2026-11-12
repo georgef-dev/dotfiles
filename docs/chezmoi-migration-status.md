@@ -99,3 +99,8 @@ excluded as a personal tool; the OS package remains because pacman requires it.
 Legacy GnuPG package/agent/pinentry and GPG_TTY declarations, plus an old PGP-import
 warning in the health check, remain to be retired during legacy-host migration.
 These configuration references do not establish active personal use.
+
+AI-tool cleanup retains Claude Code and Codex through Omarchy's existing mise
+providers and excludes OpenCode through the user override. rtk is kept, with its
+Dell package source still pending. Legacy OpenCode helpers are tracked for
+cleanup when their shell/editor configurations migrate.

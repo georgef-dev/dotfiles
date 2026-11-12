@@ -42,3 +42,18 @@ Legacy configuration still declares GnuPG, gpg-agent/pinentry, and `GPG_TTY` in
 PGP import in a KBFS warning; it does not execute that import. These references
 are not proof of active personal use. Revisit them during Mac/VM migration rather
 than carrying the legacy PGP setup into the new environment.
+
+## AI tools
+
+| Tool | Decision |
+| --- | --- |
+| Claude Code | Keep; retain Omarchy's existing mise provider on the Dell |
+| Codex | Keep; retain Omarchy's existing mise provider on the Dell |
+| rtk | Keep; Dell installation pending a reviewed package source |
+| OpenCode | Drop; disable Omarchy's mise declaration in the user override |
+
+No duplicate Claude Code/Codex packages are introduced. OpenCode's existing
+installation and account data are not deleted by this override. Legacy references
+in `schema_status` and `nvim/.config/nvim/lua/config/opencode.lua`
+remain for cleanup during those configurations' migration; they are not deployed
+by the Dell's chezmoi setup.
