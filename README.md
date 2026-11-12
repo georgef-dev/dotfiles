@@ -7,6 +7,15 @@
                 __/ |
                |___/
 
+# Omarchy migration
+
+The Dell now uses an initial chezmoi setup with native Arch packages. See
+[Using chezmoi](docs/using-chezmoi.md) for operation and setup, and
+[migration status](docs/chezmoi-migration-status.md) for remaining work.
+
+The setup and Nix/Home Manager instructions below still apply to the existing
+Mac, VM, and infra-nuc. Do not run that Debian-oriented bootstrap on Omarchy.
+
 # Setup
 
 ```bash

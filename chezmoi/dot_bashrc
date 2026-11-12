@@ -1,0 +1,12 @@
+# shellcheck shell=bash
+# shellcheck disable=SC1090,SC1091
+# Omarchy environment is needed even for non-interactive shells.
+[[ -r /usr/share/omarchy/default/bash/env-bootstrap ]] && source /usr/share/omarchy/default/bash/env-bootstrap
+
+[[ $- != *i* ]] && return
+
+# Keep Omarchy's maintained aliases, environment, prompt, and integrations.
+source "$OMARCHY_PATH/default/bash/rc"
+
+# Personal additions are kept separate from Omarchy's defaults.
+[[ -r ~/.config/dotfiles/bash.sh ]] && source ~/.config/dotfiles/bash.sh

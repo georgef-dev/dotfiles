@@ -1,8 +1,9 @@
 # Chezmoi migration plan: Omarchy first
 
-Read the [goal and boundaries](chezmoi-migration-goal.md) first. This PR contains
-planning only. Continue implementation on this PR's branch from the Dell XPS
-running Omarchy. There is no need to merge the plan before starting the work.
+Read the [goal and boundaries](chezmoi-migration-goal.md) first. Implementation
+has started on the Dell XPS running Omarchy; consult the
+[migration status](chezmoi-migration-status.md) before continuing on this branch.
+There is no need to merge the PR before continuing the work.
 
 The Dell is new and only starting to be used, making it the first target with
 less established configuration to disrupt. Build the shared setup here, validate

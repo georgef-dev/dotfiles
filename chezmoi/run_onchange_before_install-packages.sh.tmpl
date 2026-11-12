@@ -1,0 +1,25 @@
+#!/bin/sh
+set -eu
+
+{{ if eq .profile "omarchy" -}}
+# Reject a profile copied onto the wrong operating system before changing files.
+if [ ! -r /etc/os-release ]; then
+  echo 'The omarchy profile requires Omarchy.' >&2
+  exit 1
+fi
+# shellcheck source=/dev/null
+. /etc/os-release
+if [ "${ID:-}" != omarchy ]; then
+  echo 'The omarchy profile requires Omarchy.' >&2
+  exit 1
+fi
+
+# Omarchy installs missing packages without upgrading or removing anything.
+# Rendering the inventory here makes changes trigger this run_onchange script.
+omarchy pkg add{{ range .packages }} {{ .arch | quote }}{{ end }}
+
+{{ else -}}
+printf '%s\n' 'This chezmoi profile is not migrated yet; no packages were installed.' >&2
+printf '%s\n' 'Keep the existing setup until its migration is verified. Work Macs must not apply personal configuration.' >&2
+exit 1
+{{ end -}}

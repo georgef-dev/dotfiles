@@ -1,0 +1,49 @@
+# Native package names for the shared CLI baseline. Only the Omarchy profile
+# installs these today; verify the other mappings when migrating those machines.
+packages:
+  - tool: chezmoi
+    arch: chezmoi
+    brew: chezmoi
+    apt: chezmoi
+  - tool: git
+    arch: git
+    brew: git
+    apt: git
+  - tool: neovim
+    arch: neovim
+    brew: neovim
+    apt: neovim
+  - tool: ripgrep
+    arch: ripgrep
+    brew: ripgrep
+    apt: ripgrep
+  - tool: jq
+    arch: jq
+    brew: jq
+    apt: jq
+  - tool: gh
+    arch: github-cli
+    brew: gh
+    apt: gh
+  - tool: direnv
+    arch: direnv
+    brew: direnv
+    apt: direnv
+  - tool: fzf
+    arch: fzf
+    brew: fzf
+    apt: fzf
+  - tool: bat
+    arch: bat
+    brew: bat
+    apt: bat
+  - tool: shellcheck
+    arch: shellcheck
+    brew: shellcheck
+    apt: shellcheck
+  # Nix is infrastructure for project devShells, not a global tool provider.
+  # Other platforms need their own reviewed Nix installation path.
+  - tool: nix
+    arch: nix
+    brew: null
+    apt: nix-bin

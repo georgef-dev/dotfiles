@@ -1,6 +1,7 @@
 # Goal: a familiar environment with native package management
 
-Status: agreed direction; implementation design and migration remain to be done.
+Status: initial Omarchy CLI slice applied; broader migration remains in progress.
+See [migration status](chezmoi-migration-status.md) for verified work and next steps.
 Start with the [migration plan](chezmoi-migration-plan.md) on this branch.
 
 ## Why change
