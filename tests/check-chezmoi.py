@@ -83,8 +83,8 @@ gitSigningKey = ""
                 herdr_dir = home / '.config/herdr'
                 settings = tomllib.loads((herdr_dir / 'config.toml').read_text())
                 disabled = tomllib.loads((home / '.config/mise/config.toml').read_text())['settings']['disable_tools']
-                assert {'gh', 'opencode'} <= set(disabled)
-                assert not {'claude', 'codex'} & set(disabled), 'keep the selected Omarchy AI tools enabled'
+                assert 'gh' in disabled
+                assert not {'claude', 'codex', 'opencode'} & set(disabled), 'keep the selected Omarchy AI tools enabled'
                 assert settings['keys']['prefix'] == 'ctrl+s'
                 assert settings['keys']['goto'] == 'prefix+alt+g', 'pane search must not shadow lazygit'
                 lazygit_command = next(entry for entry in settings['keys']['command'] if entry['key'] == 'prefix+g')
