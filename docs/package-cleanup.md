@@ -105,3 +105,14 @@ legacy host declarations and existing installations remain until migration.
 Keep minidev and its native Ruby runtime. The Dell uses the existing personal
 checkout path and Bash integration; project environments retain ownership of
 project-specific runtime versions.
+
+## Language runtimes
+
+Prefer project-scoped runtimes through Nix development environments. Do not add
+Node.js or Go as global fallback runtimes in the new personal inventory.
+Project-specific Python and Ruby versions also belong to project environments.
+
+Native Python remains a dependency of the Herdr helpers, and native Ruby remains
+a dependency of minidev. These tool dependencies do not select project runtime
+versions. Existing OS/application dependencies and legacy host installations are
+not removed by this decision.
