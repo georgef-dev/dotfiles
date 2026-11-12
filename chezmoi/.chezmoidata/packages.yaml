@@ -99,3 +99,7 @@ packages:
     arch: tflint
     brew: null
     apt: null
+  - tool: ruby
+    arch: ruby
+    brew: ruby
+    apt: ruby

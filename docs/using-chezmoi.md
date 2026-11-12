@@ -166,3 +166,20 @@ Check with `herdr config check`, `herdr plugin list`, and
 `herdr plugin action list`. If an existing client hasn't picked up the new
 settings, reload config from Herdr's menu or run `herdr server reload-config`
 inside a Herdr pane. Keep the server and its existing processes running.
+
+## Minidev
+
+Minidev is retained as an editable checkout, outside chezmoi ownership. On a new
+personal machine, clone it once before opening a fresh terminal:
+
+```bash
+git clone https://github.com/georgef-dev/minidev.git ~/src/github.com/georgef-dev/minidev
+```
+
+The personal Bash fragment sources that checkout's `dev.sh` when present. Native
+Ruby is included in the package inventory to run minidev outside project shells;
+project-specific Ruby versions still come from project environments. Update
+minidev through its own checkout. Chezmoi does not overwrite or update it.
+
+On this Dell, open a new terminal or run
+`source ~/.config/dotfiles/bash.sh` to load the `dev` shell function.

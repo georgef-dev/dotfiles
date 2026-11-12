@@ -99,3 +99,9 @@ Terraform and tflint use native Arch packages on the Dell. Their Mac and Debian
 package sources remain to be verified during host migration; null mappings mark
 that pending work. The dropped tools are excluded from the new inventory;
 legacy host declarations and existing installations remain until migration.
+
+## Repository workflow
+
+Keep minidev and its native Ruby runtime. The Dell uses the existing personal
+checkout path and Bash integration; project environments retain ownership of
+project-specific runtime versions.

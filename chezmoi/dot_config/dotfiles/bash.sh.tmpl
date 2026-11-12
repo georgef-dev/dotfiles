@@ -9,6 +9,12 @@ if command -v direnv >/dev/null 2>&1; then
   eval "$(direnv hook bash)"
 fi
 
+# Keep minidev as an editable checkout, shared with the legacy host layout.
+if [[ -f "$HOME/src/github.com/georgef-dev/minidev/dev.sh" ]]; then
+  # shellcheck source=/dev/null
+  source "$HOME/src/github.com/georgef-dev/minidev/dev.sh"
+fi
+
 # Keep sidebar metadata current as the shell changes directories.
 _dotfiles_herdr_sidebar_prompt() {
   [[ -n "${HERDR_PANE_ID:-}" ]] || return 0
