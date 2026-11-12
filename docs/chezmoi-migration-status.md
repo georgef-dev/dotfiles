@@ -87,3 +87,9 @@ Eight focused launcher tests cover the returned workspace/pane IDs, cwd and
 layout, default naming, cancellation, failure cleanup, readiness timeout, and
 argument quoting. Interactive popup behavior and crossing Neovim boundaries remain
 separate from static configuration validation. No existing workspace or pane is closed.
+
+## Package cleanup
+
+The first [cleanup decisions](package-cleanup.md) select btop instead of htop,
+and retain tree, wget, and mosh. Glow, nmap, and lolcat are excluded from the new
+inventory. The legacy sources remain available until their hosts migrate.

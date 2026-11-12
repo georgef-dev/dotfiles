@@ -59,3 +59,19 @@ packages:
     arch: lazygit
     brew: lazygit
     apt: null
+  - tool: btop
+    arch: btop
+    brew: btop
+    apt: btop
+  - tool: tree
+    arch: tree
+    brew: tree
+    apt: tree
+  - tool: wget
+    arch: wget
+    brew: wget
+    apt: wget
+  - tool: mosh
+    arch: mosh
+    brew: mosh
+    apt: mosh
