@@ -116,3 +116,11 @@ packages:
     arch: firefox
     brew: null
     apt: null
+  - tool: discord
+    arch: discord
+    brew: null
+    apt: null
+  - tool: spotify
+    arch: spotify
+    brew: null
+    apt: null

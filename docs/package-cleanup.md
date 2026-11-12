@@ -133,3 +133,16 @@ Mac cask installation and Debian package sources remain pending host migration,
 represented by null mappings. Chrome is already the Dell's default browser;
 this selection does not change it. Existing Omarchy applications are not
 uninstalled, and the legacy Joplin configuration remains until host migration.
+
+## Communication and music
+
+| App | Decision |
+| --- | --- |
+| Discord | Keep |
+| Spotify | Keep |
+| Zoom | Drop |
+
+Discord and Spotify use native packages from the Dell's configured repositories.
+Mac cask installation and Debian sources remain pending host migration, marked
+with null mappings. Zoom is excluded from the new inventory; existing
+installations and legacy host declarations remain until migration.
