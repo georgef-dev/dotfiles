@@ -83,7 +83,7 @@ and lazygit are included in the native inventory.
 The focused integration check covers config schema, portable paths, plugin source
 registration, archive deployment with a local fixture, apply/reapply, unchanged
 session data, rejection of folded directory symlinks, and prompt-hook idempotence.
-Seven focused launcher tests cover the returned workspace/pane IDs, cwd and
+Eight focused launcher tests cover the returned workspace/pane IDs, cwd and
 layout, default naming, cancellation, failure cleanup, readiness timeout, and
 argument quoting. Interactive popup behavior and crossing Neovim boundaries remain
 separate from static configuration validation. No existing workspace or pane is closed.

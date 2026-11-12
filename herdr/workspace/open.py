@@ -13,6 +13,9 @@ def herdr(*args):
         [os.environ.get('HERDR_BIN_PATH') or 'herdr', *args],
         check=True, capture_output=True, text=True,
     )
+    # Mutation commands such as pane run succeed without printing a response.
+    if not result.stdout.strip():
+        return {}
     return json.loads(result.stdout)['result']
 
 

@@ -1,6 +1,7 @@
 import contextlib
 import importlib.util
 import io
+import json
 import os
 from pathlib import Path
 import subprocess
@@ -52,6 +53,21 @@ class WorkspaceLauncherTest(unittest.TestCase):
             ('pane', 'split', '--pane', 'new-shell', '--direction', 'down',
              '--ratio', '0.7', '--cwd', self.cwd, '--no-focus'),
         ])
+        self.assertIn(('pane', 'run', 'new-editor', 'nvim'), self.calls)
+        self.assertEqual(self.calls[-1], ('workspace', 'focus', 'new-space'))
+        self.assertNotIn(('workspace', 'close', 'new-space'), self.calls)
+
+    def test_silent_cli_success_does_not_remove_completed_workspace(self):
+        def cli_response(argv, **kwargs):
+            args = tuple(argv[1:])
+            result = self.fake_herdr(*args)
+            silent = args[:2] in (('pane', 'run'), ('workspace', 'focus'))
+            stdout = '' if silent else json.dumps({'result': result})
+            return subprocess.CompletedProcess(argv, 0, stdout=stdout)
+
+        with patch('builtins.input', return_value='Personal workspace'), \
+                patch.object(launcher.subprocess, 'run', side_effect=cli_response):
+            self.assertEqual(launcher.main(), 0)
         self.assertIn(('pane', 'run', 'new-editor', 'nvim'), self.calls)
         self.assertEqual(self.calls[-1], ('workspace', 'focus', 'new-space'))
         self.assertNotIn(('workspace', 'close', 'new-space'), self.calls)
