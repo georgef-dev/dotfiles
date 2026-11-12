@@ -186,3 +186,15 @@ Retain the existing ChatGPT Homebrew cask selection for Mac migration. This
 choice adds no Linux package or replacement client. Mac-only app installation
 support remains pending; the active Omarchy inventory is unchanged. Existing
 installations and legacy host declarations remain until migration.
+
+## USB imaging and HTML conversion
+
+| App | Decision |
+| --- | --- |
+| balenaEtcher | Keep |
+| wkhtmltopdf | Drop |
+
+Etcher's Dell installation is pending a reviewed package source: it is not in
+this machine's configured repositories. Retain the existing `balenaetcher`
+Homebrew cask selection for Mac migration. wkhtmltopdf is excluded from the new
+inventory; existing installations and legacy declarations remain until migration.
