@@ -56,3 +56,15 @@ No duplicate Claude Code, Codex, or OpenCode packages are introduced. OpenCode
 remains enabled through Omarchy's mise declaration. Its legacy `schema_status`
 helper and custom Neovim integration are separate configuration choices; keeping
 the CLI does not deploy those integrations on the Dell.
+
+## Containers
+
+Keep Docker CLI, Compose, Buildx, and lazydocker across personal machines.
+Use Colima running Docker on the Mac and native Docker Engine on Omarchy and
+Debian. Colima is not needed on the Linux hosts.
+
+The Dell already has Docker, Compose, and Buildx; lazydocker is added through
+its native package inventory. This selection does not change Docker services,
+contexts, credentials, or existing container data. Mac and Debian installation
+sources remain to be verified during their migrations; null apt mappings mark
+unresolved package sources rather than dropped tools.

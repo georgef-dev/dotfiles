@@ -75,3 +75,19 @@ packages:
     arch: mosh
     brew: mosh
     apt: mosh
+  - tool: docker
+    arch: docker
+    brew: docker
+    apt: docker.io
+  - tool: docker-compose
+    arch: docker-compose
+    brew: docker-compose
+    apt: null
+  - tool: docker-buildx
+    arch: docker-buildx
+    brew: docker-buildx
+    apt: null
+  - tool: lazydocker
+    arch: lazydocker
+    brew: lazydocker
+    apt: null
