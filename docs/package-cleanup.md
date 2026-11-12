@@ -173,3 +173,16 @@ installations and legacy host declarations remain until migration.
 
 All four are excluded from the new personal inventory. Existing installations,
 network settings, and legacy host declarations remain unchanged until migration.
+
+## Desktop AI, editors, and terminals
+
+| App | Decision |
+| --- | --- |
+| ChatGPT desktop | Keep for the personal Mac |
+| Visual Studio Code | Drop |
+| iTerm2 | Drop |
+
+Retain the existing ChatGPT Homebrew cask selection for Mac migration. This
+choice adds no Linux package or replacement client. Mac-only app installation
+support remains pending; the active Omarchy inventory is unchanged. Existing
+installations and legacy host declarations remain until migration.
