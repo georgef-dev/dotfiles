@@ -91,3 +91,11 @@ packages:
     arch: lazydocker
     brew: lazydocker
     apt: null
+  - tool: terraform
+    arch: terraform
+    brew: null
+    apt: null
+  - tool: tflint
+    arch: tflint
+    brew: null
+    apt: null

@@ -82,3 +82,20 @@ unresolved package sources rather than dropped tools.
 None are selected for the new personal inventory. Existing installations and
 legacy Mac/VM declarations remain until those hosts migrate; packages needed by
 other applications can remain as dependencies.
+
+## Infrastructure
+
+| Tool | Decision |
+| --- | --- |
+| terraform | Keep |
+| tflint | Keep |
+| terraform-docs | Drop |
+| terraform-ls | Drop |
+| tfsec | Drop |
+| cloudflared | Drop |
+| istioctl | Drop |
+
+Terraform and tflint use native Arch packages on the Dell. Their Mac and Debian
+package sources remain to be verified during host migration; null mappings mark
+that pending work. The dropped tools are excluded from the new inventory;
+legacy host declarations and existing installations remain until migration.
