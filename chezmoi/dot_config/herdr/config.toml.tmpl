@@ -1,5 +1,7 @@
 {{- /* Keep the legacy config authoritative while its hosts still use Stow. */ -}}
 {{- $config := include (joinPath .chezmoi.workingTree "herdr/.config/herdr/config.toml") | fromToml -}}
+{{- /* Built-in actions win over custom commands, so free prefix+g for lazygit. */ -}}
+{{- $_ := set $config.keys "goto" "prefix+alt+g" -}}
 {{- range $command := $config.keys.command -}}
   {{- if eq $command.key "prefix+v" -}}
     {{- $_ := set $command "command" (printf "python3 %s" (joinPath $.chezmoi.workingTree "herdr/workspace/open.py" | shellQuote)) -}}

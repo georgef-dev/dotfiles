@@ -83,6 +83,10 @@ gitSigningKey = ""
                 herdr_dir = home / '.config/herdr'
                 settings = tomllib.loads((herdr_dir / 'config.toml').read_text())
                 assert settings['keys']['prefix'] == 'ctrl+s'
+                assert settings['keys']['goto'] == 'prefix+alt+g', 'pane search must not shadow lazygit'
+                lazygit_command = next(entry for entry in settings['keys']['command'] if entry['key'] == 'prefix+g')
+                assert lazygit_command['type'] == 'popup'
+                assert shlex.split(lazygit_command['command']) == [str(REPO / 'herdr/lazygit/open.sh')]
                 workspace_command = next(entry['command'] for entry in settings['keys']['command'] if entry['key'] == 'prefix+v')
                 assert shlex.split(workspace_command) == ['python3', str(REPO / 'herdr/workspace/open.py')]
                 assert settings['experimental']['pane_history'] is False
