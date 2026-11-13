@@ -1,0 +1,17 @@
+# shellcheck shell=sh
+# Shared Bash/Zsh preferences. Keep shell-specific integrations in their own rc.
+export EDITOR={{ .preferences.editor | shellQuote }}
+export VISUAL={{ .preferences.editor | shellQuote }}
+export SUDO_EDITOR={{ .preferences.editor | shellQuote }}
+
+{{ range $name, $command := .preferences.aliases -}}
+alias {{ $name }}={{ $command | shellQuote }}
+{{ end }}
+# Omarchy gates Docker access behind authorization by default.
+dps() {
+  if command -v omarchy-sudo-docker >/dev/null 2>&1 && omarchy-sudo-docker; then
+    sudo docker ps --format 'table {{"{{"}}.ID{{"}}"}}\t{{"{{"}}.Names{{"}}"}}\t{{"{{"}}.Status{{"}}"}}\t{{"{{"}}.Ports{{"}}"}}'
+  else
+    docker ps --format 'table {{"{{"}}.ID{{"}}"}}\t{{"{{"}}.Names{{"}}"}}\t{{"{{"}}.Status{{"}}"}}\t{{"{{"}}.Ports{{"}}"}}'
+  fi
+}

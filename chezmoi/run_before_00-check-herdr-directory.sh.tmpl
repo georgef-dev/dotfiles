@@ -1,0 +1,9 @@
+#!/bin/sh
+set -eu
+{{ if eq .profile "omarchy" -}}
+# Never follow a folded Stow directory into the repository for runtime files.
+if [ -L {{ joinPath .chezmoi.destDir ".config/herdr" | shellQuote }} ]; then
+  echo 'Herdr config directory is a symlink. Transfer its ownership before applying chezmoi.' >&2
+  exit 1
+fi
+{{ end -}}

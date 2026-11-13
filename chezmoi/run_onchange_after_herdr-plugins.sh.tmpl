@@ -1,0 +1,8 @@
+#!/bin/sh
+set -eu
+{{ if eq .profile "omarchy" -}}
+# Herdr owns its registry; only link plugin source, never manage plugins.json.
+herdr plugin link {{ joinPath .chezmoi.destDir ".local/share/dotfiles/herdr/vim-herdr-navigation" | shellQuote }} --enabled
+herdr plugin link {{ joinPath .chezmoi.workingTree "herdr/plugins/active-pane-sidebar" | shellQuote }} --enabled
+herdr plugin link {{ joinPath .chezmoi.workingTree "herdr/plugins/pr-status" | shellQuote }} --enabled
+{{ end -}}

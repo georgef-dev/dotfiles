@@ -1,0 +1,146 @@
+# Native package names for the shared personal inventory. Only the Omarchy profile
+# installs these today; verify the other mappings when migrating those machines.
+packages:
+  - tool: chezmoi
+    arch: chezmoi
+    brew: chezmoi
+    apt: chezmoi
+  - tool: git
+    arch: git
+    brew: git
+    apt: git
+  - tool: neovim
+    arch: neovim
+    brew: neovim
+    apt: neovim
+  - tool: ripgrep
+    arch: ripgrep
+    brew: ripgrep
+    apt: ripgrep
+  - tool: jq
+    arch: jq
+    brew: jq
+    apt: jq
+  - tool: gh
+    arch: github-cli
+    brew: gh
+    apt: gh
+  - tool: direnv
+    arch: direnv
+    brew: direnv
+    apt: direnv
+  - tool: fzf
+    arch: fzf
+    brew: fzf
+    apt: fzf
+  - tool: bat
+    arch: bat
+    brew: bat
+    apt: bat
+  - tool: shellcheck
+    arch: shellcheck
+    brew: shellcheck
+    apt: shellcheck
+  # Nix is infrastructure for project devShells, not a global tool provider.
+  # Other platforms need their own reviewed Nix installation path.
+  - tool: nix
+    arch: nix
+    brew: null
+    apt: nix-bin
+  - tool: herdr
+    arch: herdr
+    brew: null
+    apt: null
+  - tool: python3
+    arch: python
+    brew: python
+    apt: python3
+  - tool: lazygit
+    arch: lazygit
+    brew: lazygit
+    apt: null
+  - tool: btop
+    arch: btop
+    brew: btop
+    apt: btop
+  - tool: tree
+    arch: tree
+    brew: tree
+    apt: tree
+  - tool: wget
+    arch: wget
+    brew: wget
+    apt: wget
+  - tool: mosh
+    arch: mosh
+    brew: mosh
+    apt: mosh
+  - tool: docker
+    arch: docker
+    brew: docker
+    apt: docker.io
+  - tool: docker-compose
+    arch: docker-compose
+    brew: docker-compose
+    apt: null
+  - tool: docker-buildx
+    arch: docker-buildx
+    brew: docker-buildx
+    apt: null
+  - tool: lazydocker
+    arch: lazydocker
+    brew: lazydocker
+    apt: null
+  - tool: terraform
+    arch: terraform
+    brew: null
+    apt: null
+  - tool: tflint
+    arch: tflint
+    brew: null
+    apt: null
+  - tool: ruby
+    arch: ruby
+    brew: ruby
+    apt: ruby
+  # Desktop apps: Homebrew cask/vendor apt sources need host migration support.
+  - tool: 1password
+    arch: 1password
+    brew: null
+    apt: null
+  - tool: google-chrome
+    arch: google-chrome
+    brew: null
+    apt: null
+  - tool: firefox
+    arch: firefox
+    brew: null
+    apt: null
+  - tool: discord
+    arch: discord
+    brew: null
+    apt: null
+  - tool: spotify
+    arch: spotify
+    brew: null
+    apt: null
+  - tool: gimp
+    arch: gimp
+    brew: null
+    apt: gimp
+  # Reviewed AUR recipes repackage vendor binaries; upgrades remain OS-managed.
+  - tool: keybase
+    arch: keybase-bin
+    source: aur
+    brew: null
+    apt: null
+  - tool: rtk
+    arch: rtk-bin
+    source: aur
+    brew: rtk
+    apt: null
+  - tool: balenaEtcher
+    arch: etcher-bin
+    source: aur
+    brew: null
+    apt: null
