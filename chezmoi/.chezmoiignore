@@ -2,6 +2,7 @@
 # These targets have only been migrated on Omarchy. Other hosts retain HM/Stow.
 .bashrc
 .config/dotfiles
+.config/omarchy
 .config/git/config
 .config/git/ignore
 .config/herdr

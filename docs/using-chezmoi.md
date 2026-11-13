@@ -196,3 +196,40 @@ socket is enabled for boot; an inactive daemon can be normal before first use.
 Run `sudo docker ...` or `sudo lazydocker` from a terminal. No docker-group access
 was granted during migration. Docker CLI, Compose, Buildx, and lazydocker are
 selected across personal machines; the Mac uses Colima as its Docker backend.
+
+## Shared preferences and themes
+
+`chezmoi/.chezmoidata/preferences.yaml` holds the shared editor, aliases, and
+Dracula palette. Chezmoi renders `~/.config/dotfiles/shared.sh`, sourced after
+Omarchy's Bash defaults. It is also written using shell syntax usable from Zsh;
+the Mac migration must wire it into the Mac's shell after transferring ownership.
+The selected aliases are `tf`, `fzc`, `newtask`, `rebasemain`, and `oops`; `dps`
+is a shared function that respects Omarchy's Docker authorization requirement.
+`oops` still means `git reset --soft HEAD~1`, so use it deliberately. Secret
+loaders, branch-deletion helpers, and the old `glow` reader are not migrated.
+
+Chezmoi renders the palette into
+`~/.config/omarchy/themes/dracula/colors.toml`. An after-apply script calls
+`omarchy theme set dracula` when the selected theme or palette changes. Omarchy
+then generates and reloads its supported app configurations. Generated files
+under `~/.local/state/omarchy/current/theme` are never chezmoi targets. Theme
+switching follows Omarchy's maintained editor integration; this does not migrate
+the personal Neovim configuration. The theme supplies colors only, no wallpaper.
+
+For non-Omarchy Ghostty, the same colors render into
+`~/.config/dotfiles/ghostty-theme`. The Mac agent should replace the old static
+`theme = Dracula Dusk` setting with a `config-file` include of that fragment
+when migrating Ghostty ownership. Do not add that include on Omarchy: its
+terminal already includes Omarchy's dynamic theme. This fragment is staged for
+the Mac handoff and is not loaded by the Dell terminal.
+
+Edit shared source, commit/push, then pull/apply on other migrated hosts. This
+is deliberate synchronization, not a background service. Theme switching from
+Omarchy's menu remains available and an unchanged chezmoi apply does not undo
+it. To reselect the committed theme explicitly, run `omarchy theme set dracula`.
+To change the shared Dracula colors, edit the palette in `preferences.yaml` and
+apply. For another named Omarchy theme, change `preferences.theme`; the custom
+Dracula palette and portable Ghostty fragment remain Dracula until edited.
+
+Mac/VM profiles remain guarded and have not been applied. App settings stored
+in databases or cloud accounts still use each app's own synchronization.

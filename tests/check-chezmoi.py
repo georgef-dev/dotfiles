@@ -51,6 +51,8 @@ gitSigningKey = ""
         if profile != 'omarchy':
             assert '.bashrc' not in managed and '.config/git/config' not in managed
             assert '.config/herdr/config.toml' not in managed
+            assert '.config/dotfiles/shared.sh' not in managed
+            assert '.config/omarchy/themes/dracula/colors.toml' not in managed
             result = subprocess.run(('sh', str(script_path)), capture_output=True, text=True)
             assert result.returncode == 1 and 'not migrated' in result.stderr
         else:
@@ -61,14 +63,18 @@ gitSigningKey = ""
                 bin_dir.mkdir()
                 log = root / 'package-calls'
                 plugin_log = root / 'plugin-calls'
+                theme_log = root / 'theme-calls'
                 stub = bin_dir / 'omarchy'
-                stub.write_text('#!/bin/sh\nprintf "%s\\n" "$*" >> "$PACKAGE_LOG"\n')
+                stub.write_text('#!/bin/sh\ncase "$1" in\n'
+                                'pkg) printf "%s\\n" "$*" >> "$PACKAGE_LOG" ;;\n'
+                                'theme) printf "%s\\n" "$*" >> "$THEME_LOG" ;;\n'
+                                '*) exit 1 ;;\nesac\n')
                 stub.chmod(0o755)
                 herdr_stub = bin_dir / 'herdr'
                 herdr_stub.write_text('#!/bin/sh\nset -eu\ntest -f "$3/herdr-plugin.toml"\nprintf "%s\\n" "$*" >> "$PLUGIN_LOG"\n')
                 herdr_stub.chmod(0o755)
                 env = dict(os.environ, PATH=f'{bin_dir}:{os.environ["PATH"]}',
-                           PACKAGE_LOG=str(log), PLUGIN_LOG=str(plugin_log))
+                           PACKAGE_LOG=str(log), PLUGIN_LOG=str(plugin_log), THEME_LOG=str(theme_log))
                 run(*args, 'apply', env=env)
                 git_config = home / '.config/git/config'
                 assert run('git', 'config', '--file', str(git_config), 'user.email').stdout.strip() == 'test@example.com'
@@ -78,6 +84,37 @@ gitSigningKey = ""
                 calls = log.read_text().splitlines()
                 assert len(calls) == 2, 'expected one repository and one AUR call across apply/reapply'
                 assert calls[0].startswith('pkg add ')
+                assert theme_log.read_text().splitlines() == ['theme set dracula'], 'theme reapplied without a source change'
+                colors = tomllib.loads((home / '.config/omarchy/themes/dracula/colors.toml').read_text())
+                assert colors['background'] == '#282a36'
+                assert colors['accent'] == '#bd93f9'
+                ghostty = (home / '.config/dotfiles/ghostty-theme').read_text()
+                assert f"background = {colors['background']}" in ghostty
+                assert 'palette = 4=' + colors['blue'] in ghostty
+                assert '.config/ghostty/config' not in managed
+                # Exercise Omarchy's real renderer in isolated state, never live config.
+                staged = home / '.local/state/omarchy/current/next-theme'
+                staged.mkdir(parents=True)
+                (staged / 'colors.toml').write_text((home / '.config/omarchy/themes/dracula/colors.toml').read_text())
+                run('/usr/share/omarchy/bin/omarchy-theme-set-templates',
+                    env=dict(os.environ, HOME=str(home), OMARCHY_PATH='/usr/share/omarchy'))
+                generated = (staged / 'ghostty.conf').read_text()
+                assert colors['background'] in generated and '{{' not in generated
+                shared = home / '.config/dotfiles/shared.sh'
+                run('shellcheck', str(shared))
+                run('sh', '-n', str(shared))
+                aliases = run('bash', '--noprofile', '--norc', '-c',
+                              'source "$1"; alias tf; alias rebasemain; printf "%s\\n" "$EDITOR"',
+                              'bash', str(shared)).stdout
+                assert 'terraform' in aliases and 'git rebase origin/main' in aliases and 'nvim' in aliases
+                for needs_sudo in (0, 1):
+                    result = run('bash', '--noprofile', '--norc', '-c',
+                                 'source "$1"; docker() { printf "docker:%s\\n" "$*"; }; '
+                                 'sudo() { printf "sudo:"; "$@"; }; '
+                                 'need=$2; omarchy-sudo-docker() { return "$need"; }; '
+                                 'dps', 'bash', str(shared), str(needs_sudo)).stdout
+                    assert result.startswith('sudo:docker:' if needs_sudo == 0 else 'docker:')
+                    assert '--format table {{.ID}}' in result
                 assert calls[1] == 'pkg aur add keybase-bin rtk-bin etcher-bin'
                 assert not {'keybase-bin', 'rtk-bin', 'etcher-bin'} & set(calls[0].split())
                 # The always-run directory safety check is intentionally shown as a script.

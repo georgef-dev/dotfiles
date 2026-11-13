@@ -141,3 +141,13 @@ These configuration references do not establish active personal use.
 AI-tool cleanup retains Claude Code, Codex, and OpenCode through Omarchy's existing
 mise providers. rtk is kept through the reviewed AUR `rtk-bin` package. Keeping
 OpenCode does not deploy the legacy shell/editor integrations.
+
+## Shared preference layer after the Dell audit
+
+The user selected Dracula as the shared color preference. The new data source
+`chezmoi/.chezmoidata/preferences.yaml` supplies editor/alias settings, an Omarchy
+palette-only Dracula theme, and a matching portable Ghostty palette fragment.
+Omarchy retains ownership of generated app theming; personal Neovim migration
+remains deferred. Bash loads the shared shell fragment after Omarchy defaults.
+Mac shell/Ghostty integration is prepared in source and documented, but profile
+activation and transfer from Home Manager/Stow still require the Mac migration.
