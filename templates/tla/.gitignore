@@ -1,0 +1,5 @@
+# TLC working state and the trace modules it writes on a violation.
+states/
+*_TTrace_*.tla
+*_TTrace_*.bin
+.direnv/

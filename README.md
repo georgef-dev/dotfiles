@@ -66,6 +66,7 @@ Layout:
 - `nix/home/programs/` — zsh, git, direnv, herdr, minidev
 - `nix/pkgs/` — packages not in nixpkgs, pinned to a commit
 - `nix/devshells/` — per-project toolchains
+- `templates/` — `nix flake init` starters with their own `flake.nix` (`tla`)
 - `reference/` — retired configs, kept for reference, imported by nothing
 
 # Per-project runtimes
