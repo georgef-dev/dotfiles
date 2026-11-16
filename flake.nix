@@ -89,5 +89,12 @@
       devShells = nixpkgs.lib.genAttrs
         [ "aarch64-darwin" "x86_64-linux" ]
         (system: import ./nix/devshells { pkgs = pkgsFor system; });
+
+      # Starters with their own flake.nix, so each project pins its own
+      # toolchain: `nix flake init -t ~/dotfiles#tla`.
+      templates.tla = {
+        path = ./templates/tla;
+        description = "TLA+ specs checked with TLC via `make check`";
+      };
     };
 }

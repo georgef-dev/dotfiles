@@ -173,7 +173,9 @@ echo 'use flake ~/dotfiles#node' > .envrc && direnv allow
 Shells in `nix/devshells/default.nix`: `default` (python3/node/go), `node`,
 `python`, `ruby`, `rust`.
 
-A project with its own `flake.nix` uses plain `use flake`.
+A project with its own `flake.nix` uses plain `use flake`. Templates in
+`templates/` start one: `nix flake init -t ~/dotfiles#tla` gives a TLA+
+project with TLC and `make check`.
 
 `core.nix` carries python3, node and go ambiently so an ad-hoc script in
 `~` still runs. Per-project versions shadow those.
