@@ -103,6 +103,13 @@ packages:
     arch: ruby
     brew: ruby
     apt: ruby
+  # TLC (TLA+ model checker) runs on Java. Pin the LTS JRE: tla2tools 1.7.4 is
+  # tested with Java 11/17/21, and Arch's rolling jre-openjdk is newer than
+  # upstream supports. Verify before bumping.
+  - tool: java
+    arch: jre21-openjdk
+    brew: temurin
+    apt: default-jre
   # Desktop apps: Homebrew cask/vendor apt sources need host migration support.
   - tool: 1password
     arch: 1password
@@ -141,6 +148,12 @@ packages:
     apt: null
   - tool: balenaEtcher
     arch: etcher-bin
+    source: aur
+    brew: null
+    apt: null
+  # TLC, SANY, PlusCal translator, and TLATeX; needs the java entry above.
+  - tool: tla-tools
+    arch: tla-tools
     source: aur
     brew: null
     apt: null

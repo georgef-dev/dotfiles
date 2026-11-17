@@ -115,8 +115,9 @@ gitSigningKey = ""
                                  'dps', 'bash', str(shared), str(needs_sudo)).stdout
                     assert result.startswith('sudo:docker:' if needs_sudo == 0 else 'docker:')
                     assert '--format table {{.ID}}' in result
-                assert calls[1] == 'pkg aur add keybase-bin rtk-bin etcher-bin'
-                assert not {'keybase-bin', 'rtk-bin', 'etcher-bin'} & set(calls[0].split())
+                assert calls[1] == 'pkg aur add keybase-bin rtk-bin etcher-bin tla-tools'
+                assert not {'keybase-bin', 'rtk-bin', 'etcher-bin', 'tla-tools'} & set(calls[0].split())
+                assert 'jre21-openjdk' in calls[0].split(), 'TLC needs its pinned LTS JRE'
                 # The always-run directory safety check is intentionally shown as a script.
                 drift = run(*args, 'diff', '--exclude', 'scripts', '--no-pager', env=env).stdout
                 assert drift == '', drift
