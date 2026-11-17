@@ -1,0 +1,10 @@
+#!/bin/sh
+set -eu
+{{ if eq .profile "omarchy" -}}
+# Reapply when either the preference or palette changes, not on every apply.
+# Palette checksum: {{ .preferences.colors | toJson | sha256sum }}
+# Let Omarchy generate and reload its app configurations.
+omarchy theme set {{ .preferences.theme | shellQuote }}
+{{ else -}}
+# Platform integration remains guarded until this host migrates.
+{{ end -}}

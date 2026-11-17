@@ -22,3 +22,7 @@ herdr/.config/herdr/.plugins.lock
 # activation script in nix/home/programs/herdr.nix.
 herdr/.config/herdr/plugins.json
 herdr/.config/herdr/plugins/
+
+# Bytecode from the native workspace launcher and its focused tests.
+herdr/workspace/__pycache__/
+tests/__pycache__/

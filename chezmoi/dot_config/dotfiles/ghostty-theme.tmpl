@@ -1,0 +1,11 @@
+# Shared palette for Ghostty on hosts that do not use Omarchy's generated theme.
+{{ $c := .preferences.colors -}}
+background = {{ $c.background }}
+foreground = {{ $c.foreground }}
+cursor-color = {{ $c.foreground }}
+cursor-text = {{ $c.background }}
+selection-background = {{ $c.selection }}
+selection-foreground = {{ $c.bright_foreground }}
+{{ range $index, $key := list "dark_background" "red" "green" "yellow" "blue" "magenta" "cyan" "foreground" "muted" "bright_red" "bright_green" "bright_yellow" "bright_blue" "bright_magenta" "bright_cyan" "bright_foreground" -}}
+palette = {{ $index }}={{ index $c $key }}
+{{ end -}}

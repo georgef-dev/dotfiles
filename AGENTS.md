@@ -4,6 +4,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Personal dotfiles: one CLI environment across macOS and Linux, driven by a Nix flake + Home Manager, with GNU Stow for the few configs Home Manager does not own. The README and `docs/using-nix-home-manager.md` are the full user docs; read the latter before non-trivial Nix changes.
 
+## Chezmoi migration (Omarchy first)
+
+The user has chosen native global packages and chezmoi-managed configuration,
+retaining Nix for project dependencies. Read `docs/using-chezmoi.md` and
+`docs/chezmoi-migration-status.md` before working on the migration.
+`.chezmoiroot` selects `chezmoi/`; only the `omarchy` profile is ready to apply.
+Machine identity belongs in local chezmoi data, not shared templates.
+Use `python3 tests/check-chezmoi.py` and `chezmoi diff` for this slice; preserve
+Omarchy's maintained startup/defaults. The Nix/Home Manager conventions below
+remain in force for legacy hosts until their ownership is explicitly migrated.
+Do not activate the existing Debian bootstrap or `hms` on this Dell.
+
 ## Commands
 
 ```bash
@@ -43,7 +55,7 @@ Adding a host or changing a host's bundles means editing all relevant ones. The 
 
 ## Conventions and gotchas
 
-- Every CLI tool comes from Nix. Homebrew (`brew/.Brewfile`) is macOS GUI casks and `mas` only.
+- On legacy hosts, CLI tools come from Nix and Homebrew (`brew/.Brewfile`) is GUI casks and `mas` only. Omarchy uses the native inventory under `chezmoi/`.
 - Daemon+CLI pairs (docker daemon, tailscale) are deliberately not in Nix; Home Manager can't own system units.
 - Config Home Manager writes is read-only store symlinks; tools that write their own config (e.g. `~/.docker/config.json`, `plugins.json`) are intentionally left unmanaged.
 - `nix/home/core.nix` must stay portable and safe on any host, including a work machine.

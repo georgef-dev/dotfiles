@@ -1,0 +1,14 @@
+{{- $profile := promptStringOnce . "profile" "Machine profile (omarchy, personal-mac, dev-vm, work-mac)" "omarchy" -}}
+{{- if not (has $profile (list "omarchy" "personal-mac" "dev-vm" "work-mac")) -}}
+{{- fail "Unknown machine profile" -}}
+{{- end -}}
+{{- $name := promptStringOnce . "gitName" "Git author name" "George Ferreira" -}}
+{{- $email := promptStringOnce . "gitEmail" "Git author email (preserve this machine's identity)" -}}
+{{- $key := promptStringOnce . "gitSigningKey" "SSH signing public-key path (empty to leave signing disabled)" "" -}}
+sourceDir = {{ .chezmoi.workingTree | quote }}
+
+[data]
+profile = {{ $profile | quote }}
+gitName = {{ $name | quote }}
+gitEmail = {{ $email | quote }}
+gitSigningKey = {{ $key | quote }}

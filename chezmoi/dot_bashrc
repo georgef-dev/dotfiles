@@ -1,0 +1,17 @@
+# shellcheck shell=bash
+# shellcheck disable=SC1090,SC1091
+# Omarchy environment is needed even for non-interactive shells.
+[[ -r /usr/share/omarchy/default/bash/env-bootstrap ]] && source /usr/share/omarchy/default/bash/env-bootstrap
+
+[[ $- != *i* ]] && return
+
+# Keep Omarchy's maintained aliases, environment, prompt, and integrations.
+source "$OMARCHY_PATH/default/bash/rc"
+
+# Personal additions are kept separate from Omarchy's defaults.
+[[ -r ~/.config/dotfiles/bash.sh ]] && source ~/.config/dotfiles/bash.sh
+. "$HOME/.cargo/env"
+
+# pnpm global bin (for the `ultimate` command)
+export PNPM_HOME="$HOME/.local/share/pnpm"
+export PATH="$PNPM_HOME/bin:$PNPM_HOME:$PATH"
